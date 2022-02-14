@@ -21,3 +21,6 @@ class Raemis:
         with rq.get(url=url, auth=("raemis", "password")) as resp:
             ret = resp.json()
         return ret if isinstance(ret, list) else None
+    
+    def get_subscriber_for_ip(self, ip: str) -> tuple[str, str]:
+        

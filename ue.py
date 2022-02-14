@@ -70,8 +70,8 @@ class UE:
                 if self.mac != mac:
                     self.mac_to_release = self.mac
                     self.need_to_release = True
-            finally:
-                self.mac = mac
+            except: pass
+            self.mac = mac
             return self.mac
         return None
 
