@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 import requests as rq
+from typing import Union
 
 
 class Raemis:
     def __init__(self):
         self.api = "http://10.44.1.13/api/"
-        self.api_user = "raemis"
-        self.api_pass = "password"
 
-    async def get_subscribers(self):
+    def get_subscribers(self) -> list[dict]:
         endpoint = self.api + "subscriber"
-        return rq.get(endpoint, auth=(self.api_user, self.api_pass)).json()
+        data = self.fetch_data(endpoint)
+        return data if data else list()
 
-    async def get_data_sessions(self):
+    def get_data_sessions(self) -> list[dict]:
         endpoint = self.api + "data_session"
-        return rq.get(endpoint, auth=(self.api_user, self.api_pass)).json()
+        data = self.fetch_data(endpoint)
+        return data if data else list()
+
+    def fetch_data(self, url: str) -> Union[None, list[dict]]:
+        with rq.get(url=url, auth=("raemis", "password")) as resp:
+            ret = resp.json()
+        return ret if isinstance(ret, list) else None

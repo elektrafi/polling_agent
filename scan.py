@@ -6,7 +6,8 @@ from scanner import Scanner
 
 def main():
     scanner = Scanner()
-    pprint(scanner.snmp_list)
+    scanner.run_scan()
+    pprint([ue.mac_address() for ue in scanner.raemis_list])
 
 
 if __name__ == "__main__":
