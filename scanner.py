@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import contextvars
 from routeros_api import Api
 from ue import UE
 from raemis import Raemis

@@ -3,6 +3,8 @@
 
 class MACAddress:
     def __init__(self, mac: str) -> None:
+        if not isinstance(mac, str):
+            raise ValueError()
         mac = mac.upper().replace(":", "")
         if len(mac) != 12:
             raise ValueError()

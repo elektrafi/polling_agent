@@ -63,39 +63,15 @@ class UE:
         mac = self.snmp_get(".1.3.6.1.2.1.2.2.1.6.7")
         if mac is None:
             return None
-        if isinstance(mac.value, str):
-            mac = mac.value.encode("utf-8").hex().replace("c2", "").replace("c3", "")
-            if not len(mac) >= 12:
-                mac = self.snmp_get(".1.3.6.1.2.1.2.2.1.6.2")
-                if mac is None:
-                    return None
-                if isinstance(mac.value, str):
-                    mac = (
-                        mac.value.encode("utf-8")
-                        .hex()
-                        .replace("c2", "")
-                        .replace("c3", "")
-                    )
-                    if len(mac) >= 12:
-                        try:
-                            self.mac = MACAddress(mac)
-                        except:
-                            return None
-
-                    else:
-                        return None
-                else:
-                    return None
+        mac = mac.value.encode("utf-8").hex().replace("c2", "").replace("c3", "")
+        if isinstance(mac, str) and len(mac) == 12:
+            mac = MACAddress(mac)
             try:
                 if self.mac != mac:
                     self.mac_to_release = self.mac
                     self.need_to_release = True
-            except:
-                pass
-            try:
-                self.mac = MACAddress(mac)
-            except:
-                return None
+            finally:
+                self.mac = mac
             return self.mac
         return None
 
