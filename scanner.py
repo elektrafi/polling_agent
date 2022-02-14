@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-from aiohttp.helpers import BasicAuth
 from routeros_api import Api
 from ue import UE
 from raemis import Raemis
-import aiohttp
 import asyncio
-from aiohttp import ClientSession
 
 
 class Scanner:
@@ -45,8 +42,7 @@ class Scanner:
     async def update_sonar(self) -> None:
         tasks = []
         for ue in self.raemis_list:
-            if ue.mac_address():
-                tasks.append(asyncio.to_thread(ue.update_sonar))
+            tasks.append(asyncio.to_thread(ue.update_sonar))
         await asyncio.gather(*tasks)
 
     def get_raemis_clients(self) -> list[UE]:
@@ -57,5 +53,5 @@ class Scanner:
         print("done with raemis")
         asyncio.run(self.scan_snmp_info())
         print("Done with MAC addresses")
-        asyncio.run(self.update_sonar())
+        # asyncio.run(self.update_sonar())
         print("Done again")

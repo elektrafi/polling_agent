@@ -3,7 +3,8 @@ from easysnmp import Session
 from easysnmp import SNMPVariable
 from typing import Union
 from mac_address import MACAddress
-import requests
+from requests import get as rget
+from telnet_client import TelnetClient
 
 sonar_apikey = "f56e4e95-1790-4392-bf45-379ef2994d3c"
 sonar_url = "https://elektrafi.sonar.software/api/dhcp"
@@ -17,6 +18,7 @@ class UE:
         )
         self.ue_has_snmp = True
         self.need_to_release = False
+        self.telnet = TelnetClient(self.hostname)
 
     def update_sonar(self) -> None:
         if self.old_mac():
@@ -26,8 +28,7 @@ class UE:
                 "ip_address": self.hostname,
                 "mac_address": self.old_mac(),
             }
-            with requests.get(url=sonar_url, params=data) as resp:
-                print(resp.text)
+            with rget(url=sonar_url, params=data) as resp:
                 self.release_old_mac()
         data = {
             "expired": 0,
@@ -35,8 +36,8 @@ class UE:
             "ip_address": self.hostname,
             "mac_address": self.mac_address(),
         }
-        with requests.get(url=sonar_url, params=data) as resp:
-            print(resp.text)
+        with rget(url=sonar_url, params=data) as resp:
+            pass
 
     def fetch_has_snmp(self) -> None:
         try:
@@ -46,27 +47,17 @@ class UE:
             if ue_info is None:
                 self.ue_has_snmp = False
             else:
-                self.ue_info = ue_info.value
                 self.ue_has_snmp = True
+                if isinstance(ue_info.value, str):
+                    self.ue_info = " ".join(ue_info.value.split()[0:2])
 
-    def fetch_hw_info(self) -> str:
-        try:
-            return self.ue_type
-        except:
-            if self.has_snmp:
-                telrad_check = self.telrad_12000_update_mac_address()
-                if telrad_check:
-                    self.ue_type = "Telrad 12000"
-                    return self.ue_type
-                else:
-                    telrad_check = self.telrad_12300_update_mac_address()
-                    if telrad_check:
-                        self.ue_type = "Telrad 12300"
-                        return self.ue_type
-            else:
-                print(f"Device %s isn't SNMP capable" % self.hostname)
-            self.ue_type = "Unknonwn"
-            return self.ue_type
+    def fetch_hw_info(self) -> None:
+        if self.has_snmp:
+            telrad_check = self.telrad_12000_update_mac_address()
+            if not telrad_check:
+                telrad_check = self.telrad_12300_update_mac_address()
+        else:
+            self.telnet_info = self.telnet.cmd("wan lte status")
 
     def telrad_12300_update_mac_address(self) -> Union[MACAddress, None]:
         mac = self.snmp_get(".1.3.6.1.2.1.2.2.1.6.7")
@@ -97,7 +88,7 @@ class UE:
                     return None
             try:
                 if self.mac != mac:
-                    self.mac_to_release = mac
+                    self.mac_to_release = self.mac
                     self.need_to_release = True
             except:
                 pass
@@ -134,20 +125,26 @@ class UE:
     def has_snmp(self) -> bool:
         return self.ue_has_snmp
 
+    def get_ue_info(self) -> Union[None, str]:
+        try:
+            return self.ue_info
+        except:
+            return None
+
     def release_old_mac(self) -> None:
         try:
             del self.mac_to_release
         finally:
             self.need_to_release = False
 
+    def get_host(self) -> str:
+        return self.hostname
+
     def old_mac(self) -> Union[None, MACAddress]:
         try:
             return self.mac_to_release
         except:
             return None
-
-    def __repr__(self):
-        return self.hostname
 
     def snmp_get(self, oid: str) -> Union[None, SNMPVariable]:
         try:
@@ -164,5 +161,20 @@ class UE:
         except:
             return None
 
+    def __repr__(self) -> str:
+        sep = "==========================================="
+        return f"""{sep}
+        Host: {self.get_host()}
+        HW Address: {self.mac_address()}
+        Info: {self.get_ue_info()}
+        {'Telnet Info: ' + self.telnet_info if hasattr(self, 'telnet_info') else ''}
+        sep"""
+
     def __str__(self) -> str:
-        return self.hostname
+        sep = "==========================================="
+        return f"""{sep}
+        Host: {self.get_host()}
+        HW Address: {self.mac_address()}
+        Info: {self.get_ue_info()}
+        {'Telnet Info: ' + self.telnet_info if hasattr(self, 'telnet_info') else ''}
+        sep"""

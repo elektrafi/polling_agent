@@ -5,7 +5,6 @@ class MACAddress:
     def __init__(self, mac: str) -> None:
         mac = mac.upper().replace(":", "")
         if len(mac) != 12:
-            print(mac)
             raise ValueError()
         self.mac = bytes.fromhex(mac)
 
