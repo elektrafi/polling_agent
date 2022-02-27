@@ -5,6 +5,7 @@ from typing import Union
 from mac_address import MACAddress
 from requests import get as rget
 from telnet_client import TelnetClient
+from web_scrape import WebScraper
 
 sonar_apikey = "f56e4e95-1790-4392-bf45-379ef2994d3c"
 sonar_url = "https://elektrafi.sonar.software/api/dhcp"
@@ -18,7 +19,7 @@ class UE:
         )
         self.ue_has_snmp = True
         self.need_to_release = False
-        self.telnet = TelnetClient(self.hostname)
+        # self.telnet = TelnetClient(self.hostname)
 
     def update_sonar(self) -> None:
         if self.old_mac():
@@ -39,25 +40,29 @@ class UE:
         with rget(url=sonar_url, params=data) as resp:
             pass
 
-    def fetch_has_snmp(self) -> None:
+    def fetch_ue_info(self) -> None:
         try:
-            self.ue_info
-        except:
             ue_info = self.snmp_get(".1.3.6.1.2.1.1.1.0")
+            print(ue_info)
             if ue_info is None:
                 self.ue_has_snmp = False
+                self.scraper = WebScraper(self.hostname)
+                mac = self.scraper.getMacAddress()
+                self.ue_info = self.scraper.model
+                if mac and isinstance(mac, MACAddress):
+                    self.mac = mac
             else:
                 self.ue_has_snmp = True
                 if isinstance(ue_info.value, str):
                     self.ue_info = " ".join(ue_info.value.split()[0:2])
-
-    def fetch_hw_info(self) -> None:
-        if self.has_snmp:
-            telrad_check = self.telrad_12000_update_mac_address()
-            if not telrad_check:
-                telrad_check = self.telrad_12300_update_mac_address()
-        else:
-            self.telnet_info = self.telnet.cmd("wan lte status")
+                else:
+                    self.ue_info = "UNKNOWN"
+                telrad_check = self.telrad_12000_update_mac_address()
+                if not telrad_check:
+                    telrad_check = self.telrad_12300_update_mac_address()
+        except:
+            print(f"Died for {self.hostname}")
+            return
 
     def telrad_12300_update_mac_address(self) -> Union[MACAddress, None]:
         mac = self.snmp_get(".1.3.6.1.2.1.2.2.1.6.7")
@@ -70,7 +75,8 @@ class UE:
                 if self.mac != mac:
                     self.mac_to_release = self.mac
                     self.need_to_release = True
-            except: pass
+            except:
+                pass
             self.mac = mac
             return self.mac
         return None
@@ -142,15 +148,11 @@ class UE:
         return f"""{sep}
         Host: {self.get_host()}
         HW Address: {self.mac_address()}
-        Info: {self.get_ue_info()}
-        {'Telnet Info: ' + self.telnet_info if hasattr(self, 'telnet_info') else ''}
-        sep"""
+        Info: {self.get_ue_info()}"""
 
     def __str__(self) -> str:
         sep = "==========================================="
         return f"""{sep}
         Host: {self.get_host()}
         HW Address: {self.mac_address()}
-        Info: {self.get_ue_info()}
-        {'Telnet Info: ' + self.telnet_info if hasattr(self, 'telnet_info') else ''}
-        sep"""
+        Info: {self.get_ue_info()}"""

@@ -1,37 +1,207 @@
+from binascii import Error
+from typing import Union
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
+from io import open
+from json import JSONDecoder
+from ue import UE
+from pprint import pprint
+from functools import reduce
 
-sonar_api_key = """eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZDIwYWJiZWM2NmU2YmY3ZTQwZWVjNjQwNWExYTNmZjA2MmMxMzBhNjJiNTc0MmE5NTJkNDFmZWYwZjhhNTE3NWM5ZjliNzA4NTI3OWI5MjgiLCJpYXQiOjE2NDQ4NjU0NzUsIm5iZiI6MTY0NDg2NTQ3NSwiZXhwIjoyMTQ1OTE2ODAwLCJzdWIiOiI2Iiwic2NvcGVzIjpbXX0.VU9jUPi0-kzjUXH3y78Vb5541xhyfwj8nzKifNjY8pfbQ1fpdcdqG6JRovP__tocORCRFCbxksFVVI5ppBoNq7qSoZXT2YDZ_E3xAPTQnD0i6KhGjat_AbGW34Rx38ILtiN7JBf25rwzW65sy29M0zqnmdxTyPEeImSpFijzCdw4gH4ARL5vCAy91pTYKZU0hlVbrBSqa9faJd8-UPwffqm3d_1l8nTbm91zWWEbXajE89M3vstJReKOJ4x5jGqVGI1oh889A9lBfnoCYjLRct06sVudKFlb93U4MnnBAEZbMI7vIb4XeVPEI6-AisCt06E9K1KlIYmX8kcQH8eXPDYWlPMz9h4dTghzNha19pfWlU8uhlSw8x03N8Ahxg8obGUvKhn3Ee522YCFX-vTGVfdw7GQmE3c02A9SgrWAGoq_rvPhjh8z5Q0eC6NoDB3ERbp_cyktdKw92nuHoupiAhhU766tBXeoaii8KhfUmiQJT7F8K7S2GLb7iQ7QLyU891be4fJilp1jBtD5DUtaT7W2-PTFYBDYx9n0bubxrlgqix_jC7372URfYAgC1Cqchph2BLlhrthZIw4FbYrpvKX1sv_o0PXYg8H_v74TbWA_eplaCHrHSDvBgtnskiARxsEy7x5e9rHotITRezyV39svbn7vSJ2vzCaLz9hZrI"""
-sonar_url = 'https://elektrafi.sonar.software/api/graphql'
+sonar_url = "https://elektrafi.sonar.software/api/graphql"
+
+
 class SonarGraphQL:
     def __init__(self):
+        with open("sonar_api.key") as key_file:
+            sonar_api_key = JSONDecoder().decode(key_file.readline())["sonar_api_key"]
         transport = AIOHTTPTransport(
             url=sonar_url,
             ssl=True,
             ssl_close_timeout=50,
             headers={
-                'Authorization': f'Bearer {sonar_api_key}',
-                'Accept': 'application/json'
-            })
+                "Authorization": f"Bearer {sonar_api_key}",
+                "Accept": "application/json",
+            },
+        )
         self.client = Client(transport=transport, fetch_schema_from_transport=True)
-        
 
-    def get_users(self):
+    def get_inventory_with_mac(self) -> Union[None, dict]:
         query = gql(
             """
-            query getAccounts {
-                contacts {
-                    entities {
-                        id,
-                        name,
-                        primary
+              query ($page: Paginator!) {
+                inventory_items(paginator:$page){
+                  page_info {
+                    page,
+                    total_pages,
+                  },
+                  entities{
+                    id
+                    inventory_model_field_data {
+                      entities {
+                        inventory_model_field {
+                          name
+                        }
+                        value
+                      }
+                    },
+                    inventory_model {
+                      id,
+                      name
                     }
+                  },
+                }
+              }"""
+        )
+        page = {"page": {"page": 1, "records_per_page": 100}}
+        try:
+            data = self.client.execute(query, variable_values=page)
+            pageInfo = data["inventory_items"]["page_info"]
+            numPages = pageInfo["total_pages"]
+            currPage = pageInfo["page"]
+            invItems = data["inventory_items"]["entities"]
+            while currPage < numPages:
+                page["page"]["page"] += 1
+                try:
+                    try:
+                        data = self.client.execute(query, variable_values=page)
+                    except:
+                        raise InterruptedError("Failed while fetching paged data")
+                    pageInfo = data["inventory_items"]["page_info"]
+                    if numPages != pageInfo["total_pages"]:
+                        raise ValueError("Different number of pages between requests")
+                    currPage = pageInfo["page"]
+                    invItems.extend(data["inventory_items"]["entities"])
+                except:
+                    raise ValueError(
+                        "Unable to update paged data with newest page's information"
+                    )
+        except InterruptedError as ie:
+            raise ie
+        except Exception as e:
+            raise e
+        return invItems
+
+    def insert_inventory(self, ues: list[UE]) -> None:
+        query = gql(
+            """
+            mutation InsertInventoryItem($input: CreateInventoryItemsMutationInput) {
+                createInventoryItems(input: $input) {
+                    inventory_model_id,
+                     inventoryitemable_type,
+                     inventory_model_field_data {
+                         entities {
+                             id,
+                             value
+                         }
+                     }
                 }
             }
             """
         )
-        return self.client.execute(query)
+        field_data_12000 = list()
+        field_data_12300 = list()
+        field_data_wac104 = list()
+        for ue in ues:
+            if ue.mac_address():
+                if str(ue.mac_address()).startswith("80"):
+                    field_data_12000.append(
+                        [
+                            {
+                                "inventory_model_field_id": 38,
+                                "value": str(ue.mac_address()),
+                            },
+                            {
+                                "inventory_model_field_id": 39,
+                                "value": str(ue.get_ue_info()),
+                            },
+                        ]
+                    )
+                elif str(ue.mac_address()).startswith("34"):
+                    field_data_12300.append(
+                        [
+                            {
+                                "inventory_model_field_id": 44,
+                                "value": str(ue.mac_address()),
+                            },
+                            {
+                                "inventory_model_field_id": 45,
+                                "value": str(ue.get_ue_info()),
+                            },
+                        ]
+                    )
+                elif ue.get_ue_info() and "WAP" in str(ue.get_ue_info()):
+                    field_data_wac104.append(
+                        [
+                            {
+                                "inventory_model_field_id": 50,
+                                "value": str(ue.mac_address()),
+                            },
+                            {
+                                "inventory_model_field_id": 51,
+                                "value": str(ue.get_ue_info()),
+                            },
+                        ]
+                    )
 
-        
-if __name__ == '__main__':
-    print(SonarGraphQL().get_users())
+            self.data = [
+                {
+                    "input": {
+                        "inventory_model_id": 13,
+                        "inventoryitemable_type": "InventoryLocation",
+                        "inventoryitemable_id": 1,
+                        "items": [
+                            {"individual_inventory_item_fields": fields}
+                            for fields in field_data_12000
+                        ],
+                    }
+                },
+                {
+                    "input": {
+                        "inventory_model_id": 14,
+                        "inventoryitemable_type": "InventoryLocation",
+                        "inventoryitemable_id": 1,
+                        "items": [
+                            {"individual_inventory_item_fields": fields}
+                            for fields in field_data_12300
+                        ],
+                    }
+                },
+                {
+                    "input": {
+                        "inventory_model_id": 1,
+                        "inventoryitemable_type": "InventoryLocation",
+                        "inventoryitemable_id": 1,
+                        "items": [
+                            {"individual_inventory_item_fields": field}
+                            for field in field_data_wac104
+                        ],
+                    },
+                },
+            ]
+        try:
+            print(
+                "TOTAL ITEMS INSERTED: %d"
+                % sum(
+                    (
+                        len(field_data_12300),
+                        len(field_data_12000),
+                        len(field_data_wac104),
+                    )
+                )
+            )
+        except:
+            print("No Data!")
+            return
+        for d in self.data:
+            try:
+                result = self.client.execute(query, variable_values=d)
+                print(*[f"Res: {str(r)}\n" for r in result])
+            except Exception as e:
+                print(f"Oh no! FAILED\n{e.__repr__()}")
+        return
+
+
+if __name__ == "__main__":
+    pass
+    # print(SonarGraphQL().get_users())
