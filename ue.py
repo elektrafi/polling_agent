@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from easysnmp import Session
 from easysnmp import SNMPVariable
+import easysnmp
 from typing import Union
 from mac_address import MACAddress
 from requests import get as rget
@@ -14,11 +15,12 @@ sonar_url = "https://elektrafi.sonar.software/api/dhcp"
 class UE:
     def __init__(self, hostname: str) -> None:
         self.hostname = hostname
-        self.snmp = Session(
+        self.snmp = easysnmp.Session(
             hostname=hostname, community="public", version=2, timeout=3, retries=2
         )
         self.ue_has_snmp = True
         self.need_to_release = False
+
         # self.telnet = TelnetClient(self.hostname)
 
     def update_sonar(self) -> None:
@@ -43,7 +45,6 @@ class UE:
     def fetch_ue_info(self) -> None:
         try:
             ue_info = self.snmp_get(".1.3.6.1.2.1.1.1.0")
-            print(ue_info)
             if ue_info is None:
                 self.ue_has_snmp = False
                 self.scraper = WebScraper(self.hostname)
@@ -54,15 +55,83 @@ class UE:
             else:
                 self.ue_has_snmp = True
                 if isinstance(ue_info.value, str):
-                    self.ue_info = " ".join(ue_info.value.split()[0:2])
+                    self.ue_info = " ".join(ue_info.value.split()[0:3])
                 else:
                     self.ue_info = "UNKNOWN"
-                telrad_check = self.telrad_12000_update_mac_address()
-                if not telrad_check:
-                    telrad_check = self.telrad_12300_update_mac_address()
+                if isinstance(ue_info.value, str) and (
+                    "bec" in ue_info.value.lower()
+                    or "ridgewave" in ue_info.value.lower()
+                ):
+                    self.bec_snmp_update_mac_address()
+                elif isinstance(ue_info.value, str) and "wap" in ue_info.value.lower():
+                    self.wac104_snmp_update_mac_address()
+                elif isinstance(ue_info.value, str) and "bai" in ue_info.value.lower():
+                    pass
+                else:
+                    telrad_check = self.telrad_12000_update_mac_address()
+                    if not telrad_check:
+                        telrad_check = self.telrad_12300_update_mac_address()
         except:
             print(f"Died for {self.hostname}")
             return
+
+    def wac104_snmp_update_mac_address(self) -> Union[MACAddress, None]:
+        try:
+            check = self.snmp.get_bulk(".1.3.6.1.2.1.2.2.1.2")
+            num = next(
+                (val.oid.split(".")[-1] for val in check if val.value == "lan4"), None
+            )
+            mac = self.snmp_get(f".1.3.6.1.2.1.2.2.1.6.{num}")
+        except:
+            print(f"SNMP for WAC104 {self.hostname} failed while matching lan4")
+            return None
+        if mac is None:
+            return None
+        mac = mac.value.encode().hex().replace("c2", "").replace("c3", "")
+        if isinstance(mac, str) and len(mac) == 12:
+            mac = MACAddress(mac)
+            try:
+                if self.mac != mac:
+                    self.mac_to_release = self.mac
+                    self.need_to_release = True
+            except:
+                pass
+            self.mac = mac
+            return mac
+        else:
+            print(
+                f"SNMP for WAC104 {self.hostname} failed (maybe because of c2/c3 removal)"
+            )
+        return None
+
+    def bec_snmp_update_mac_address(self) -> Union[MACAddress, None]:
+        try:
+            check = self.snmp.get_bulk(".1.3.6.1.2.1.2.2.1.2")
+            num = next(
+                (val.oid.split(".")[-1] for val in check if val.value == "eth0"), None
+            )
+            mac = self.snmp_get(f".1.3.6.1.2.1.2.2.1.6.{num}")
+        except:
+            print(f"SNMP for BEC {self.hostname} failed while matching eth0")
+            return None
+        if mac is None:
+            return None
+        mac = mac.value.encode().hex().replace("c2", "").replace("c3", "")
+        if isinstance(mac, str) and len(mac) == 12:
+            mac = MACAddress(mac)
+            try:
+                if self.mac != mac:
+                    self.mac_to_release = self.mac
+                    self.need_to_release = True
+            except:
+                pass
+            self.mac = mac
+            return mac
+        else:
+            print(
+                f"SNMP for BEC {self.hostname} failed (maybe because of c2/c3 removal)"
+            )
+        return None
 
     def telrad_12300_update_mac_address(self) -> Union[MACAddress, None]:
         mac = self.snmp_get(".1.3.6.1.2.1.2.2.1.6.7")
@@ -146,13 +215,9 @@ class UE:
     def __repr__(self) -> str:
         sep = "==========================================="
         return f"""{sep}
-        Host: {self.get_host()}
-        HW Address: {self.mac_address()}
-        Info: {self.get_ue_info()}"""
+        Host: {self.get_host()} HW Address: {self.mac_address()} Info: {self.get_ue_info()}"""
 
     def __str__(self) -> str:
         sep = "==========================================="
         return f"""{sep}
-        Host: {self.get_host()}
-        HW Address: {self.mac_address()}
-        Info: {self.get_ue_info()}"""
+        Host: {self.get_host()} HW Address: {self.mac_address()} Info: {self.get_ue_info()}"""

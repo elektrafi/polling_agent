@@ -1,1 +1,6 @@
 __pycache__/**
+.vscode/**
+.dir-local*
+*.log
+*.har
+

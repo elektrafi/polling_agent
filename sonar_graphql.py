@@ -1,5 +1,6 @@
 from binascii import Error
 from typing import Union
+import asyncio
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 from io import open
@@ -14,13 +15,15 @@ sonar_url = "https://elektrafi.sonar.software/api/graphql"
 class SonarGraphQL:
     def __init__(self):
         with open("sonar_api.key") as key_file:
-            sonar_api_key = JSONDecoder().decode(key_file.readline())["sonar_api_key"]
+            self.sonar_api_key = JSONDecoder().decode(key_file.readline())[
+                "sonar_api_key"
+            ]
         transport = AIOHTTPTransport(
             url=sonar_url,
             ssl=True,
             ssl_close_timeout=50,
             headers={
-                "Authorization": f"Bearer {sonar_api_key}",
+                "Authorization": f"Bearer {self.sonar_api_key}",
                 "Accept": "application/json",
             },
         )
@@ -82,7 +85,7 @@ class SonarGraphQL:
             raise e
         return invItems
 
-    def insert_inventory(self, ues: list[UE]) -> None:
+    async def insert_inventory(self, ues: list[UE]) -> None:
         query = gql(
             """
             mutation InsertInventoryItem($input: CreateInventoryItemsMutationInput) {
@@ -101,7 +104,10 @@ class SonarGraphQL:
         )
         field_data_12000 = list()
         field_data_12300 = list()
+        field_data_bec6900 = list()
         field_data_wac104 = list()
+        field_data_bec6500 = list()
+        field_data_od06 = list()
         for ue in ues:
             if ue.mac_address():
                 if str(ue.mac_address()).startswith("80"):
@@ -130,7 +136,7 @@ class SonarGraphQL:
                             },
                         ]
                     )
-                elif ue.get_ue_info() and "WAP" in str(ue.get_ue_info()):
+                elif ue.get_ue_info() and "wap" in str(ue.get_ue_info()).lower():
                     field_data_wac104.append(
                         [
                             {
@@ -139,6 +145,48 @@ class SonarGraphQL:
                             },
                             {
                                 "inventory_model_field_id": 51,
+                                "value": str(ue.get_ue_info()),
+                            },
+                        ]
+                    )
+                elif ue.get_ue_info() and "6900" in str(ue.get_ue_info()):
+                    field_data_bec6900.append(
+                        [
+                            {
+                                "inventory_model_field_id": 54,
+                                "value": str(ue.mac_address()),
+                            },
+                            {
+                                "inventory_model_field_id": 55,
+                                "value": str(ue.get_ue_info()),
+                            },
+                        ]
+                    )
+                elif ue.get_ue_info() and ("6500" in str(ue.get_ue_info())):
+                    field_data_bec6500.append(
+                        [
+                            {
+                                "inventory_model_field_id": 60,
+                                "value": str(ue.mac_address()),
+                            },
+                            {
+                                "inventory_model_field_id": 61,
+                                "value": str(ue.get_ue_info()),
+                            },
+                        ]
+                    )
+                elif ue.get_ue_info() and (
+                    "od06" in str(ue.get_ue_info()).lower()
+                    or "bai" in str(ue.get_ue_info()).lower()
+                ):
+                    field_data_od06.append(
+                        [
+                            {
+                                "inventory_model_field_id": 66,
+                                "value": str(ue.mac_address()),
+                            },
+                            {
+                                "inventory_model_field_id": 71,
                                 "value": str(ue.get_ue_info()),
                             },
                         ]
@@ -169,12 +217,45 @@ class SonarGraphQL:
                 },
                 {
                     "input": {
+                        "inventory_model_id": 15,
+                        "inventoryitemable_type": "InventoryLocation",
+                        "inventoryitemable_id": 1,
+                        "items": [
+                            {"individual_inventory_item_fields": field}
+                            for field in field_data_bec6900
+                        ],
+                    },
+                },
+                {
+                    "input": {
+                        "inventory_model_id": 16,
+                        "inventoryitemable_type": "InventoryLocation",
+                        "inventoryitemable_id": 1,
+                        "items": [
+                            {"individual_inventory_item_fields": field}
+                            for field in field_data_bec6500
+                        ],
+                    },
+                },
+                {
+                    "input": {
                         "inventory_model_id": 1,
                         "inventoryitemable_type": "InventoryLocation",
                         "inventoryitemable_id": 1,
                         "items": [
                             {"individual_inventory_item_fields": field}
                             for field in field_data_wac104
+                        ],
+                    },
+                },
+                {
+                    "input": {
+                        "inventory_model_id": 2,
+                        "inventoryitemable_type": "InventoryLocation",
+                        "inventoryitemable_id": 1,
+                        "items": [
+                            {"individual_inventory_item_fields": field}
+                            for field in field_data_od06
                         ],
                     },
                 },
@@ -187,15 +268,27 @@ class SonarGraphQL:
                         len(field_data_12300),
                         len(field_data_12000),
                         len(field_data_wac104),
+                        len(field_data_bec6900),
+                        len(field_data_bec6500),
                     )
                 )
             )
+            transport = AIOHTTPTransport(
+                url=sonar_url,
+                ssl=True,
+                ssl_close_timeout=50,
+                headers={
+                    "Authorization": f"Bearer {self.sonar_api_key}",
+                    "Accept": "application/json",
+                },
+            )
+            self.client = Client(transport=transport, fetch_schema_from_transport=True)
         except:
-            print("No Data!")
+            print("Failed to create client to transport Data!")
             return
         for d in self.data:
             try:
-                result = self.client.execute(query, variable_values=d)
+                result = await self.client.execute_async(query, variable_values=d)
                 print(*[f"Res: {str(r)}\n" for r in result])
             except Exception as e:
                 print(f"Oh no! FAILED\n{e.__repr__()}")

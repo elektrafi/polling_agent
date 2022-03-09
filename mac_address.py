@@ -14,9 +14,9 @@ class MACAddress:
         return self.mac
 
     def __eq__(self, other) -> bool:
-        if not isinstance(other, MACAddress):
-            return False
-        return self.mac == other
+        if isinstance(other, MACAddress):
+            return self.mac == other.mac
+        return False
 
     def __repr__(self):
         return bytes.hex(self.mac, ":", 1)
