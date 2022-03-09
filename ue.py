@@ -21,26 +21,27 @@ class UE:
         self.ue_has_snmp = True
         self.need_to_release = False
 
-        # self.telnet = TelnetClient(self.hostname)
-
-    def update_sonar(self) -> None:
-        if self.old_mac():
-            data = {
-                "expired": 1,
-                "api_key": sonar_apikey,
-                "ip_address": self.hostname,
-                "mac_address": self.old_mac(),
-            }
-            with rget(url=sonar_url, params=data) as resp:
-                self.release_old_mac()
-        data = {
-            "expired": 0,
-            "api_key": sonar_apikey,
-            "ip_address": self.hostname,
-            "mac_address": self.mac_address(),
-        }
-        with rget(url=sonar_url, params=data) as resp:
-            pass
+    def find_imei(self):
+        mac = self.mac_address()
+        if mac is None:
+            return
+        mac = str(mac)
+        if mac.startswith("80"):
+            snmp_res = self.snmp_get(".1.3.6.1.4.1.17713.20.2.1.4.11.0")
+            if snmp_res is None:
+                return
+            imei = snmp_res.value
+            if imei is None:
+                return
+            self.imei = imei
+        if mac.startswith("60"):
+            snmp_res = self.snmp_get(".1.3.6.1.4.1.17453.4.1.8.0")
+            if snmp_res is None:
+                return
+            imei = snmp_res.value
+            if imei is None:
+                return
+            self.imei = imei
 
     def fetch_ue_info(self) -> None:
         try:
