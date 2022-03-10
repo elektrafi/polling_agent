@@ -1,0 +1,2017 @@
+{
+    "_tags": [
+        "62599_Sheilds, Brooke_SETX0001_sec 60_mile_BEC 6900"
+    ],
+    "_registered": "2022-01-11T16:58:34.566Z",
+    "_lastInform": "2022-03-09T16:54:12.918Z",
+    "_lastBootstrap": "2022-01-11T16:58:34.566Z",
+    "_lastBoot": "2022-02-17T13:15:12.144Z",
+    "_id": "600347-BEC%206900%2DR21-600347518A77",
+    "_deviceId": {
+        "_SerialNumber": "600347518A77",
+        "_ProductClass": "BEC 6900-R21",
+        "_OUI": "600347",
+        "_Manufacturer": "BEC"
+    },
+    "VirtualParameters": {
+        "_object": true,
+        "SINR": {
+            "_object": false
+        },
+        "RSRQ": {
+            "_object": false
+        },
+        "RSRP": {
+            "_object": false
+        },
+        "LOCKED_PCI_LIST": {
+            "_object": false
+        },
+        "IS_PCI_LOCKED": {
+            "_object": false
+        },
+        "History": {
+            "_writable": false,
+            "_value": "2022-03-09T16:54:12.918Z",
+            "_type": "xsd:dateTime",
+            "_timestamp": "2022-03-09T16:54:12.988Z",
+            "_object": false
+        }
+    },
+    "InternetGatewayDevice": {
+        "_timestamp": "2022-03-09T16:54:12.918Z",
+        "_object": true,
+        "X_CPE_MISC": {
+            "_writable": false,
+            "_object": true
+        },
+        "WANDeviceNumberOfEntries": {
+            "_writable": false,
+            "_object": false
+        },
+        "WANDevice": {
+            "_writable": false,
+            "_timestamp": "2022-01-31T20:49:54.432Z",
+            "_object": true,
+            "X_BEC_COM_ModuleA": {
+                "_writable": false,
+                "_timestamp": "2022-01-31T20:49:54.432Z",
+                "_object": true,
+                "ULMCS": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "TxChannel": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "TransmitTX": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "TransmitRX": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "SimCardNum": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "SCMC": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "RxChannel": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "RankIndicator": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "RAC": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "PhyCellID": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "PLMN": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "PCILock": {
+                    "_writable": false,
+                    "_object": true
+                },
+                "NetworkName": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "NetworkModeNoCheck": {
+                    "_writable": true,
+                    "_object": false
+                },
+                "NetworkMode": {
+                    "_writable": true,
+                    "_object": false
+                },
+                "NetworkList": {
+                    "_writable": false,
+                    "_object": true
+                },
+                "Module": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "MaxMTU": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "MainSNR": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "MainSINR": {
+                    "_writable": false,
+                    "_value": "16",
+                    "_type": "xsd:string",
+                    "_timestamp": "2022-03-09T16:54:12.986Z",
+                    "_object": false
+                },
+                "MainRSSI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "MainRSRQ": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "MainRSRP": {
+                    "_writable": false,
+                    "_value": "-104",
+                    "_type": "xsd:string",
+                    "_timestamp": "2022-03-09T16:54:12.986Z",
+                    "_object": false
+                },
+                "MainRSCP": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "MainCINR": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "MTU": {
+                    "_writable": true,
+                    "_object": false
+                },
+                "MSISDN": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "LTECells": {
+                    "_writable": false,
+                    "_object": true,
+                    "PHYCELLID": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "EARFCN": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "COUNT": {
+                        "_writable": false,
+                        "_object": false
+                    }
+                },
+                "LTEBandNoCheck": {
+                    "_writable": true,
+                    "_object": false
+                },
+                "LTEBand": {
+                    "_writable": true,
+                    "_object": false
+                },
+                "IMSI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "IMEI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "ECIO": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "DiversitySNR": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "DiversitySINR": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "DiversityRSSI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "DiversityRSRQ": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "DiversityRSRP": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "DiversityCINR": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "DLMCS": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CurrentNetworkName": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CurrentBand": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CellID": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CardTemperature": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CQI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellStatus": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellRSSI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellRSRP": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellDiversityRSSI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellDiversityRSRP": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellChannel": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellBandwidth": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CASCellBand": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellStatus": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellRSSI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellRSRP": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellDiversityRSSI": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellDiversityRSRP": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellChannel": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellBandwidth": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "CA2SCellBand": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "BandWidth": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "APN": {
+                    "_writable": false,
+                    "_object": true
+                }
+            },
+            "X_BEC_COM": {
+                "_writable": false,
+                "_timestamp": "2022-01-31T20:49:54.432Z",
+                "_object": true,
+                "VoltageCurrent": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "Voltage": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "Temperature": {
+                    "_writable": false,
+                    "_object": false
+                }
+            },
+            "1": {
+                "_writable": false,
+                "_timestamp": "2022-03-09T16:54:12.918Z",
+                "_object": true,
+                "WANDSLInterfaceConfig": {
+                    "_writable": false,
+                    "_object": true
+                },
+                "WANDSLDiagnostics": {
+                    "_writable": false,
+                    "_object": true,
+                    "SNRpsds": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "QLNpsds": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "LoopDiagnosticsState": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "HLINpsds": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "HLINSCds": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "GAINSpsds": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "BITSpsds": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "ACTPSDus": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "ACTPSDds": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "ACTATPus": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "ACTATPds": {
+                        "_writable": false,
+                        "_object": false
+                    }
+                },
+                "WANDSLConnectionManagement": {
+                    "_writable": false,
+                    "_object": true
+                },
+                "WANConnectionDevice": {
+                    "_writable": true,
+                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                    "_object": true,
+                    "13": {
+                        "_writable": true,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "WANPTMLinkConfig": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Stats": {
+                                "_writable": false,
+                                "_timestamp": "2022-01-31T20:49:54.432Z",
+                                "_object": true,
+                                "UnknownProtoPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "UnicastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "UnicastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "OOSNearEnd": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "OOSFarEnd": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MulticastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MulticastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "FramesSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "FramesReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ErrorsSend": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ErrorsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DiscardPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DiscardPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BytesSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BytesReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BroadcastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BroadcastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                }
+                            },
+                            "MACAddress": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "LinkStatus": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "Enable": {
+                                "_writable": true,
+                                "_object": false
+                            }
+                        },
+                        "WANPPPConnectionNumberOfEntries": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "WANPPPConnection": {
+                            "_writable": true,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "1": {
+                                "_writable": true,
+                                "_timestamp": "2022-01-31T20:49:54.432Z",
+                                "_object": true,
+                                "Username": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Uptime": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "TransportType": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "SubnetMask": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Stats": {
+                                    "_writable": false,
+                                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                                    "_object": true,
+                                    "EthernetPacketsSent": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetPacketsReceived": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetBytesSent": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetBytesReceived": {
+                                        "_writable": false,
+                                        "_object": false
+                                    }
+                                },
+                                "RouteProtocolRx": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "RSIPAvailable": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "PossibleConnectionTypes": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "PortMappingNumberOfEntries": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "Password": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "PPPoEServiceName": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "PPPoEACName": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "PPPAuthenticationProtocol": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Name": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "NATEnabled": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "MaxMTU": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MTU": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "MACAddress": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "LastConnectionError": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ExternalIPAddress": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Enable": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DefaultGateway": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DNSServers": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DNSOverrideAllowed": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DNSEnabled": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ConnectionType": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "ConnectionTrigger": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "ConnectionStatus": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "AddressingType": {
+                                    "_writable": true,
+                                    "_object": false
+                                }
+                            }
+                        },
+                        "WANIPConnectionNumberOfEntries": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "WANATMF5LoopbackDiagnostics": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Timeout": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "SuccessCount": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "NumberOfRepetitions": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "MinimumResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "MaximumResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "FailureCount": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "DiagnosticsState": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "AverageResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            }
+                        }
+                    },
+                    "12": {
+                        "_writable": true,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "WANPTMLinkConfig": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Stats": {
+                                "_writable": false,
+                                "_timestamp": "2022-01-31T20:49:54.432Z",
+                                "_object": true,
+                                "UnknownProtoPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "UnicastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "UnicastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "OOSNearEnd": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "OOSFarEnd": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MulticastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MulticastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "FramesSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "FramesReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ErrorsSend": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ErrorsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DiscardPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DiscardPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BytesSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BytesReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BroadcastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BroadcastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                }
+                            },
+                            "MACAddress": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "LinkStatus": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "Enable": {
+                                "_writable": true,
+                                "_object": false
+                            }
+                        },
+                        "WANPPPConnectionNumberOfEntries": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "WANPPPConnection": {
+                            "_writable": true,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "1": {
+                                "_writable": true,
+                                "_timestamp": "2022-01-31T20:49:54.432Z",
+                                "_object": true,
+                                "Username": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Uptime": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "TransportType": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "SubnetMask": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Stats": {
+                                    "_writable": false,
+                                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                                    "_object": true,
+                                    "EthernetPacketsSent": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetPacketsReceived": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetBytesSent": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetBytesReceived": {
+                                        "_writable": false,
+                                        "_object": false
+                                    }
+                                },
+                                "RouteProtocolRx": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "RSIPAvailable": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "PossibleConnectionTypes": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "PortMappingNumberOfEntries": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "Password": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "PPPoEServiceName": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "PPPoEACName": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "PPPAuthenticationProtocol": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Name": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "NATEnabled": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "MaxMTU": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MTU": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "MACAddress": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "LastConnectionError": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ExternalIPAddress": {
+                                    "_writable": true,
+                                    "_value": "10.251.251.55",
+                                    "_type": "xsd:string",
+                                    "_timestamp": "2022-03-09T16:54:12.919Z",
+                                    "_object": false
+                                },
+                                "Enable": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DefaultGateway": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DNSServers": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DNSOverrideAllowed": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DNSEnabled": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ConnectionType": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "ConnectionTrigger": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "ConnectionStatus": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "AddressingType": {
+                                    "_writable": true,
+                                    "_object": false
+                                }
+                            }
+                        },
+                        "WANIPConnectionNumberOfEntries": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "WANATMF5LoopbackDiagnostics": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Timeout": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "SuccessCount": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "NumberOfRepetitions": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "MinimumResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "MaximumResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "FailureCount": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "DiagnosticsState": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "AverageResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            }
+                        }
+                    },
+                    "11": {
+                        "_writable": true,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "WANPTMLinkConfig": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Stats": {
+                                "_writable": false,
+                                "_timestamp": "2022-01-31T20:49:54.432Z",
+                                "_object": true,
+                                "UnknownProtoPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "UnicastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "UnicastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "OOSNearEnd": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "OOSFarEnd": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MulticastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MulticastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "FramesSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "FramesReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ErrorsSend": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ErrorsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DiscardPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DiscardPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BytesSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BytesReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BroadcastPacketsSent": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "BroadcastPacketsReceived": {
+                                    "_writable": false,
+                                    "_object": false
+                                }
+                            },
+                            "MACAddress": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "LinkStatus": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "Enable": {
+                                "_writable": true,
+                                "_object": false
+                            }
+                        },
+                        "WANPPPConnectionNumberOfEntries": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "WANIPConnectionNumberOfEntries": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "WANIPConnection": {
+                            "_writable": true,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "1": {
+                                "_writable": true,
+                                "_timestamp": "2022-01-31T20:49:54.432Z",
+                                "_object": true,
+                                "Uptime": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "SubnetMask": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "Stats": {
+                                    "_writable": false,
+                                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                                    "_object": true,
+                                    "EthernetPacketsSent": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetPacketsReceived": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetBytesSent": {
+                                        "_writable": false,
+                                        "_object": false
+                                    },
+                                    "EthernetBytesReceived": {
+                                        "_writable": false,
+                                        "_object": false
+                                    }
+                                },
+                                "RouteProtocolRx": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "RSIPAvailable": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "PossibleConnectionTypes": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "PortMappingNumberOfEntries": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "Name": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "NATEnabled": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "MaxMTU": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "MTU": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "MACAddress": {
+                                    "_writable": false,
+                                    "_value": "",
+                                    "_type": "xsd:string",
+                                    "_timestamp": "2022-01-31T20:49:54.436Z",
+                                    "_object": false
+                                },
+                                "LastConnectionError": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ExternalIPAddress": {
+                                    "_writable": true,
+                                    "_value": "",
+                                    "_type": "xsd:string",
+                                    "_timestamp": "2022-01-31T20:49:54.436Z",
+                                    "_object": false
+                                },
+                                "Enable": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DefaultGateway": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DNSServers": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "DNSOverrideAllowed": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "DNSEnabled": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "ConnectionType": {
+                                    "_writable": true,
+                                    "_object": false
+                                },
+                                "ConnectionStatus": {
+                                    "_writable": false,
+                                    "_object": false
+                                },
+                                "AddressingType": {
+                                    "_writable": true,
+                                    "_object": false
+                                }
+                            }
+                        },
+                        "WANATMF5LoopbackDiagnostics": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Timeout": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "SuccessCount": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "NumberOfRepetitions": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "MinimumResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "MaximumResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "FailureCount": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "DiagnosticsState": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "AverageResponseTime": {
+                                "_writable": false,
+                                "_object": false
+                            }
+                        }
+                    }
+                },
+                "WANCommonInterfaceConfig": {
+                    "_writable": false,
+                    "_object": true
+                }
+            }
+        },
+        "UserInterface": {
+            "_writable": false,
+            "_object": true
+        },
+        "UploadDiagnostics": {
+            "_writable": false,
+            "_object": true
+        },
+        "UDPEchoConfig": {
+            "_writable": false,
+            "_object": true
+        },
+        "Time": {
+            "_writable": false,
+            "_object": true
+        },
+        "QueueManagement": {
+            "_writable": false,
+            "_object": true
+        },
+        "ManagementServer": {
+            "_writable": false,
+            "_object": true,
+            "Username": {
+                "_writable": true,
+                "_value": "EFITR69",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T02:23:25.034Z",
+                "_object": false
+            },
+            "UpgradesManaged": {
+                "_writable": true,
+                "_object": false
+            },
+            "URL": {
+                "_writable": true,
+                "_object": false
+            },
+            "UDPConnectionRequestNotificationLimit": {
+                "_writable": true,
+                "_object": false
+            },
+            "STUNUsername": {
+                "_writable": true,
+                "_object": false
+            },
+            "STUNServerPort": {
+                "_writable": true,
+                "_object": false
+            },
+            "STUNServerAddress": {
+                "_writable": true,
+                "_object": false
+            },
+            "STUNPassword": {
+                "_writable": true,
+                "_object": false
+            },
+            "STUNMinimumKeepAlivePeriod": {
+                "_writable": true,
+                "_object": false
+            },
+            "STUNMaximumKeepAlivePeriod": {
+                "_writable": true,
+                "_object": false
+            },
+            "STUNEnable": {
+                "_writable": true,
+                "_value": false,
+                "_type": "xsd:boolean",
+                "_timestamp": "2022-03-09T02:23:25.034Z",
+                "_object": false
+            },
+            "PeriodicInformTime": {
+                "_writable": true,
+                "_object": false
+            },
+            "PeriodicInformInterval": {
+                "_writable": true,
+                "_value": 360,
+                "_type": "xsd:unsignedInt",
+                "_timestamp": "2022-03-09T02:23:25.034Z",
+                "_object": false
+            },
+            "PeriodicInformEnable": {
+                "_writable": true,
+                "_value": true,
+                "_type": "xsd:boolean",
+                "_timestamp": "2022-03-09T02:23:25.034Z",
+                "_object": false
+            },
+            "Password": {
+                "_writable": true,
+                "_value": "EFI_Buna2020!1",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T02:23:25.035Z",
+                "_object": false
+            },
+            "ParameterKey": {
+                "_writable": false,
+                "_value": "",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T16:54:12.919Z",
+                "_object": false
+            },
+            "NATDetected": {
+                "_writable": true,
+                "_object": false
+            },
+            "ManageableDeviceNumberOfEntries": {
+                "_writable": false,
+                "_object": false
+            },
+            "ManageableDeviceNotificationLimit": {
+                "_writable": true,
+                "_object": false
+            },
+            "ConnectionRequestUsername": {
+                "_writable": true,
+                "_value": "cpe",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T02:23:25.034Z",
+                "_object": false
+            },
+            "ConnectionRequestURL": {
+                "_writable": false,
+                "_value": "http://10.251.251.55:7547/cpe",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T16:54:12.919Z",
+                "_object": false
+            },
+            "ConnectionRequestPassword": {
+                "_writable": true,
+                "_value": "EFI_Buna2020!1",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T02:23:25.035Z",
+                "_object": false
+            }
+        },
+        "Layer3Forwarding": {
+            "_writable": false,
+            "_object": true
+        },
+        "LANDeviceNumberOfEntries": {
+            "_writable": false,
+            "_object": false
+        },
+        "LANDevice": {
+            "_writable": false,
+            "_timestamp": "2022-01-31T20:49:54.432Z",
+            "_object": true,
+            "1": {
+                "_writable": false,
+                "_timestamp": "2022-01-31T20:49:54.432Z",
+                "_object": true,
+                "LANWLANConfigurationNumberOfEntries": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "LANUSBInterfaceNumberOfEntries": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "LANUSBInterfaceConfig": {
+                    "_writable": false,
+                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                    "_object": true,
+                    "1": {
+                        "_writable": false,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "Type": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "Status": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "Stats": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "UnknownProtoPacketsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "UnicastPacketsSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "UnicastPacketsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "MulticastPacketsSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "MulticastPacketsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "ErrorsSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "ErrorsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "DiscardPacketsSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "DiscardPacketsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "CellsSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "CellsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "BytesSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "BytesReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "BroadcastPacketsSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "BroadcastPacketsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            }
+                        },
+                        "Standard": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "Rate": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "Power": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "Name": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "MACAddressControlEnabled": {
+                            "_writable": true,
+                            "_object": false
+                        },
+                        "MACAddress": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "Enable": {
+                            "_writable": true,
+                            "_object": false
+                        }
+                    }
+                },
+                "LANHostConfigManagement": {
+                    "_writable": false,
+                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                    "_object": true,
+                    "SubnetMask": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "ReservedAddresses": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "MinAddress": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "MaxAddress": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "IPRouters": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "IPInterfaceNumberOfEntries": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "IPInterface": {
+                        "_writable": false,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "1": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "IPInterfaceSubnetMask": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "IPInterfaceIPAddress": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "IPInterfaceAddressingType": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "Enable": {
+                                "_writable": true,
+                                "_object": false
+                            }
+                        }
+                    },
+                    "DomainName": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "DNSServers": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "DHCPServerEnable": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "DHCPServerConfigurable": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "DHCPRelay": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "DHCPOptionNumberOfEntries": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "DHCPOption": {
+                        "_writable": false,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "2": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Value": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "Tag": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "Enable": {
+                                "_writable": true,
+                                "_object": false
+                            }
+                        },
+                        "1": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "Value": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "Tag": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "Enable": {
+                                "_writable": true,
+                                "_object": false
+                            }
+                        }
+                    },
+                    "DHCPLeaseTime": {
+                        "_writable": true,
+                        "_object": false
+                    },
+                    "DHCPConditionalServingPool": {
+                        "_writable": false,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "1": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "VendorClassIDMode": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "VendorClassIDExclude": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "VendorClassID": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "UserClassIDExclude": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "UserClassID": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "UseAllocatedWAN": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "SubnetMask": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "SourceInterface": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "ReservedAddresses": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "PoolOrder": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "MinAddress": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "MaxAddress": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "LocallyServed": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "IPRouters": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "Enable": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "DomainName": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "DNSServers": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "DHCPStaticAddressNumberOfEntries": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "DHCPServerIPAddress": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "DHCPOptionNumberOfEntries": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "DHCPOption": {
+                                "_writable": false,
+                                "_timestamp": "2022-01-31T20:49:54.432Z",
+                                "_object": true,
+                                "1": {
+                                    "_writable": false,
+                                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                                    "_object": true,
+                                    "Value": {
+                                        "_writable": true,
+                                        "_object": false
+                                    },
+                                    "Tag": {
+                                        "_writable": true,
+                                        "_object": false
+                                    },
+                                    "Enable": {
+                                        "_writable": true,
+                                        "_object": false
+                                    }
+                                }
+                            },
+                            "DHCPLeaseTime": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "ClientIDExclude": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "ClientID": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "ChaddrMask": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "ChaddrExclude": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "Chaddr": {
+                                "_writable": true,
+                                "_object": false
+                            },
+                            "AssociatedConnection": {
+                                "_writable": true,
+                                "_object": false
+                            }
+                        }
+                    },
+                    "DHCPConditionalPoolNumberOfEntries": {
+                        "_writable": false,
+                        "_object": false
+                    }
+                },
+                "LANEthernetInterfaceNumberOfEntries": {
+                    "_writable": false,
+                    "_object": false
+                },
+                "LANEthernetInterfaceConfig": {
+                    "_writable": false,
+                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                    "_object": true,
+                    "1": {
+                        "_writable": false,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "Status": {
+                            "_writable": false,
+                            "_object": false
+                        },
+                        "Stats": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "PacketsSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "PacketsReceived": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "BytesSent": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "BytesReceived": {
+                                "_writable": false,
+                                "_object": false
+                            }
+                        },
+                        "MACAddress": {
+                            "_writable": false,
+                            "_object": false
+                        }
+                    }
+                },
+                "Hosts": {
+                    "_writable": false,
+                    "_timestamp": "2022-01-31T20:49:54.432Z",
+                    "_object": true,
+                    "HostNumberOfEntries": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "Host": {
+                        "_writable": false,
+                        "_timestamp": "2022-01-31T20:49:54.432Z",
+                        "_object": true,
+                        "1": {
+                            "_writable": false,
+                            "_timestamp": "2022-01-31T20:49:54.432Z",
+                            "_object": true,
+                            "MACAddress": {
+                                "_writable": false,
+                                "_value": "94:A6:7E:DD:DC:00",
+                                "_type": "xsd:string",
+                                "_timestamp": "2022-01-31T20:49:54.436Z",
+                                "_object": false
+                            },
+                            "LeaseTimeRemaining": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "InterfaceType": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "IPAddress": {
+                                "_writable": false,
+                                "_value": "192.168.1.100",
+                                "_type": "xsd:string",
+                                "_timestamp": "2022-01-31T20:49:54.436Z",
+                                "_object": false
+                            },
+                            "HostName": {
+                                "_writable": false,
+                                "_value": "EFI_WAP",
+                                "_type": "xsd:string",
+                                "_timestamp": "2022-01-31T20:49:54.436Z",
+                                "_object": false
+                            },
+                            "AddressSource": {
+                                "_writable": false,
+                                "_object": false
+                            },
+                            "Active": {
+                                "_writable": false,
+                                "_object": false
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "LANConfigSecurity": {
+            "_writable": false,
+            "_object": true
+        },
+        "IPPingDiagnostics": {
+            "_writable": false,
+            "_object": true
+        },
+        "DownloadDiagnostics": {
+            "_writable": false,
+            "_object": true
+        },
+        "DeviceSummary": {
+            "_writable": false,
+            "_type": "xsd:string",
+            "_timestamp": "2022-03-09T16:54:12.919Z",
+            "_object": false
+        },
+        "DeviceInfo": {
+            "_writable": false,
+            "_object": true,
+            "VendorConfigFileNumberOfEntries": {
+                "_writable": false,
+                "_object": false
+            },
+            "VendorConfigFile": {
+                "_writable": false,
+                "_object": true,
+                "1": {
+                    "_writable": false,
+                    "_object": true,
+                    "Version": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "Name": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "Description": {
+                        "_writable": false,
+                        "_object": false
+                    },
+                    "Date": {
+                        "_writable": false,
+                        "_object": false
+                    }
+                }
+            },
+            "UpTime": {
+                "_writable": false,
+                "_object": false
+            },
+            "SpecVersion": {
+                "_writable": false,
+                "_value": "1.0",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T16:54:12.919Z",
+                "_object": false
+            },
+            "SoftwareVersion": {
+                "_writable": false,
+                "_value": "1.04.1.560.cbsd",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T16:54:12.919Z",
+                "_object": false
+            },
+            "SerialNumber": {
+                "_writable": false,
+                "_object": false
+            },
+            "ProvisioningCode": {
+                "_writable": true,
+                "_value": "",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T16:54:12.919Z",
+                "_object": false
+            },
+            "ProductClass": {
+                "_writable": false,
+                "_object": false
+            },
+            "ModelName": {
+                "_writable": false,
+                "_object": false
+            },
+            "ManufacturerOUI": {
+                "_writable": false,
+                "_object": false
+            },
+            "Manufacturer": {
+                "_writable": false,
+                "_object": false
+            },
+            "HwMonitor": {
+                "_writable": false,
+                "_object": false
+            },
+            "HardwareVersion": {
+                "_writable": false,
+                "_value": "",
+                "_type": "xsd:string",
+                "_timestamp": "2022-03-09T16:54:12.919Z",
+                "_object": false
+            },
+            "DeviceLog": {
+                "_writable": false,
+                "_object": false
+            },
+            "DevSyslog": {
+                "_writable": false,
+                "_object": false
+            },
+            "Description": {
+                "_writable": false,
+                "_object": false
+            }
+        },
+        "DeviceConfig": {
+            "_writable": false,
+            "_object": true
+        },
+        "Capabilities": {
+            "_writable": false,
+            "_object": true
+        }
+    }
+}

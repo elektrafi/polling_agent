@@ -67,34 +67,73 @@ class TR069Value:
             self._value = d["_value"]
 
 
-class TR069IGDBaicells:
-    class TR069Baicells:
-        class TR069Network:
-            MapnQos: TR069Value
-            _object: bool
-            _writable: bool
+class TR069:
+    class TR069InternetGatewayDevice:
+        class TR069Baicells:
+            class TR069Network:
+                MapnQos: TR069Value
 
-        Network: TR069Network
-        _writable: bool
+            Network: TR069Network
+
+        Baicells: TR069Baicells
+
+        class TR069DeviceInfo:
+            AdditionalSoftwareVersion: TR069Value
+            Description: TR069Value
+            ModelName: TR069Value
+            SerialNumber: TR069Value
+            Manufacturer: TR069Value
+            ProductClass: TR069Value
+
+        DeviceInfo: TR069DeviceInfo
+
+        LANDeviceNumberOfEntries: TR069Value
+        WANDeviceNumberOfEntries: TR069Value
+
+        class TR069ManagementServer:
+            ConnectionRequestURL: TR069Value
+            ConnectionRequestUsername: TR069Value
+            ConnectionRequestPassword: TR069Value
+            Password: TR069Value
+            PeriodicInformEnable: TR069Value
+            PeriodicInformInterval: TR069Value
+            PeriodicInformTime: TR069Value
+            URL: TR069Value
+            Username: TR069Value
+
+        ManagementServer: TR069ManagementServer
+
+        class TR069WANDevice:
+            class TR069WANConnectionDevice:
+                class TR069WANIPConnection:
+                    ConnectionStatus: TR069Value
+
+    class TR069VirtualParameters:
         _object: bool
+        SINR: TR069Value
+        RSRQ: TR069Value
+        RSRP: TR069Value
+        LOCKED_PCI_LIST: TR069Value
+        IS_PCI_LOCKED: TR069Value
+        History: TR069Value
 
-    Baicells: TR069Baicells
+    class TR069DeviceId:
+        _SerialNumber: str
+        _ProductClass: str
+        _OUI: str
+        _Manufacturer: str
 
-    class TR069DeviceInfo:
-        AdditionalSoftwareVersion: TR069Value
-        Description: TR069Value
-        ModelName: TR069Value
-        SerialNumber: TR069Value
-
-    DeviceInfo: TR069DeviceInfo
-    src: dict
-    rest: dict
+    InternetGatewayDevice: TR069InternetGatewayDevice
+    VirtualParameters: TR069VirtualParameters
+    _tags: list[str]
+    _id: str
+    _deviceId: TR069DeviceId
 
 
 def _tr069_hook(d: dict):
     if "InternetGatewayDevice" in d:
         igd: dict = d["InternetGatewayDevice"]
-        ret = TR069IGDBaicells()
+        ret = TR069InternetGatewayDevice()
         if "Baicells" in igd:
             bai = igd["Baicells"]
             ret.Baicells = ret.TR069Baicells()
@@ -126,3 +165,5 @@ def _tr069_hook(d: dict):
             del igd["DeviceInfo"]
         return ret
     return d
+
+def _tr069_dyn_hook(d: dict):
