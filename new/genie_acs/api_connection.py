@@ -1,23 +1,9 @@
 #!/usr/bin/env python3
-from types import new_class
 from enum import Enum, unique
-from typing import Mapping
 import requests
 from requests.exceptions import JSONDecodeError
-from functools import partial
-
-
-def create_deep_object(name: str, data: dict | str | list) -> object:
-    if isinstance(data, Mapping):
-        cls = new_class(name)()
-        keys = data.keys()
-        for k in keys:
-            prefix = ""
-            if k[0].isnumeric():
-                prefix = "item"
-            cls.__dict__[f"{prefix}{k}"] = create_deep_object(k, data[k])
-        return cls
-    return data
+from . import device_object_hook
+import logging
 
 
 @unique
@@ -38,6 +24,8 @@ class GenieACS:
         username: str = "admin",
         password: str = "password",
     ):
+
+        self.logger = logging.getLogger(__name__)
         self._host = host
         self._port = port
         self._username = username
@@ -46,7 +34,6 @@ class GenieACS:
         self.session = requests.session()
         self.session.auth = (self._username, self._password)
         self.session.verify = False
-        self._root_hook = partial(create_deep_object, "Device")
 
     def __del__(self):
         self.session.close()
@@ -59,7 +46,7 @@ class GenieACS:
         if resp is None or resp.status_code != 200:
             return []
         try:
-            data = resp.json(object_hook=self._root_hook)
+            data = resp.json(object_hook=device_object_hook)
         except:
             raise JSONDecodeError
         return data
