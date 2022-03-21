@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from http.server import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler
 from http.server import ThreadingHTTPServer
 from socketserver import TCPServer, ThreadingTCPServer
 import pprint
@@ -53,7 +53,7 @@ class RaemisListener:
             self.logger.error("event receiver HTTP server failed to shutdown")
 
 
-class EventReceiver(BaseHTTPRequestHandler):
+class EventReceiver(SimpleHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
 
