@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from http.server import SimpleHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
 from http.server import ThreadingHTTPServer
 import pprint
 import threading
@@ -43,13 +43,14 @@ class RaemisListener:
 
     def __del__(self) -> None:
         try:
+            self._eventReceiver.server_close()
             self._eventReceiver.shutdown()
             self.logger.info("Event receiver HTTP server shutdown")
         except:
             self.logger.error("event receiver HTTP server failed to shutdown")
 
 
-class EventReceiver(SimpleHTTPRequestHandler):
+class EventReceiver(BaseHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
 
