@@ -47,15 +47,6 @@ class EventReceiver(CGIHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
 
-    def __init__(
-        self,
-        request: bytes,
-        client_address: tuple[str, int],
-        server: socketserver.BaseServer,
-        directory: str | None = ...,
-    ) -> None:
-        super().__init__(request, client_address, server, directory)
-
     def do_POST(self):
         print("post")
         if self.EVENT_PATH in self.path:
@@ -74,8 +65,8 @@ class EventReceiver(CGIHTTPRequestHandler):
             self.logger.debug(f"headers:\t{pprint.pformat(self.headers.as_string())}")
             self.logger.debug(f"Raemis sent {data_len} bytes of data")
             print("done")
-            if "py" not in self.path[-2:]:
-                self.path = f"{self.path}.py"
+            if "cgi" not in self.path[-3:]:
+                self.path = f"{self.path}.cgi"
             super().do_POST()
 
         else:
