@@ -19,26 +19,10 @@ import json
 class RaemisListener:
     logger = logging.getLogger(__name__)
 
-    def sock(self):
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind(("0.0.0.0", 9998))
-            s.listen()
-            conn, addr = s.accept()
-            print(conn)
-            print(addr)
-            with conn:
-                print(f"Connected by {addr}")
-                while True:
-                    data = conn.recv(1024)
-                    if not data:
-                        break
-                    print(str(data))
-                    conn.sendall(data)
-
     def _start_event_receiver_server(self) -> None:
         try:
             self._eventReceiver = ThreadingTCPServer(
-                ("10.244.1.250", 9998), EventReceiver
+                ("10.244.1.250", 9998), CGIHTTPRequestHandler
             )
             self.server_thread = threading.Thread(
                 target=self._eventReceiver.serve_forever
