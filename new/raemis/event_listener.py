@@ -66,9 +66,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.logger.debug(f"headers:\t{pprint.pformat(self.headers.as_string())}")
             self.logger.debug(f"Raemis sent {data_len} bytes of data")
             print("done")
-            if "cgi" not in self.path[-3:]:
-                self.path = f"{self.path}.cgi"
-            super().do_POST()
+            return
 
         else:
             print("not path")
