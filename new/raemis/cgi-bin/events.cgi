@@ -12,7 +12,7 @@ print("<html><head></head><body>")
 
 print("<h1>stdin</h1>")
 
-data = sys.stdin.read()
+data = cgi.parse(strict_parsing=False, keep_blank_values=True)
 
 print("<br>")
 print("<br>")
