@@ -67,6 +67,10 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.logger.debug(f"headers:\t{pprint.pformat(self.headers.as_string())}")
             self.logger.debug(f"Raemis sent {data_len} bytes of data")
             print("done")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(post_data)))
+            self.end_headers()
             self.wfile.write(post_data)
             self.wfile.flush()
             return
