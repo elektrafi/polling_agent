@@ -6,6 +6,7 @@ import cgi
 import cgitb
 
 cgitb.enable()
+cgi.print_environ()
 
 print("<h1>cgi.parse()</h1>")
 form = cgi.parse(keep_blank_values=True, strict_parsing=False)
@@ -18,4 +19,4 @@ print("<h1>FieldStorage()</h1>")
 form = cgi.FieldStorage()
 keys = form.keys()
 for k in keys:
-    pprint.pprint(form[k])
+    print(form[k])
