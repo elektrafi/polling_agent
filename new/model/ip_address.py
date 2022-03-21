@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-from functools import reduce
-from re import compile, fullmatch
+import re
 
 
 class IPv4Address:
@@ -24,9 +23,10 @@ class IPv4Address:
             raise ValueError
 
         if address:
-            if not fullmatch(compile("""(\d{,2}[1-9].){3}\d{,2}[1-9]"""), address):
+            address = address.strip()
+            if not re.match(re.compile("""(\d{1,3}\.){3}\d{1,3}"""), address):
                 self.logger.error(
-                    f"Provided string, {address} is not in the (PCRE) form of (\\d{{1,3}}){{4}}"
+                    f"Provided string, {address} is not in the (PCRE) form of (\\d{{1,3}}.){{3}}\\d{{1,3}}"
                 )
             try:
                 self.address = list(map(lambda x: int(x), address.split(".")))
@@ -175,3 +175,11 @@ class IPv4Address:
     @classmethod
     def __ones(cls, x: int) -> int:
         return x.bit_length() - x.bit_count()
+
+    def __str__(self):
+        a = self.address
+        return f"{a[0]}.{a[1]}.{a[2]}.{a[3]}"
+
+    def __repr__(self):
+        a = self.address
+        return f"{a[0]}.{a[1]}.{a[2]}.{a[3]}"

@@ -5,13 +5,20 @@ import xml.etree.ElementTree as ET
 import requests
 import re
 import functools
-
 from urllib3 import disable_warnings
+import logging
 
 disable_warnings()
 
 
 class Baicells:
+    logger = logging.getLogger(__name__)
+    username: str
+    password: str
+    baseUrl: str
+    loggedIn: bool
+    stoks: dict
+
     def __init__(
         self, baseUrl: str, username: str = "admin", password: str = "EFI_Buna2020"
     ):
@@ -60,27 +67,33 @@ class Baicells:
                     timeout=timeout,
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
+                if timeout > 7:
+                    self.logger.error(
                         "Could not connect to login page of Baicells device"
                     )
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
 
         if not respStok.status_code == 200 or respStok.text is None:
-            raise UnsupportedOperation(
+            self.logger.error(
                 "Tried to load a page for a Baicells device that does not exitst here."
             )
+            raise UnsupportedOperation
 
         return respStok
 
     def get_stok_from_page_head(self, resp: requests.Response) -> str:
         if resp.text is None:
-            raise ValueError("No text in request to get stok")
+            self.logger.error("No text in request to get stok")
+            raise ValueError
         stokRe = re.compile(
             """<\s*?meta\s+?name[\s="]+?stok[\s"]+?content[="\s]+?([0-9a-zA-Z]+)"[\s]*?>"""
         )
         match = re.search(stokRe, resp.text)
+        if match is None:
+            self.logger.error("coulnd find stok in page head")
+            raise ValueError
         return match.groups()[0]
 
     def get_stok(self, respStok: requests.Response, name: str = "login") -> str:
@@ -88,9 +101,10 @@ class Baicells:
         stok = stokTree.find(f"{name}_stok")
 
         if stok is None:
-            raise ValueError(
+            self.logger.error(
                 "Nonce info (stok) not found in login init XML for Baicells device"
             )
+            raise ValueError
 
         if stok.text is None:
             return ""
@@ -120,10 +134,11 @@ class Baicells:
                     allow_redirects=True,
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
+                if timeout > 7:
+                    self.logger.error(
                         "Could not connect to login page to loogin to Baicells device"
                     )
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
 
@@ -144,22 +159,23 @@ class Baicells:
                     },
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
-                        "Could not connect to Baicells sysinfo page"
-                    )
+                if timeout > 7:
+                    self.logger.error("Could not connect to Baicells sysinfo page")
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
 
         infoTree = ET.fromstring(sysInfo.text)
 
         if infoTree is None:
-            raise ET.ParseError("Unable to parse Baicells login state page into XML")
+            self.logger.error("Unable to parse Baicells login state page into XML")
+            raise ET.ParseError
 
         ret = infoTree.find("WebServer")
 
         if ret is None:
-            raise ValueError("Unable to find sysinfo tag on Baicells login state page")
+            self.logger.error("Unable to find sysinfo tag on Baicells login state page")
+            raise ValueError
         return ret
 
     def need_to_login(self) -> bool:
@@ -189,22 +205,23 @@ class Baicells:
                     },
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
-                        "Could not connect to Baicells sysinfo page"
-                    )
+                if timeout > 7:
+                    self.logger.error("Could not connect to Baicells sysinfo page")
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
 
         infoTree = ET.fromstring(sysInfo.text)
 
         if infoTree is None:
-            raise ET.ParseError("Unable to parse Baicells sysinfo page into XML")
+            self.logger.error("Unable to parse Baicells sysinfo page into XML")
+            raise ET.ParseError
 
         ret = infoTree.find("sysinfo")
 
         if ret is None:
-            raise ValueError("Unable to find sysinfo tag on Baicells sysinfo page")
+            self.logger.error("Unable to find sysinfo tag on Baicells sysinfo page")
+            raise ValueError
         return ret
 
     @check_login
@@ -219,10 +236,9 @@ class Baicells:
                     allow_redirects=True,
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
-                        "Could not connect to Baicells sysinfo page"
-                    )
+                if timeout > 7:
+                    self.logger.error("Could not connect to Baicells sysinfo page")
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
         return resp
@@ -266,16 +282,18 @@ class Baicells:
                     },
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
+                if timeout > 7:
+                    self.logger.error(
                         "Could not connect to Baicells firewall update page"
                     )
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
         if resp.text and not "<xml>" in resp.text:
-            raise ValueError(
+            self.logger.error(
                 "Did not get the correct response when updating firewall settings"
             )
+            raise ValueError
 
     @check_login
     def update_tr069_settings(self) -> None:
@@ -307,16 +325,18 @@ class Baicells:
                     },
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
+                if timeout > 7:
+                    self.logger.error(
                         "Could not connect to Baicells TR-069 update page"
                     )
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
         if resp.text and not "<xml>" in resp.text:
-            raise ValueError(
+            self.logger.error(
                 "Did not get the correct response when updating TR-069 settings"
             )
+            raise ValueError
 
     @check_login
     def update_upnp_settings(self) -> None:
@@ -338,28 +358,30 @@ class Baicells:
                     },
                 )
             except:
-                if timeout > 10:
-                    raise requests.ConnectionError(
-                        "Could not connect to Baicells upnp update page"
-                    )
+                if timeout > 7:
+                    self.logger.error("Could not connect to Baicells upnp update page")
+                    raise requests.ConnectionError
             finally:
                 timeout += 3
         if resp.text and not "<xml>" in resp.text:
-            raise ValueError(
+            self.logger.error(
                 "Did not get the correct response when updating upnp settings"
             )
+            raise ValueError
 
     def get_mac_address(self) -> str:
         info = self.get_sysinfo()
 
         info = info.find("idu_mac")
         if info is None:
-            raise ValueError("No MAC address information on Baicells sysinfo page")
+            self.logger.error("No MAC address information on Baicells sysinfo page")
+            raise ValueError
         mac = info.text
 
         if mac is None:
-            raise ValueError(
+            self.logger.error(
                 "MAC address XML tag contains no information on sysinfo page of Baicells device"
             )
+            raise ValueError
 
         return mac

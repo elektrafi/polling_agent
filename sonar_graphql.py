@@ -1,13 +1,9 @@
-from binascii import Error
 from typing import Union
-import asyncio
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 from io import open
 from json import JSONDecoder
 from ue import UE
-from pprint import pprint
-from functools import reduce
 
 sonar_url = "https://elektrafi.sonar.software/api/graphql"
 

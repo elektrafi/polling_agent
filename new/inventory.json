@@ -1,0 +1,2757 @@
+[
+        {
+          "id": "62",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:DC:AF:2E"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "65",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5C:F4"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "73",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5E:98"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Zach_Vaught"
+              }
+            ]
+          }
+        },
+        {
+          "id": "78",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:61:F6"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Joshua_McFarland"
+              }
+            ]
+          }
+        },
+        {
+          "id": "82",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:61:AA"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "87",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5E:A7"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "99",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5E:23"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "102",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:47"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "110",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:61:98"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Southern_Sass_CPE_1"
+              }
+            ]
+          }
+        },
+        {
+          "id": "111",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5F:FF"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Don_Johnson"
+              }
+            ]
+          }
+        },
+        {
+          "id": "113",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:56:54"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "116",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:36"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 First_Baptist_2"
+              }
+            ]
+          }
+        },
+        {
+          "id": "123",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:71"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Donnell_Bryant"
+              }
+            ]
+          }
+        },
+        {
+          "id": "131",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5D:E3"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "137",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5D:15"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "140",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:4D"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "141",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:53:EB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Gill_Sheila"
+              }
+            ]
+          }
+        },
+        {
+          "id": "149",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5C:8A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "150",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:A9"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "155",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5D:26"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "162",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5D:F2"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "164",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:61:E5"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Padgett_CPE1"
+              }
+            ]
+          }
+        },
+        {
+          "id": "165",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5F:CD"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "168",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:54:7F"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "171",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:4B"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "172",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5E:AA"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "177",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:54:6E"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "190",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:61:2E"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "192",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5F:3D"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "194",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:7A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "206",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:61:AB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "207",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5C:58"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "208",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5D:12"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Zachary_Graham"
+              }
+            ]
+          }
+        },
+        {
+          "id": "211",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:B5"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "215",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5D:2F"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Falcon_Phylis"
+              }
+            ]
+          }
+        },
+        {
+          "id": "218",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5F:F6"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "222",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:DB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "228",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5F:3C"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "233",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:75"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "245",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:55:24"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "265",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:74"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "269",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:54:02"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "271",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5E:FE"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "285",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5E:3C"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Wiliam_Walters"
+              }
+            ]
+          }
+        },
+        {
+          "id": "289",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5C:5A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Rose_Klayton"
+              }
+            ]
+          }
+        },
+        {
+          "id": "291",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6B:6A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Sunshine_Grocery"
+              }
+            ]
+          }
+        },
+        {
+          "id": "295",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5F:33"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Brickey_Shanda"
+              }
+            ]
+          }
+        },
+        {
+          "id": "297",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:52:05"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "298",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:DB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "309",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:6E"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "312",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:72"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "314",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:61:8A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "315",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:54:80"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "318",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5F:F8"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "320",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:55:A4"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "323",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:3A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "327",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5B:C1"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "330",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:54:58"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Lee_Deshone"
+              }
+            ]
+          }
+        },
+        {
+          "id": "335",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6B:68"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "350",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5E:6F"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "356",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6B:9D"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12000 Telrad_8F5DED"
+              }
+            ]
+          }
+        },
+        {
+          "id": "365",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:4A:71"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "366",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:69:16"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "367",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:3E:50"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "368",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:45:4C"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "369",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:40:92"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "370",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:4B:3D"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "371",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:41:02"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "372",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:4A:92"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "373",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:3E:0B"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "374",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:45:0A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "375",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:3F:BE"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "376",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:40:8C"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "377",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:41:83"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "378",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:3F:97"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "379",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:3F:8A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "380",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:40:33"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "381",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:6B:89"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "382",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:69:22"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "383",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:6B:A1"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "384",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:6B:9B"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "385",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:41:97"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "386",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:45:AB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "387",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:44:AA"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "388",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:4C:9C"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "389",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:41:9A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "CPE12300 gdm7243"
+              }
+            ]
+          }
+        },
+        {
+          "id": "395",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6A:D4"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux Telrad_8F5DED 3.10.0-uc0"
+              }
+            ]
+          }
+        },
+        {
+          "id": "397",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:5B:84"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux Telrad_8F5DED 3.10.0-uc0"
+              }
+            ]
+          }
+        },
+        {
+          "id": "401",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "34:BA:9A:82:44:82"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux gdm7243 3.10.0-uc0"
+              }
+            ]
+          }
+        },
+        {
+          "id": "404",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:DD"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "405",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:53"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "407",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:D3"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "408",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:D8"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "413",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:6B"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "416",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:C1"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "418",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:2B"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "419",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:8A:72"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "422",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:E5"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "423",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1E:EB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "424",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:C4"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "425",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:4E:B1:77"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC RidgeWave 6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "429",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:8A:77"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "430",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:D4"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "433",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1E:ED"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "435",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1E:EA"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "436",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1E:C8"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "437",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:C8"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "439",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1E:DB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "440",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:2D"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "441",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:57"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "443",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:8A:75"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "447",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:E9"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "449",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:01"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "452",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:8B:0E"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "454",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:8A:15"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "455",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:88"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "456",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:D2"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "460",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1E:D1"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "464",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:48"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "467",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:6A"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC RidgeWave 6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "473",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:68"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "475",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:C7"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "478",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1E:EC"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "479",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:19"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "482",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:52:1F:DB"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "486",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:51:89:55"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC6900"
+              }
+            ]
+          }
+        },
+        {
+          "id": "496",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:4C:9F:B4"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC RidgeWave 6500AEL"
+              }
+            ]
+          }
+        },
+        {
+          "id": "497",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "60:03:47:4C:A0:88"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "BEC RidgeWave 6500AEL"
+              }
+            ]
+          }
+        },
+        {
+          "id": "498",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "80:02:9C:8F:6C:55"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux Telrad_8F5DED 3.10.0-uc0"
+              }
+            ]
+          }
+        },
+        {
+          "id": "499",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:cf:47"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "505",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0d:af:8a"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "506",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:d2:df"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "508",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:cc:7f"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "512",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:c6:a7"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "516",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:b9:8f"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "522",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:c7:df"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "527",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:db:bf"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "529",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0d:bf:6a"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "532",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:d0:2f"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "535",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0e:6d:3a"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "538",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "48:bf:74:0d:b4:3a"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "OD06"
+              }
+            ]
+          }
+        },
+        {
+          "id": "543",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "94:A6:7E:9D:A5:00"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux EFI_WAP 5.4.154"
+              }
+            ]
+          }
+        },
+        {
+          "id": "544",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "94:A6:7E:AB:BF:B6"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux EFI_WAP 5.4.154"
+              }
+            ]
+          }
+        },
+        {
+          "id": "545",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "94:A6:7E:AB:99:8E"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux EFI_WAP 5.4.154"
+              }
+            ]
+          }
+        },
+        {
+          "id": "546",
+          "inventory_model_field_data": {
+            "entities": [
+              {
+                "inventory_model_field": {
+                  "name": "MAC"
+                },
+                "value": "94:A6:7E:B7:82:BC"
+              },
+              {
+                "inventory_model_field": {
+                  "name": "Name"
+                },
+                "value": "Linux EFI_WAP 5.4.154"
+              }
+            ]
+          }
+        }
+      ]
