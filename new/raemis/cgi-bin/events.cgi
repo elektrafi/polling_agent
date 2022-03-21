@@ -11,8 +11,13 @@ cgitb.enable()
 print("<html><head></head><body>")
 
 print("<h1>stdin</h1>")
-for line in sys.stdin.readlines():
+
+while True:
+    line = sys.stdin.buffer.readline()
+    if not line:
+        break
     print(line)
+    print("<br>")
 
 print("<br>")
 print("<br>")
