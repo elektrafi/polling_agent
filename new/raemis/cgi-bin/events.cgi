@@ -11,7 +11,6 @@ cgitb.enable()
 print("<html><head></head><body>")
 
 print("<h1>stdin</h1>")
-sys.stdin.flush()
 
 
 while True:
@@ -27,10 +26,5 @@ while True:
 print("<br>")
 print("<br>")
 
-print("<h1>FieldStorage()</h1>")
-form = cgi.FieldStorage()
-keys = form.keys()
-for k in keys:
-    print(form[k])
 
 print("</body></html>")
