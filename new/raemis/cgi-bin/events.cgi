@@ -6,6 +6,7 @@ import cgi
 import cgitb
 
 cgitb.enable()
+cgi.print_arguments()
 
 print("<html><head></head><body>")
 print("<h1>cgi.parse()</h1>")
