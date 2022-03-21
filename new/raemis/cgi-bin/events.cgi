@@ -11,7 +11,17 @@ cgi.print_environ()
 cgi.print_arguments()
 cgi.print_directory()
 
-if sys.argv:
-    pprint.pprint(sys.argv)
+print()
+print()
 
-print("running")
+form = cgi.parse(keep_blank_values=True, strict_parsing=False)
+pprint.pprint(form)
+
+print()
+print()
+
+
+form = cgi.FieldStorage()
+keys = form.keys()
+for k in keys:
+    print(form[k])
