@@ -72,6 +72,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             pprint.pprint(post_data)
             print("printed data")
             # Raemis.event_queue.put(event_data)
+            self.logger.debug(f"headers: \n{pprint.pformat(self.headers)}")
             self.logger.debug(f"Raemis sent {data_len} bytes of data")
             print("done")
         else:
@@ -79,6 +80,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.logger.info("received event data from Raemis")
             self.send_response(404)
             self.send_header("Content-Type", "text/html")
+            self.send_header("Content-Length", str(len(b"nopage")))
             self.end_headers()
             self.wfile.write(b"nopage")
 
@@ -87,5 +89,6 @@ class EventReceiver(BaseHTTPRequestHandler):
         self.logger.info("received GET event data from Raemis")
         self.send_response(404)
         self.send_header("Content-Type", "text/html")
+        self.send_header("Content-Length", str(len(b"nomethod")))
         self.end_headers()
         self.wfile.write(b"nomethod")
