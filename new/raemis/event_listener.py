@@ -5,7 +5,7 @@ from http.server import (
     CGIHTTPRequestHandler,
 )
 from http.server import ThreadingHTTPServer
-from http.server import HTTPServer
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import TCPServer, ThreadingTCPServer
 import cgi
 import socketserver
@@ -44,7 +44,7 @@ class RaemisListener:
             self.logger.error("event receiver HTTP server failed to shutdown")
 
 
-class EventReceiver(BasicHTTPRequestHandler):
+class EventReceiver(BaseHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
 
