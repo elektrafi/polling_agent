@@ -6,9 +6,13 @@ import cgi
 import cgitb
 
 cgitb.enable()
-cgi.print_arguments()
+
 
 print("<html><head></head><body>")
+
+print("<h1>stdin</h1>")
+for line in sys.stdin.readlines():
+    print(line)
 
 print("<br>")
 print("<br>")
