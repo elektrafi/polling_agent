@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from http.server import SimpleHTTPRequestHandler
 from http.server import ThreadingHTTPServer
+import pprint
 import threading
 import socket
 import logging
@@ -46,23 +47,28 @@ class RaemisListener:
 
 class EventReceiver(SimpleHTTPRequestHandler):
     EVENT_PATH: str = "/events"
+    logger = logging.getLogger(__name__)
 
     def do_POST(self):
+        print("post")
         if self.path == self.EVENT_PATH:
-            logger = logging.getLogger(__name__)
-            logger.info("received event data from Raemis")
+            print("path")
+            self.logger.info("received event data from Raemis")
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
+            print("headers")
             data_len = int(self.headers.get("Content-Length"))
             post_data = self.rfile.read(data_len)
+            print("data")
             # event_data = json.loads(post_data)
-            import pprint
 
             pprint.pprint(post_data)
+            print("printed data")
             # Raemis.event_queue.put(event_data)
-            logger.debug(f"Raemis sent {data_len} bytes of data")
+            self.logger.debug(f"Raemis sent {data_len} bytes of data")
             self.wfile.write(b"OK")
+            print("done")
         else:
             self.send_response_only(404, f"POST method not supported for {self.path}")
 
