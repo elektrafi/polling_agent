@@ -64,7 +64,7 @@ class EventReceiver(CGIHTTPRequestHandler):
 
     def do_POST(self):
         print("post")
-        if self.path == self.EVENT_PATH:
+        if self.EVENT_PATH in self.path:
             print("path")
             self.logger.info("received event data from Raemis")
             print("headers")
