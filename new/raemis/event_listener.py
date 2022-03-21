@@ -7,6 +7,7 @@ from http.server import (
 from http.server import ThreadingHTTPServer
 from http.server import HTTPServer
 from socketserver import TCPServer, ThreadingTCPServer
+import socketserver
 import pprint
 import threading
 from urllib.parse import urlparse
@@ -21,7 +22,7 @@ class RaemisListener:
 
     def _start_event_receiver_server(self) -> None:
         try:
-            self._eventReceiver = ThreadingTCPServer(
+            self._eventReceiver = ThreadingHTTPServer(
                 ("10.244.1.250", 9998), CGIHTTPRequestHandler
             )
             self.server_thread = threading.Thread(
