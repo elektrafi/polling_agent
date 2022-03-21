@@ -13,7 +13,7 @@ class RaemisListener:
 
     def sock(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind(("0.0.0.0", 9999))
+            s.bind(("0.0.0.0", 9998))
             s.listen()
             conn, addr = s.accept()
             print(conn)
@@ -29,7 +29,9 @@ class RaemisListener:
 
     def _start_event_receiver_server(self) -> None:
         try:
-            self._eventReceiver = ThreadingHTTPServer(("0.0.0.0", 9999), EventReceiver)
+            self._eventReceiver = ThreadingHTTPServer(
+                ("10.244.1.250", 9998), EventReceiver
+            )
             server_thread = threading.Thread(target=self._eventReceiver.serve_forever)
             server_thread.daemon = True
             server_thread.start()
