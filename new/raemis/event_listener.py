@@ -56,6 +56,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             print("headers")
             data_len = self.headers.get("Content-Length")
             data_len = int(data_len) if data_len else 0
+            self.rfile.flush()
             post_data = self.rfile.read(data_len)
             # event_data = json.loads(post_data)
             pprint.pprint(post_data)
@@ -66,6 +67,8 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.logger.debug(f"headers:\t{pprint.pformat(self.headers.as_string())}")
             self.logger.debug(f"Raemis sent {data_len} bytes of data")
             print("done")
+            self.wfile.write(post_data)
+            self.wfile.flush()
             return
 
         else:
