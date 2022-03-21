@@ -46,6 +46,15 @@ class EventReceiver(CGIHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
 
+    def __init__(
+        self,
+        request: bytes,
+        client_address: tuple[str, int],
+        server: socketserver.BaseServer,
+        directory: str | None = ...,
+    ) -> None:
+        super().__init__(request, client_address, server, directory)
+
     def do_POST(self):
         print("post")
         if self.EVENT_PATH in self.path:
