@@ -56,7 +56,7 @@ class EventReceiver(SimpleHTTPRequestHandler):
             self.end_headers()
             data_len = int(self.headers.get("Content-Length"))
             post_data = self.rfile.read(data_len)
-            event_data = json.loads(post_data)
+            # event_data = json.loads(post_data)
             import pprint
 
             pprint.pprint(post_data)
