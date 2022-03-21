@@ -64,7 +64,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.end_headers()
             print("headers")
             data_len = self.headers.get("Content-Length")
-            data_len = data_len if data_len else 0
+            data_len = int(data_len) if data_len else 0
             post_data = self.rfile.read(data_len)
             print("data: ", post_data)
             # event_data = json.loads(post_data)
