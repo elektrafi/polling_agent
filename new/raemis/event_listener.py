@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
-from http.server import BaseHTTPRequestHandler, SimpleHTTPRequestHandler
+from http.server import (
+    BaseHTTPRequestHandler,
+    SimpleHTTPRequestHandler,
+    CGIHTTPRequestHandler,
+)
 from http.server import ThreadingHTTPServer
+from http.server import HTTPServer
 from socketserver import TCPServer, ThreadingTCPServer
 import pprint
 import threading
@@ -53,7 +58,7 @@ class RaemisListener:
             self.logger.error("event receiver HTTP server failed to shutdown")
 
 
-class EventReceiver(SimpleHTTPRequestHandler):
+class EventReceiver(CGIHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
 
@@ -62,9 +67,6 @@ class EventReceiver(SimpleHTTPRequestHandler):
         if self.path == self.EVENT_PATH:
             print("path")
             self.logger.info("received event data from Raemis")
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
             print("headers")
             data_len = self.headers.get("Content-Length")
             data_len = int(data_len) if data_len else 0
@@ -78,8 +80,9 @@ class EventReceiver(SimpleHTTPRequestHandler):
             self.logger.debug(f"headers:\t{pprint.pformat(self.headers.as_string())}")
             self.logger.debug(f"Raemis sent {data_len} bytes of data")
             print("done")
-            self.wfile.write(post_data)
-            return
+            self.path = f"{self.path}.py"
+            super().do_POST()
+
         else:
             print("not path")
             obj = json.dumps({"error": "incorrect page"})
