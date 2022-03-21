@@ -9,9 +9,6 @@ cgitb.enable()
 cgi.print_arguments()
 
 print("<html><head></head><body>")
-print("<h1>cgi.parse()</h1>")
-form = cgi.parse(keep_blank_values=True, strict_parsing=False)
-pprint.pprint(form)
 
 print("<br>")
 print("<br>")
