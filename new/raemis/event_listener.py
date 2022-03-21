@@ -80,7 +80,8 @@ class EventReceiver(CGIHTTPRequestHandler):
             self.logger.debug(f"headers:\t{pprint.pformat(self.headers.as_string())}")
             self.logger.debug(f"Raemis sent {data_len} bytes of data")
             print("done")
-            self.path = f"{self.path}.py"
+            if "py" not in self.path[-2:]:
+                self.path = f"{self.path}.py"
             super().do_POST()
 
         else:
