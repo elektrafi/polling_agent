@@ -10,14 +10,20 @@ cgitb.enable()
 
 print("<html><head></head><body>")
 
-print("<h1>stdin</h1>")
+print("<h1>Environ</h1>")
+cgi.print_environ()
 
-data = cgi.parse(strict_parsing=False, keep_blank_values=True)
+print("<br>")
+print("<br>")
+
+print("<h1>environ_usage</h1>")
+cgi.print_environ_usage()
 
 print("<br>")
 print("<br>")
 
 print("<h1>data</h1>")
+data = cgi.parse(strict_parsing=False, keep_blank_values=True)
 print(data)
 
 print("</body></html>")

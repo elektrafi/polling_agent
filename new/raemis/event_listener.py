@@ -7,6 +7,7 @@ from http.server import (
 from http.server import ThreadingHTTPServer
 from http.server import HTTPServer
 from socketserver import TCPServer, ThreadingTCPServer
+import cgi
 import socketserver
 import pprint
 import threading
@@ -23,12 +24,12 @@ class RaemisListener:
     def _start_event_receiver_server(self) -> None:
         try:
             self._eventReceiver = ThreadingHTTPServer(
-                ("10.244.1.250", 9998), CGIHTTPRequestHandler
+                ("10.244.1.250", 9998), EventReceiver
             )
             self.server_thread = threading.Thread(
                 target=self._eventReceiver.serve_forever
             )
-            self.server_thread.daemon = False
+            self.server_thread.daemon = True
             self.server_thread.start()
             self.logger.info("event receiver server thread started")
         except:
@@ -43,7 +44,7 @@ class RaemisListener:
             self.logger.error("event receiver HTTP server failed to shutdown")
 
 
-class EventReceiver(CGIHTTPRequestHandler):
+class EventReceiver(BasicHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
 
