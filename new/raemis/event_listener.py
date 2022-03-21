@@ -23,7 +23,7 @@ class RaemisListener:
 
     def _start_event_receiver_server(self) -> None:
         try:
-            self._eventReceiver = ThreadingHTTPServer(
+            self._eventReceiver = ThreadingTCPServer(
                 ("10.244.1.250", 9998), EventReceiver
             )
             self.server_thread = threading.Thread(
@@ -73,6 +73,8 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(post_data)
             self.wfile.flush()
+            self.finish()
+            self.connection.close()
             return
 
         else:
@@ -85,6 +87,8 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(obj)))
             self.end_headers()
             self.wfile.write(obj)
+            self.finish()
+            self.connection.close()
             return
 
     def do_GET(self):
@@ -96,4 +100,6 @@ class EventReceiver(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/html")
         self.end_headers()
         self.wfile.write(obj)
+        self.finish()
+        self.connection.close()
         return
