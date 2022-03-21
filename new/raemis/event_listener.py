@@ -73,6 +73,8 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(post_data)
             self.wfile.flush()
+            self.finish()
+            self.connection.close()
             return
 
         else:
@@ -85,6 +87,8 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(obj)))
             self.end_headers()
             self.wfile.write(obj)
+            self.finish()
+            self.connection.close()
             return
 
     def do_GET(self):
@@ -96,4 +100,6 @@ class EventReceiver(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/html")
         self.end_headers()
         self.wfile.write(obj)
+        self.finish()
+        self.connection.close()
         return
