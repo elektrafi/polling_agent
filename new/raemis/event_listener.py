@@ -21,11 +21,33 @@ import json
 class RaemisListener:
     logger = logging.getLogger(__name__)
 
+    def start_socket(self):
+        sock = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, None
+        )
+        sock.bind(("0.0.0.0", 9998))
+        sock.listen(10)
+        while True:
+            (clientsock, addr) = sock.accept()
+            threading.Thread(
+                name=f"client-{addr}", target=self.child_socket, args=[clientsock, addr]
+            )
+
+    def child_socket(self, sock: socket.socket, addr: str):
+        chunks = []
+        bytes_recd = 0
+        MSGLEN = 2048
+        while bytes_recd < MSGLEN:
+            chunk = sock.recv(min(MSGLEN - bytes_recd, 2048))
+            if chunk == b"":
+                raise RuntimeError("socket connection broken")
+            chunks.append(chunk)
+            bytes_recd = bytes_recd + len(chunk)
+        return b"".join(chunks)
+
     def _start_event_receiver_server(self) -> None:
         try:
-            self._eventReceiver = ThreadingTCPServer(
-                ("10.244.1.250", 9998), EventReceiver
-            )
+            self._eventReceiver = HTTPServer(("10.244.1.250", 9998), EventReceiver)
             self.server_thread = threading.Thread(
                 target=self._eventReceiver.serve_forever
             )
