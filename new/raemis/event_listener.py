@@ -84,6 +84,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.rfile.flush()
             post_data = self.rfile.read(data_len)
             # event_data = json.loads(post_data)
+            post_data = parse_qs(post_data, True, False)
             pprint.pprint(post_data)
             print("printed data")
             # Raemis.event_queue.put(event_data)
@@ -96,7 +97,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(post_data)))
             self.end_headers()
-            self.wfile.write(post_data)
+            self.wfile.write(pprint.pformat(post_data).encode())
             self.wfile.flush()
             self.connection.close()
             return
