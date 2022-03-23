@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from multiprocessing import Queue, Process, Event, _EventType
-from typing import Callable
+from multiprocessing import Queue, Process, Event
+from typing import Callable, Any
 import requests
 from typing_extensions import Self
 from ..sonar.api_connection import Sonar
@@ -15,7 +15,7 @@ class Allocator:
     pending_allocations: Queue[Attachment]
     logger = logging.getLogger(__name__)
     __loop_process: Process
-    __stop_event: _EventType
+    __stop_event: Any
     __ue_callback: Callable[[str], UE | None]
     __sonar: Sonar
     __api_key: str
@@ -54,7 +54,7 @@ class Allocator:
         self.__loop_process.join()
 
     def __start_processing_loop(
-        self, stop_event: _EventType, get_ue: Callable[[str], UE | None]
+        self, stop_event: Any, get_ue: Callable[[str], UE | None]
     ):
         self.logger.info("allocator loop started")
         while True:
