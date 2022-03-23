@@ -24,7 +24,7 @@ class Attachment:
 
 
 class Allocator:
-    pending_allocations: Queue[Attachment]
+    pending_allocations: Queue
     logger = logging.getLogger(__name__)
     __loop_process: Process
     __stop_event: Any
