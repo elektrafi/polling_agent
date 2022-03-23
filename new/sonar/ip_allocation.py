@@ -49,7 +49,7 @@ class Allocator(object):
 
     def __new__(cls: type[Self], *args, **kwargs) -> Self:
         if not cls.inst:
-            cls.inst = super(Allocator, cls).__new__(cls, *args, **kwargs)
+            cls.inst = super().__new__(cls, *args, **kwargs)
         return cls.inst
 
     def start_loop(self):
