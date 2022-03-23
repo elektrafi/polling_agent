@@ -35,7 +35,10 @@ class RaemisListener:
             self.server_thread = threading.Thread(
                 target=self._eventReceiver.serve_forever
             )
-            self._eventReceiver.timeout = 10
+            self._eventReceiver.timeout = 3
+            self._eventReceiver.block_on_close = False
+            self._eventReceiver.request_queue_size = 25
+            self._eventReceiver.daemon_threads = True
             self.server_thread.daemon = True
             self.server_thread.start()
             self.logger.info("event receiver server thread started")
