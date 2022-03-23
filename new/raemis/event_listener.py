@@ -2,14 +2,13 @@
 from http.server import BaseHTTPRequestHandler
 from http.server import BaseHTTPRequestHandler
 from socketserver import ThreadingTCPServer
-from ..model import IPv4Address
 import time
 import pprint
 import threading
 from urllib.parse import parse_qs
 import logging
 import json
-from ..sonar.ip_allocation import Allocator
+from ..sonar.ip_allocation import Allocator, Attachment
 
 
 class Listener:
@@ -148,14 +147,3 @@ class EventReceiver(BaseHTTPRequestHandler):
         self.wfile.write(obj)
         self.connection.close()
         return
-
-
-class Attachment:
-    imsi: str
-    timestamp: time.struct_time | None
-    address: IPv4Address | None
-
-    def __init__(self, i, t=None, a=None):
-        self.imsi = i
-        self.timestamp = t
-        self.address = a

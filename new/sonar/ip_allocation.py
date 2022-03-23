@@ -7,8 +7,20 @@ from typing_extensions import Self
 from ..sonar.api_connection import Sonar
 
 from ..model.ue import UE
-from ..raemis.event_listener import Attachment
+from ..model.ip_address import IPv4Address
+import time
 import logging
+
+
+class Attachment:
+    imsi: str
+    timestamp: time.struct_time | None
+    address: IPv4Address | None
+
+    def __init__(self, i, t=None, a=None):
+        self.imsi = i
+        self.timestamp = t
+        self.address = a
 
 
 class Allocator:
