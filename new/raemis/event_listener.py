@@ -25,7 +25,7 @@ class RaemisListener:
         sock = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, None
         )
-        sock.bind(("0.0.0.0", 9998))
+        sock.bind(("0.0.0.0", 9997))
         sock.listen(10)
         while True:
             (clientsock, addr) = sock.accept()
@@ -48,7 +48,7 @@ class RaemisListener:
     def _start_event_receiver_server(self) -> None:
         try:
             self._eventReceiver = ThreadingTCPServer(
-                ("0.0.0.0", 9998), EventReceiver, bind_and_activate=True
+                ("0.0.0.0", 9997), EventReceiver, bind_and_activate=True
             )
             self.server_thread = threading.Thread(
                 target=self._eventReceiver.serve_forever
