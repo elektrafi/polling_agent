@@ -8,6 +8,7 @@ from http.server import ThreadingHTTPServer
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import TCPServer, ThreadingTCPServer
 import cgi
+import time
 import socketserver
 import pprint
 import threading
@@ -72,6 +73,15 @@ class RaemisListener:
 class EventReceiver(BaseHTTPRequestHandler):
     EVENT_PATH: str = "/events"
     logger = logging.getLogger(__name__)
+    last_time = time.thread_time_ns()
+    this_time = time.thread_time_ns()
+
+    def posts_per_second(self):
+        return 1 / (self.this_time - self.last_time)
+
+    def update_time(self):
+        self.last_time = self.this_time
+        self.this_time = time.thread_time_ns()
 
     def do_POST(self):
         print("post")
@@ -100,6 +110,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.wfile.write(pprint.pformat(post_data).encode())
             self.wfile.flush()
             self.connection.close()
+            self.update_time()
             return
 
         else:
@@ -113,6 +124,7 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(obj)
             self.connection.close()
+            self.update_time()
             return
 
     def do_GET(self):
