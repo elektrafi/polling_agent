@@ -48,7 +48,7 @@ class RaemisListener:
     def _start_event_receiver_server(self) -> None:
         try:
             self._eventReceiver = ThreadingTCPServer(
-                ("10.244.1.250", 9998), EventReceiver, bind_and_activate=True
+                ("0.0.0.0", 9998), EventReceiver, bind_and_activate=True
             )
             self.server_thread = threading.Thread(
                 target=self._eventReceiver.serve_forever
