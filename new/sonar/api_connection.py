@@ -32,7 +32,7 @@ class Sonar:
 
     def __new__(cls: type[Self], *args, **kwargs) -> Self:
         if not cls.inst:
-            cls.inst = super().__new__(cls, *args, **kwargs)
+            cls.inst = super(Sonar, cls).__new__(cls)
         return cls.inst
 
     def __init__(self, apiUrl: str = "https://elektrafi.sonar.software/api/graphql"):

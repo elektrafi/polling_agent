@@ -47,9 +47,9 @@ class Allocator(object):
         )
         self.__loop_process.daemon = True
 
-    def __new__(cls: type[Self], *args, **kwargs) -> Self:
+    def __new__(cls: type[Self]) -> Self:
         if not cls.inst:
-            cls.inst = super().__new__(cls, *args, **kwargs)
+            cls.inst = super(Allocator, cls).__new__(cls)
         return cls.inst
 
     def start_loop(self):
