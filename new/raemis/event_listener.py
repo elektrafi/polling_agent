@@ -62,7 +62,7 @@ class EventReceiver(BaseHTTPRequestHandler):
     this_time = time.thread_time_ns()
 
     def posts_per_second(self):
-        return 1 / (self.this_time - self.last_time)
+        return 1 / (self.last_time - self.this_time)
 
     def update_time(self):
         self.last_time = self.this_time
