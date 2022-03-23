@@ -35,6 +35,7 @@ class Raemis:
         self.logger.info("starting Raemis API connection")
         self.session = requests.session()
         self.session.verify = False
+        self.session.auth = (username, password)
         self.apiUrl = apiUrl[:-1] if apiUrl[-1] == "/" else apiUrl
         self._auth = {"username": username, "password": password}
         self._post_data(RaemisEndpoint.SESSION, self._auth)
