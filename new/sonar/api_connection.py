@@ -31,7 +31,7 @@ class Sonar:
     sonar_api_key: str
 
     def __new__(cls: type[Self], *args, **kwargs) -> Self:
-        if hasattr(cls, "inst") or cls.inst is None:
+        if not hasattr(cls, "inst") or cls.inst is None:
             cls.inst = super(Sonar, cls).__new__(cls, *args, **kwargs)
         return cls.inst
 
