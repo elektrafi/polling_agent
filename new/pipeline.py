@@ -16,7 +16,7 @@ class Pipeline:
     __executors: set[ThreadPoolExecutor]
     cursor: Future
 
-    def __init__(self, pool_size: int = 175):
+    def __init__(self, pool_size: int = 125):
         self.mainExec = ThreadPoolExecutor(max_workers=pool_size)
         self.__executors = {self.mainExec}
         self.cursor = Future()

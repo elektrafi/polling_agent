@@ -131,13 +131,13 @@ class Raemis:
                     data=data if data else None,
                 )
             except:
-                if timeout > 10:
+                if timeout > 60:
                     self.logger.error(
                         f"unable to resolve HTTP {method.value} request to {self._get_raemis_url(ep)}"
                     )
                     raise requests.ConnectionError
             finally:
-                timeout += 3
+                timeout += 5
         self.logger.debug(
             f"HTTP request type {method.value} resolved with status code {resp.status_code}"
         )
