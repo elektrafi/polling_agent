@@ -31,9 +31,13 @@ class Sonar:
     sonar_api_key: str
 
     def __new__(cls: type[Self], *args, **kwargs) -> Self:
-        if not hasattr(cls, "inst") or cls.inst is None:
+        try:
+            if not hasattr(cls, "inst") or cls.inst is None:
+                cls.inst = super(Sonar, cls).__new__(cls, *args, **kwargs)
+            return cls.inst
+        except:
             cls.inst = super(Sonar, cls).__new__(cls, *args, **kwargs)
-        return cls.inst
+            return cls.inst
 
     def __init__(self, apiUrl: str = "https://elektrafi.sonar.software/api/graphql"):
         self.apiUrl = apiUrl

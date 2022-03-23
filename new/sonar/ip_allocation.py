@@ -48,9 +48,13 @@ class Allocator:
         self.__loop_process.daemon = True
 
     def __new__(cls: type[Self], *args, **kwargs) -> Self:
-        if not hasattr(cls, "inst") or cls.inst is None:
+        try:
+            if not hasattr(cls, "inst") or cls.inst is None:
+                cls.inst = super(Allocator, cls).__new__(cls, *args, **kwargs)
+            return cls.inst
+        except:
             cls.inst = super(Allocator, cls).__new__(cls, *args, **kwargs)
-        return cls.inst
+            return cls.inst
 
     def start_loop(self):
         self.logger.info("starting ip address allocator loop")
