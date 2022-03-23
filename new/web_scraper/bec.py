@@ -157,7 +157,7 @@ class BECWebEmulator:
     def updateCWMPDefault(self) -> bool:
         data = {
             "CWMP_Active": "Yes",
-            "CWMP_ACSURL": "http://10.0.44.21:7547",
+            "CWMP_ACSURL": "http://10.244.1.21:7547",
             "CWMP_ACSUserName": "EFITR69",
             "CWMP_ACSPassword": "",
             "CWMP_ConnectionRequestPath": "/cpe",

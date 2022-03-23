@@ -307,7 +307,7 @@ class Baicells:
                     data={
                         "Command": "setTR069value",
                         "TR_ENABLE": "1",
-                        "TR_ACS_URL": "http://10.0.44.21:7547",
+                        "TR_ACS_URL": "http://10.244.1.21:7547",
                         "TR_ACS_USER": "EFITR69",
                         "TR_ACS_PASS": "",
                         "TR_INFORM_ENABLE": "1",

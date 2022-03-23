@@ -28,7 +28,7 @@ class GenieACS:
 
     def __init__(
         self,
-        host: str = "10.0.44.21",
+        host: str = "10.244.1.21",
         port: int = 7557,
         username: str = "admin",
         password: str = "password",
