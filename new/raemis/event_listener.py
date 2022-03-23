@@ -17,34 +17,15 @@ from urllib.parse import parse_qs
 import socket
 import logging
 import json
+from typing import Callable
 
 
 class RaemisListener:
     logger = logging.getLogger(__name__)
+    done: bool = False
 
-    def start_socket(self):
-        sock = socket.socket(
-            socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, None
-        )
-        sock.bind(("0.0.0.0", 9997))
-        sock.listen(10)
-        while True:
-            (clientsock, addr) = sock.accept()
-            threading.Thread(
-                name=f"client-{addr}", target=self.child_socket, args=[clientsock, addr]
-            )
-
-    def child_socket(self, sock: socket.socket, addr: str):
-        chunks = []
-        bytes_recd = 0
-        MSGLEN = 2048
-        while bytes_recd < MSGLEN:
-            chunk = sock.recv(min(MSGLEN - bytes_recd, 2048))
-            if chunk == b"":
-                raise RuntimeError("socket connection broken")
-            chunks.append(chunk)
-            bytes_recd = bytes_recd + len(chunk)
-        return b"".join(chunks)
+    def __init__(self):
+        self.done = False
 
     def _start_event_receiver_server(self) -> None:
         try:
@@ -62,6 +43,7 @@ class RaemisListener:
             self.logger.exception("could not start event erceiver server")
 
     def __del__(self) -> None:
+        self.done = True
         try:
             self._eventReceiver.server_close()
             self._eventReceiver.shutdown()
@@ -111,6 +93,9 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.wfile.flush()
             self.connection.close()
             self.update_time()
+            self.logger.info(
+                f"Received {self.posts_per_second()} POST requests from Raemis per second"
+            )
             return
 
         else:
