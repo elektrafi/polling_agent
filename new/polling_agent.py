@@ -1,144 +1,19 @@
 #!/usr/bin/env python3
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Iterator,
-    Mapping,
-    ParamSpec,
-    TypeVar,
-)
-
+from typing import Any
 from new.web_scraper.bec import BECWebEmulator
 from .model.mac_address import MACAddress
 import re
 from .model.ip_address import IPv4Address
 from .raemis.api_connection import Raemis
+from .raemis.event_listener import Listener
 from .genie_acs.api_connection import GenieACS
 from .sonar.api_connection import Sonar, AccountType, InventoryType
+from .sonar.ip_allocation import Allocator
 from .model.ue import UE, UEManufacturer, UEModel, Address
-from concurrent.futures import ThreadPoolExecutor, Future
+from concurrent.futures import Future
 from .web_scraper.baicells import Baicells
+from .pipeline import Pipeline, FList
 import logging
-
-P = ParamSpec("P")
-T = TypeVar("T")
-F = TypeVar("F", list[Future], Future)
-FList = type(list[Future[Any]])
-TPE = type(ThreadPoolExecutor)
-
-
-class Pipeline:
-    mainExec: ThreadPoolExecutor
-    __executors: set[ThreadPoolExecutor]
-    cursor: Future
-
-    def __init__(self, pool_size: int = 175):
-        self.mainExec = ThreadPoolExecutor(max_workers=pool_size)
-        self.__executors = {self.mainExec}
-        self.cursor = Future()
-
-    def __del__(self):
-        (x.shutdown(wait=True, cancel_futures=False) for x in self.__executors)
-
-    def map(
-        self,
-        fn: Callable[P, T],
-        iterable: Iterable[Any] | Any,
-        timeout: float | None = None,
-        chunksize: int = -1,
-    ) -> Iterator[T]:
-        return self.mainExec.map(fn, iterable, timeout=timeout, chunksize=chunksize)
-
-    def start_fn_in_executor(
-        self,
-        e: TPE,
-        fn: Callable[P, T],
-        *args: Iterable[Any] | Any,
-        **kwargs: Mapping[str, Any],
-    ) -> Future[T]:
-        self.__executors.add(e)
-        self.cursor = e.submit(fn, *args, **kwargs)
-        return self.cursor
-
-    def start_fn(
-        self,
-        fn: Callable[P, T],
-        *args: Iterable[Any] | Any,
-        **kwargs: Mapping[str, Any],
-    ) -> Future[T]:
-        self.cursor = self.start_fn_in_executor(self.mainExec, fn, *args, **kwargs)
-        return self.cursor
-
-    def start_fn_after_cursor(
-        self,
-        fn: Callable[P, T],
-        *args: Iterable[Any] | Any,
-        **kwargs: Mapping[str, Any],
-    ) -> Future[T]:
-        self.cursor = self.start_fn_after_future(self.cursor, fn, *args, **kwargs)
-        return self.cursor
-
-    def start_fns_after_future(
-        self,
-        f: Future[Any],
-        fns: list[Callable[P, T]],
-        alist: list[Iterable[Any] | Any] = [],
-        kwalist: list[Mapping[str, Any]] = [],
-    ) -> Future[T]:
-        if not alist:
-            for _ in range(len(fns)):
-                alist.append(())
-        if not kwalist:
-            for _ in range(len(fns)):
-                kwalist.append({})
-        ret = []
-        for i, fn in enumerate(fns):
-            ret.append(self.start_fn_after_future(f, fn, *alist[i], **kwalist[i]))
-        self.cursor = self.merge_futures_list(ret)
-        return self.cursor
-
-    def start_fn_after_future(
-        self,
-        f: Future[Any],
-        fn: Callable[P, T],
-        *args: Iterable[Any] | Any,
-        **kwargs: Mapping[str, Any],
-    ) -> Future[T]:
-        def call_fn_after_future(
-            f: Future[Any],
-            fn: Callable[P, T],
-            *args: Iterable[Any] | Any,
-            **kwargs: Mapping[str, Any],
-        ) -> T:
-            while not f.done():
-                pass
-            return fn(*args, **kwargs)
-
-        self.cursor = self.mainExec.submit(call_fn_after_future, f, fn, *args, **kwargs)
-        return self.cursor
-
-    def start_fn_after_futures_list(
-        self,
-        l: FList,
-        fn: Callable[P, T],
-        *args: Iterable[Any] | Any,
-        **kwargs: Mapping[str, Any],
-    ) -> Future[T]:
-        f = self.merge_futures_list(l)
-        self.cursor = self.start_fn_after_future(f, fn, *args, **kwargs)
-        return self.cursor
-
-    def merge_futures_list(self, l: FList) -> FList:
-        def merge(l: FList) -> list[Any]:
-            while not self.__all_futures_done(l):
-                pass
-            return [x.result() for x in l]
-
-        return self.mainExec.submit(merge, l)
-
-    def __all_futures_done(self, futures: FList) -> bool:
-        return all(x.done() for x in futures)
 
 
 class PollingAgent:
@@ -146,6 +21,8 @@ class PollingAgent:
     raemis: Raemis
     genis: GenieACS
     sonar: Sonar
+    allocator: Allocator
+    listener: Listener
     ue: list[UE]
     __devices: list
     pipeline: Pipeline = Pipeline()
@@ -155,6 +32,8 @@ class PollingAgent:
         self.raemis = Raemis()
         self.genie = GenieACS()
         self.sonar = Sonar()
+        self.listener = Listener()
+        self.allocator = Allocator(self.__get_ue_by_imsi)
         self.__startup()
 
     def __startup(self):
@@ -169,6 +48,10 @@ class PollingAgent:
         f = self.pipeline.start_fn_after_future(f, self.__check_http_for_remaining)
         f = self.pipeline.start_fn_after_future(f, self.__baicells_web_scrapes)
         f = self.pipeline.start_fn_after_future(f, self.__get_sonar_info)
+        f = self.pipeline.start_fn_after_future(
+            f, self.listener.start_event_receiver_server
+        )
+        # f = self.pipeline.start_fn_after_future(f, self.allocator.start_loop)
         self.pipeline.start_fn_after_future(
             f, lambda: self.logger.info("finished initializing")
         )
@@ -350,6 +233,19 @@ class PollingAgent:
         i = f.result()
         if i is not None:
             return list(self.pipeline.map(lambda x: fn(x), i))
+
+    def __get_ue_by_imsi(self, imsi: str) -> UE | None:
+        if not imsi:
+            return None
+        try:
+            return next(
+                filter(
+                    lambda x: x and x.imsi and x.imsi.strip() == imsi.strip(), self.ue
+                )
+            )
+        except:
+            self.logger.error(f"could not fine UE with imsi {imsi}")
+            return None
 
     def __get_ue_by_mac(self, mac: MACAddress) -> UE | None:
         try:

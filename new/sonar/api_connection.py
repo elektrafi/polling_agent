@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 
+from typing_extensions import Self
+
+
 from gql.transport.requests import RequestsHTTPTransport
 from typing import Any
+
 from gql import Client, gql
 import re
 from json import JSONDecoder
@@ -23,6 +27,13 @@ class Sonar:
     apiUrl: str
     client: Client
     logger = logging.getLogger(__name__)
+    inst: Self | None = None
+    sonar_api_key: str
+
+    def __new__(cls: type[Self], *args, **kwargs) -> Self:
+        if cls.inst is None:
+            cls.inst = super(Sonar, cls).__new__(cls, *args, **kwargs)
+        return cls.inst
 
     def __init__(self, apiUrl: str = "https://elektrafi.sonar.software/api/graphql"):
         self.apiUrl = apiUrl

@@ -1,33 +1,21 @@
 #!/usr/bin/env python3
-from http.server import (
-    BaseHTTPRequestHandler,
-    SimpleHTTPRequestHandler,
-    CGIHTTPRequestHandler,
-)
-from http.server import ThreadingHTTPServer
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from socketserver import TCPServer, ThreadingTCPServer
-import cgi
+from http.server import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
+from socketserver import ThreadingTCPServer
+from ..model import IPv4Address
 import time
-import socketserver
 import pprint
 import threading
-from urllib.parse import urlparse
 from urllib.parse import parse_qs
-import socket
 import logging
 import json
-from typing import Callable
+from ..sonar.ip_allocation import Allocator
 
 
-class RaemisListener:
+class Listener:
     logger = logging.getLogger(__name__)
-    done: bool = False
 
-    def __init__(self):
-        self.done = False
-
-    def _start_event_receiver_server(self) -> None:
+    def start_event_receiver_server(self) -> None:
         try:
             self._eventReceiver = ThreadingTCPServer(
                 ("0.0.0.0", 9997), EventReceiver, bind_and_activate=True
@@ -69,25 +57,74 @@ class EventReceiver(BaseHTTPRequestHandler):
         self.this_time = time.thread_time_ns()
 
     def do_POST(self):
-        print("post")
         if self.EVENT_PATH in self.path:
-            print("path")
             self.logger.info("received event data from Raemis")
-            print("headers")
             data_len = self.headers.get("Content-Length")
+            content_type = self.headers.get("Content-Type")
             data_len = int(data_len) if data_len else 0
             self.rfile.flush()
             post_data = self.rfile.read(data_len)
-            # event_data = json.loads(post_data)
             post_data = parse_qs(post_data, True, False)
-            pprint.pprint(post_data)
-            print("printed data")
-            # Raemis.event_queue.put(event_data)
-            query_components = parse_qs(urlparse(self.path).query)
-            self.logger.debug(f"Other parser:\t{query_components}")
-            self.logger.debug(f"headers:\t{pprint.pformat(self.headers.as_string())}")
-            self.logger.debug(f"Raemis sent {data_len} bytes of data")
-            print("done")
+            imsis = post_data[b"imsi"]
+            add_text = post_data[b"add_text"]
+            events = post_data[b"event_type"]
+            event_times = post_data[b"event_time"]
+            if (
+                not imsis
+                or not isinstance(imsis, list)
+                or not add_text
+                or not isinstance(add_text, list)
+                or not events
+                or not isinstance(events, list)
+                or not event_times
+                or not isinstance(event_times, list)
+                or not "x-www-form-urlencoded" == content_type.lower().strip()
+            ):
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                self.wfile.flush()
+                self.connection.close()
+                self.logger.error(
+                    f"hit some kind of snag parsing the lists and content-type: {content_type}"
+                )
+                self.logger.error(
+                    f"\tlists:\n\t{imsis}\n\t{add_text}\n\t{events}\n\t{event_times}"
+                )
+            event = data = event_time = imsi = ""
+            try:
+                event = events[0].decode().strip().lower()
+                event_time = event_times[0].decode().strip().lower()
+                imsi = imsis[0].decode().strip().lower()
+                data = add_text[0].decode().strip().lower()
+            except:
+                self.logger.error("unable to parse POST data:")
+                self.logger.error(f"event: {event}")
+                self.logger.error(f"time: {event_time}")
+                self.logger.error(f"imsi: {imsi}")
+                self.logger.error(f"extra: {data}")
+            if data:
+                try:
+                    data = json.loads(data)
+                except:
+                    self.logger.error(f"unable to parse extra data ({data}) as JSON")
+                    return
+            try:
+                event_time = time.strptime(event_time, "%Y-%m-%d %H:%M:%S.%f")
+            except:
+                self.logger.warn(
+                    f'unable to parse time {event_time} with format string "%Y-%m-%d %H:%M:%S.%f"'
+                )
+            if event == "pdp_context_activated":
+                self.logger.info(f"parsing event: {event}")
+                data = dict(data)
+                attach = Attachment(imsi, event_time, data["ip"])
+                Allocator.inst.add_pending_allocation(attach)
+            elif event == "pdp_context_deactivated":
+                self.logger.info(f"parsing event: {event}")
+            else:
+                self.logger.warn(f"event {event} not parsed")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(post_data)))
@@ -95,25 +132,10 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.wfile.write(pprint.pformat(post_data).encode())
             self.wfile.flush()
             self.connection.close()
-            self.update_time()
             self.logger.info(
                 f"Received {self.posts_per_second()} POST requests from Raemis per second"
             )
-            return
-
-        else:
-            print("not path")
-            obj = json.dumps({"error": "incorrect page"})
-            obj = obj.encode("utf-8")
-            self.logger.info("received event data from Raemis")
-            self.send_response(404)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(obj)))
-            self.end_headers()
-            self.wfile.write(obj)
-            self.connection.close()
-            self.update_time()
-            return
+        return
 
     def do_GET(self):
         print("got stuff")
@@ -126,3 +148,14 @@ class EventReceiver(BaseHTTPRequestHandler):
         self.wfile.write(obj)
         self.connection.close()
         return
+
+
+class Attachment:
+    imsi: str
+    timestamp: time.struct_time | None
+    address: IPv4Address | None
+
+    def __init__(self, i, t=None, a=None):
+        self.imsi = i
+        self.timestamp = t
+        self.address = a
