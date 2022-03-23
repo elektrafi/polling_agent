@@ -23,7 +23,7 @@ class Attachment:
         self.address = a
 
 
-class Allocator:
+class Allocator(object):
     pending_allocations: Queue
     logger = logging.getLogger(__name__)
     __loop_process: Process
@@ -31,7 +31,7 @@ class Allocator:
     __ue_callback: Callable[[str], UE | None]
     __sonar: Sonar
     __api_key: str
-    inst: Self
+    inst: Self | None = None
 
     def __init__(self, ue_callback: Callable[[str], UE | None]):
         self.logger.info("creating IP address allocator thread")
@@ -48,13 +48,9 @@ class Allocator:
         self.__loop_process.daemon = True
 
     def __new__(cls: type[Self], *args, **kwargs) -> Self:
-        try:
-            if not hasattr(cls, "inst") or cls.inst is None:
-                cls.inst = super(Allocator, cls).__new__(cls, *args, **kwargs)
-            return cls.inst
-        except:
-            cls.inst = super(Allocator, cls).__new__(cls, *args, **kwargs)
-            return cls.inst
+        if not cls.inst:
+            cls.inst = object.__new__(cls, *args, **kwargs)
+        return cls.inst
 
     def start_loop(self):
         self.logger.info("starting ip address allocator loop")
