@@ -3,8 +3,9 @@ from enum import Enum, unique
 import json
 import requests
 from requests.exceptions import JSONDecodeError
-from ..genie_acs.device import device_object_hook
+from .device import device_object_hook
 import logging
+from typing_extensions import Self
 
 
 @unique
@@ -25,6 +26,7 @@ class GenieACS:
     _password: str
     apiUrl: str
     session: requests.Session
+    _inst: Self | None = None
 
     def __init__(
         self,
@@ -43,6 +45,11 @@ class GenieACS:
         self.session = requests.session()
         self.session.auth = (self._username, self._password)
         self.session.verify = False
+
+    def __new__(cls: type[Self], *args, **kwargs) -> Self:
+        if not cls._inst:
+            cls._inst = super(GenieACS, cls).__new__(cls)
+        return cls._inst
 
     def __del__(self):
         self.logger.info("closing GenieACS session")

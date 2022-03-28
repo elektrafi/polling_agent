@@ -2,12 +2,11 @@
 
 from multiprocessing import Queue, Process, Event
 from typing import Callable, Any
-import requests
 from typing_extensions import Self
-from ..sonar.api_connection import Sonar
+from .api_connection import Sonar
 
-from ..model.ue import UE
-from ..model.ip_address import IPv4Address
+from ..model.atoms import Item
+from ..model.network import IPv4Address
 import time
 import logging
 
@@ -28,12 +27,12 @@ class Allocator(object):
     logger = logging.getLogger(__name__)
     __loop_process: Process
     __stop_event: Any
-    __ue_callback: Callable[[str], UE | None]
+    __ue_callback: Callable[[str], Item | None]
     __sonar: Sonar
     __api_key: str
     inst: Self | None = None
 
-    def __init__(self, ue_callback: Callable[[str], UE | None]):
+    def __init__(self, ue_callback: Callable[[str], Item | None]):
         self.logger.info("creating IP address allocator thread")
         self.__sonar = Sonar()
         self.__api_key = self.__sonar.sonar_api_key
@@ -66,7 +65,7 @@ class Allocator(object):
         self.__loop_process.join()
 
     def __start_processing_loop(
-        self, stop_event: Any, get_ue: Callable[[str], UE | None]
+        self, stop_event: Any, get_ue: Callable[[str], Item | None]
     ):
         self.logger.info("allocator loop started")
         while True:
@@ -83,11 +82,11 @@ class Allocator(object):
             if ue is None:
                 self.logger.error(f"could not match ue to imsi: {alloc.imsi}, skipping")
                 continue
-            self.logger.debug(f"imsi: {alloc.imsi} matched UE: {ue}")
+            self.logger.debug(f"imsi: {alloc.imsi} matched Item: {ue}")
             ue.ipv4 = alloc.address
             self.__update_allocation(ue)
 
-    def __update_allocation(self, ue: UE):
+    def __update_allocation(self, ue: Item):
         url = "https://elektrafi.sonar.software/api/dhcp"
         data = {
             "mac_address": str(ue.mac_address),
@@ -104,5 +103,5 @@ class Allocator(object):
             )
             # resp = requests.get(url, verify=False, params=data)
         except:
-            self.logger.error(f"Could not update UE IP address in Sonar: {ue}")
+            self.logger.error(f"Could not update Item IP address in Sonar: {ue}")
         return resp

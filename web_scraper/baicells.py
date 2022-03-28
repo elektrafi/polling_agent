@@ -132,6 +132,7 @@ class Baicells:
                     },
                     verify=False,
                     allow_redirects=True,
+                    timeout=timeout,
                 )
             except:
                 if timeout > 7:
@@ -157,6 +158,7 @@ class Baicells:
                         "Referer": f"{self.baseUrl}/overview.html",
                         "Connection": "keep-alive",
                     },
+                    timeout=timeout,
                 )
             except:
                 if timeout > 7:
@@ -203,6 +205,7 @@ class Baicells:
                         "Referer": f"{self.baseUrl}/overview.html",
                         "Connection": "keep-alive",
                     },
+                    timeout=timeout,
                 )
             except:
                 if timeout > 7:
@@ -234,6 +237,7 @@ class Baicells:
                     self.baseUrl + url,
                     verify=False,
                     allow_redirects=True,
+                    timeout=timeout,
                 )
             except:
                 if timeout > 7:
@@ -280,6 +284,7 @@ class Baicells:
                         "Connection": "keep-alive",
                         "X-Stok": stok,
                     },
+                    timeout=timeout,
                 )
             except:
                 if timeout > 7:
@@ -323,6 +328,7 @@ class Baicells:
                         "Connection": "keep-alive",
                         "X-Stok": stok,
                     },
+                    timeout=timeout,
                 )
             except:
                 if timeout > 7:
@@ -356,6 +362,7 @@ class Baicells:
                         "Connection": "keep-alive",
                         "X-Stok": stok,
                     },
+                    timeout=timeout,
                 )
             except:
                 if timeout > 7:
@@ -375,13 +382,13 @@ class Baicells:
         info = info.find("idu_mac")
         if info is None:
             self.logger.error("No MAC address information on Baicells sysinfo page")
-            raise ValueError
+            return ""
         mac = info.text
 
         if mac is None:
             self.logger.error(
                 "MAC address XML tag contains no information on sysinfo page of Baicells device"
             )
-            raise ValueError
+            return ""
 
         return mac

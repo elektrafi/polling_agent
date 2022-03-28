@@ -2,9 +2,11 @@
 
 from typing_extensions import Self
 
+from ..model.atoms import Account, Item
+from ..pipeline import Pipeline
 
 from gql.transport.requests import RequestsHTTPTransport
-from typing import Any
+from typing import Any, TypeVar, Callable
 
 from gql import Client, gql
 import re
@@ -12,7 +14,6 @@ from json import JSONDecoder
 import logging
 
 from graphql.execution.execute import ExecutionResult
-from ..model.ue import UE
 
 AccountType = type(dict[str, str | dict[str, list[dict[str, str]]]])
 InventoryType = type(
@@ -23,17 +24,22 @@ InventoryType = type(
 )
 
 
+T = TypeVar("T")
+U = TypeVar("U")
+
+
 class Sonar:
     apiUrl: str
     client: Client
     logger = logging.getLogger(__name__)
-    inst: Self | None = None
+    _inst: Self | None = None
     sonar_api_key: str
+    pipeline = Pipeline()
 
     def __new__(cls: type[Self], *args, **kwargs) -> Self:
-        if not cls.inst:
-            cls.inst = super(Sonar, cls).__new__(cls)
-        return cls.inst
+        if not cls._inst:
+            cls._inst = super(Sonar, cls).__new__(cls)
+        return cls._inst
 
     def __init__(self, apiUrl: str = "https://elektrafi.sonar.software/api/graphql"):
         self.apiUrl = apiUrl
@@ -59,9 +65,21 @@ class Sonar:
         if self.client.transport is not None:
             self.client.transport.close()
 
+    def __process_list(self, l: list[T], proc: Callable[[T], U]) -> list[U]:
+        def fn(d: T) -> U | None:
+            try:
+                return proc(d)
+            except:
+                self.logger.exception(
+                    "error mapping raw data to objects", stack_info=True
+                )
+                return None
+
+        return list([x for x in self.pipeline.map(fn, l) if x])
+
     def get_inventory_items(
         self,
-    ) -> list[InventoryType] | None:
+    ) -> list[Item] | None:
         self.logger.info("getting inventory")
         query = """
               query ($page: Paginator!) {
@@ -81,17 +99,22 @@ class Sonar:
                       }
                     },
                     inventory_model {
-                      id,
                       name
                     }
                   },
                 }
               }"""
-        return self.__execute_paged_query(query)
+        ret = self.__execute_paged_query(query)
+        if not ret:
+            self.logger.error(
+                "recieved no data from sonar when attempting to get all inventory items"
+            )
+            return None
+        return self.__process_list(ret, Item.from_sonar)
 
-    def get_account_id_and_name(
+    def get_accounts(
         self,
-    ) -> list[AccountType] | None:
+    ) -> list[Account] | None:
         self.logger.info("getting account user names and id")
         query = """
               query ($page: Paginator!) {
@@ -103,35 +126,84 @@ class Sonar:
                   entities{
                     id,
                     name,
-                    addresses(search:{boolean_fields:{attribute:"serviceable" search_value:true}}){
+                    addresses(serviceable:true){
                       entities{
                         id,
                         line1,
                         line2,
                         city,
                         zip,
-                        inventory_items{
-                          entities{
-                            id,
-                          },
-                        },
                       },
                     },
                   },
                 }
               }"""
-        return self.__execute_paged_query(query)
+        ret = self.__execute_paged_query(query)
+        if not ret:
+            self.logger.error(
+                "recieved no data from sonar when attempting to get all accounts and addresses"
+            )
+            return None
+        return self.__process_list(ret, Account.from_sonar)
 
-    def assign_inventory_item(self, ue: UE) -> dict[str, Any]:
+    def get_all_clients_and_assigned_inventory(
+        self,
+    ) -> list[dict[str, Any]] | None:
+        self.logger.info("getting account, addresses and inventory")
+        query = """
+              query ($page:Paginator!) {
+                accounts(paginator:$page, account_status_id:1) {
+                  page_info {
+                    page
+                    total_pages
+                    total_count
+                  }
+                  entities {
+                    id
+                    name
+                    addresses(serviceable: true) {
+                      entities {
+                        id
+                        line1
+                        line1
+                        city
+                        zip
+                        inventory_items {
+                          entities {
+                            id
+                            inventory_model {
+                              name
+                            }
+                            inventory_model_field_data {
+                              entities {
+                                inventory_model_field {
+                                    name
+                                }
+                                value
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }"""
+        d = self.__execute_paged_query(query)
+        if d is None:
+            return None
+        return d
+
+    def assign_inventory_item(self, account: Account, ue: Item) -> dict[str, Any]:
         if (
             not ue
             or not ue.sonar_id
-            or ue.client is None
-            or ue.client.address is None
-            or not ue.client.address.sonar_id
+            or not account
+            or not account.address
+            or not account.address.sonar_id
         ):
             self.logger.error(
-                "UE is null or has no sonar_id; or, UE does not have an address with a sonar_id"
+                "account, address or inventory item is null or does not have a linked sonar id"
             )
             raise ValueError
         query = """
@@ -144,14 +216,18 @@ class Sonar:
         vs = {
             "input": {
                 "inventoryitemable_type": "Address",
-                "inventoryitemable_id": ue.client.address.sonar_id,
+                "inventoryitemable_id": account.address.sonar_id,
             },
             "id": ue.sonar_id,
         }
         self.logger.info(
-            f"assigning inventory item {ue.sonar_id} to {ue.client.name} (id: {ue.client.sonar_id}) at (id: {ue.client.address.sonar_id}) {ue.client.address.line1}, {ue.client.address.city}, {ue.client.address.zip_code}"
+            f"assigning inventory item {ue.sonar_id} to {account.name} (id: {account.sonar_id}) at (id: {account.address.sonar_id}) {account.address.line1}, {account.address.city}, {account.address.zip_code}"
         )
-        return self.__execute_update(query, vs)
+        ret = self.__execute_update(query, vs)
+        if ret:
+            ue
+
+        return ret
 
     def __execute_update(self, query: str, vs: dict[str, Any]) -> dict[str, Any]:
         transport = RequestsHTTPTransport(
@@ -197,7 +273,7 @@ class Sonar:
 
     def __execute_paged_query(
         self, query: str, items_per_page: int = 100
-    ) -> None | list[Any]:
+    ) -> None | list[dict[str, Any]]:
         transport = RequestsHTTPTransport(
             url=self.apiUrl,
             use_json=True,

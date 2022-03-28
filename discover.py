@@ -1,42 +1,27 @@
 #!/usr/bin/env python3
-from typing import Any
-from new.web_scraper.bec import BECWebEmulator
-from .model.mac_address import MACAddress
-import re
-from .model.ip_address import IPv4Address
-from .raemis.api_connection import Raemis
-from .raemis.event_listener import Listener
-from .genie_acs.api_connection import GenieACS
-from .sonar.api_connection import Sonar, AccountType, InventoryType
-from .sonar.ip_allocation import Allocator
-from .model.ue import UE, UEManufacturer, UEModel, Address
-from concurrent.futures import Future
-from .web_scraper.baicells import Baicells
-from .pipeline import Pipeline, FList
 import logging
+import re
+from typing import Any
+from concurrent.futures import Future
+from .pipeline import Pipeline, FList
+from .sonar.api_connection import Sonar, AccountType, InventoryType
+from .raemis.api_connection import Raemis
+from .genie_acs.api_connection import GenieACS
+from .model.ue import UE, UEModel, UEManufacturer, Address, Client
+from .model.mac_address import MACAddress
+from .model.ip_address import IPv4Address
+from new.web_scraper.bec import BECWebEmulator
+from .web_scraper.baicells import Baicells
 
 
-class PollingAgent:
+class Discover:
     logger = logging.getLogger(__name__)
-    raemis: Raemis
-    genis: GenieACS
-    sonar: Sonar
-    allocator: Allocator
-    listener: Listener
-    ue: list[UE]
-    __devices: list
     pipeline: Pipeline = Pipeline()
+    sonar: Sonar = Sonar()
+    genie: GenieACS = GenieACS()
+    raemis: Raemis = Raemis()
 
-    def __init__(self):
-        self.logger.info("starting polling agent")
-        self.raemis = Raemis()
-        self.genie = GenieACS()
-        self.sonar = Sonar()
-        self.listener = Listener()
-        self.allocator = Allocator(self.__get_ue_by_imsi)
-        self.__startup()
-
-    def __startup(self):
+    def startup(self):
         f0 = self.__get_users_from_raemis()
         f1 = self.__get_devices_from_genie()
         f = self.pipeline.merge_futures_list([f0, f1])
@@ -45,15 +30,15 @@ class PollingAgent:
             f, [self.__guess_with_raemis_data, self.__get_ip_from_raemis]
         )
         f = self.pipeline.start_fn_after_future(f, self.__run_snmp_info)
-        f = self.pipeline.start_fn_after_future(f, self.__check_http_for_remaining)
-        f = self.pipeline.start_fn_after_future(f, self.__baicells_web_scrapes)
+        f = self.pipeline.start_fn_after_future(f, self.__check_http)
         f = self.pipeline.start_fn_after_future(f, self.__get_sonar_info)
-        f = self.pipeline.start_fn_after_future(
-            f, self.listener.start_event_receiver_server
-        )
-        # f = self.pipeline.start_fn_after_future(f, self.allocator.start_loop)
-        self.pipeline.start_fn_after_future(
-            f, lambda: self.logger.info("finished initializing")
+
+    def __check_http(self) -> Future:
+        return self.pipeline.merge_futures_list(
+            [
+                self.pipeline.start_fn(self.__baicells_web_scrapes),
+                self.pipeline.start_fn(self.__check_http_for_remaining),
+            ]
         )
 
     def __baicells_web_scrapes(self) -> list[UE]:
@@ -234,19 +219,6 @@ class PollingAgent:
         if i is not None:
             return list(self.pipeline.map(lambda x: fn(x), i))
 
-    def __get_ue_by_imsi(self, imsi: str) -> UE | None:
-        if not imsi:
-            return None
-        try:
-            return next(
-                filter(
-                    lambda x: x and x.imsi and x.imsi.strip() == imsi.strip(), self.ue
-                )
-            )
-        except:
-            self.logger.error(f"could not fine UE with imsi {imsi}")
-            return None
-
     def __get_ue_by_mac(self, mac: MACAddress) -> UE | None:
         try:
             return next(
@@ -273,35 +245,6 @@ class PollingAgent:
             )
         except:
             return None
-
-    def __get_ip_from_raemis(self):
-        self.logger.warn("getting ips from raemis")
-        data = self.raemis.get_data_sessions()
-        if data is None:
-            return
-
-        def f(ue: UE):
-            if data is None:
-                return
-            d = next(
-                x
-                for x in data
-                if "imsi" in x
-                and hasattr(ue, "imsi")
-                and ue.imsi
-                and x["imsi"] == ue.imsi
-            )
-            if d is None:
-                self.logger.warn(
-                    f"unable to find data connection in Raemis for IMSI: {ue.imsi}"
-                )
-                return
-            if "ip" in d and isinstance(d["ip"], str) and "." in d["ip"]:
-                self.logger.debug(f'assigning IP address {d["ip"]} to IMSI: {ue.imsi}')
-                ue.set_host(IPv4Address(address=d["ip"]))
-            ue.apn = d["apn"] if "apn" in d else None
-
-        return list(self.pipeline.map(lambda x: f(x), self.ue))
 
     def __snmp_guess_from_info(self, u: UE) -> None:
         if u.info:
@@ -730,3 +673,32 @@ class PollingAgent:
         while not ue.done():
             pass
         self.ue = ue.result()
+
+    def __get_ip_from_raemis(self):
+        self.logger.warn("getting ips from raemis")
+        data = self.raemis.get_data_sessions()
+        if data is None:
+            return
+
+        def f(ue: UE):
+            if data is None:
+                return
+            d = next(
+                x
+                for x in data
+                if "imsi" in x
+                and hasattr(ue, "imsi")
+                and ue.imsi
+                and x["imsi"] == ue.imsi
+            )
+            if d is None:
+                self.logger.warn(
+                    f"unable to find data connection in Raemis for IMSI: {ue.imsi}"
+                )
+                return
+            if "ip" in d and isinstance(d["ip"], str) and "." in d["ip"]:
+                self.logger.debug(f'assigning IP address {d["ip"]} to IMSI: {ue.imsi}')
+                ue.set_host(IPv4Address(address=d["ip"]))
+            ue.apn = d["apn"] if "apn" in d else None
+
+        return list(self.pipeline.map(lambda x: f(x), self.ue))

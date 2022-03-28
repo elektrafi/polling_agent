@@ -64,9 +64,27 @@ class EventReceiver(BaseHTTPRequestHandler):
             self.rfile.flush()
             post_data = self.rfile.read(data_len)
             post_data = parse_qs(post_data, True, False)
+            if b"imsi" not in post_data:
+                self.logger.error(
+                    f"no imsi in {post_data} aborting processing this record"
+                )
+                return
             imsis = post_data[b"imsi"]
+            if b"add_text" not in post_data:
+                self.logger.warn(
+                    f'no "add_text" in {post_data} NOT aborting processing this record'
+                )
             add_text = post_data[b"add_text"]
+            if b"event_type" not in post_data:
+                self.logger.error(
+                    f"no event_type in {post_data} aborting processing this record"
+                )
+                return
             events = post_data[b"event_type"]
+            if b"event_time" not in post_data:
+                self.logger.warn(
+                    f'no "event_time" in {post_data} NOT aborting processing this record'
+                )
             event_times = post_data[b"event_time"]
             if (
                 not imsis

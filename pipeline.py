@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
 
 from concurrent.futures import ThreadPoolExecutor, Future
-from typing import Callable, Iterable, Mapping, Any, ParamSpec, TypeVar, Iterator
+from typing import (
+    Callable,
+    Iterable,
+    Mapping,
+    Any,
+    ParamSpec,
+    TypeVar,
+    Iterator,
+)
+import logging
+from typing_extensions import Self
 
 
 P = ParamSpec("P")
@@ -15,11 +25,19 @@ class Pipeline:
     mainExec: ThreadPoolExecutor
     __executors: set[ThreadPoolExecutor]
     cursor: Future
+    logger = logging.getLogger(__name__)
+    _inst: Self | None = None
 
-    def __init__(self, pool_size: int = 125):
+    def __init__(self, pool_size: int = 250):
         self.mainExec = ThreadPoolExecutor(max_workers=pool_size)
+
         self.__executors = {self.mainExec}
         self.cursor = Future()
+
+    def __new__(cls: type[Self], *args, **kwargs) -> Self:
+        if not cls._inst:
+            cls._inst = super(Pipeline, cls).__new__(cls)
+        return cls._inst
 
     def __del__(self):
         (x.shutdown(wait=True, cancel_futures=False) for x in self.__executors)
@@ -31,6 +49,7 @@ class Pipeline:
         timeout: float | None = None,
         chunksize: int = -1,
     ) -> Iterator[T]:
+
         return self.mainExec.map(fn, iterable, timeout=timeout, chunksize=chunksize)
 
     def start_fn_in_executor(
