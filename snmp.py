@@ -7,59 +7,66 @@ import logging
 
 
 class Session(object):
-    host: str
-    _snmp: _Session
     _logger = logging.getLogger(__name__)
-    _has_snmp: bool
 
-    def __init__(self, hostname: str):
-        self.host = hostname
-        self._has_snmp = True
-        self._snmp = _Session(
-            hostname=self.host,
+    @classmethod
+    def get_item_values(cls, i: _Item) -> _Item:
+        ret = _Item()
+        if not i.ipv4:
+            return ret
+        snmp = _Session(
+            hostname=str(i.ipv4),
             version=2,
             community="public",
             timeout=5,
             retries=3,
         )
 
-    def get_item_values(self) -> _Item:
-        info = self._get_device_info().strip().lower()
+        cls._logger.info(f"getting SNMP info for IP {snmp.hostname}")
+        info = cls._get_device_info(snmp).strip().lower()
         t120_info = _re.compile(r"linux\s*[a-z0-9_]*\s*[-0-9\.]+uc\d")
+        t123_info = _re.compile(r"linux\s*gdm\d{1,5}\s*[-0-9\.]+uc\d")
         bec69_info = _re.compile(
             r"(bec)?\s*((ridgewave)|(bec))?\s*((6[95]00)|(7000))((ael)|(-r21)|(\s*r28-g))?\s*4g/lte"
         )
-        ret = _Item()
+        if _re.match(t123_info, info):
+            ret = cls._get_telrad_12300(snmp)
         if _re.match(t120_info, info):
-            ret = self._get_telrad_12000()
+            ret = cls._get_telrad_12000(snmp)
         elif _re.match(bec69_info, info):
-            ret = self._get_bec6900(info)
-        self._logger.info(f"returning {ret} for {self.host}")
+            ret = cls._get_bec6900(snmp, info)
+        else:
+            cls._logger.error(f"no model type determined for {snmp.hostname}")
+        cls._logger.info(f"returning {ret} for {snmp.hostname}")
         return ret
 
-    def _get_device_info(self) -> str:
-        return self._snmp_get_value(".1.3.6.1.2.1.1.1.0")
+    @classmethod
+    def _get_device_info(cls, snmp: _Session) -> str:
+        return cls._snmp_get_value(snmp, ".1.3.6.1.2.1.1.1.0")
 
-    def _get_t12300(self) -> _Item:
+    @classmethod
+    def _get_telrad_12300(cls, snmp: _Session) -> _Item:
         ret = _Item()
 
         ret.model = _Model.T12300
         ret.manufacturer = _Manufacturer.TELRAD
 
-        mac_num = self._snmp_search_bulk_regex(
-            ".1.3.6.1.2.1.2.2.1.2", _re.compile(r"eth0")
+        mac_num = cls._snmp_search_bulk_regex(
+            snmp, ".1.3.6.1.2.1.2.2.1.2", _re.compile(r"eth0")
         )
         if mac_num is None or not mac_num.oid:
-            self._logger.error(f"could not find the eth0 device for {self.host}")
+            cls._logger.error(f"could not find the eth0 device for {snmp.hostname}")
             return ret
         mac_num = mac_num.oid.split(".")[-1]
-        mac = self._snmp_get_value(f".1.3.6.1.2.1.2.2.1.6.{mac_num}")
+        mac = cls._snmp_get_value(snmp, f".1.3.6.1.2.1.2.2.1.6.{mac_num}")
         if mac:
             ret.mac_address = _MACAddress(mac.encode().hex())
 
+        cls._logger.info(f"found {ret} as a Telrad 12300")
         return ret
 
-    def _get_bec6900(self, info: str) -> _Item:
+    @classmethod
+    def _get_bec6900(cls, snmp: _Session, info: str) -> _Item:
         ret = _Item()
         if "6900" in info:
             ret.model = _Model.BEC6900
@@ -68,17 +75,17 @@ class Session(object):
         if "7000" in info:
             ret.model = _Model.BEC7000
         ret.manufacturer = _Manufacturer.BEC
-        mac_num = self._snmp_search_bulk_regex(
-            ".1.3.6.1.2.1.2.2.1.2", _re.compile(r"eth0")
+        mac_num = cls._snmp_search_bulk_regex(
+            snmp, ".1.3.6.1.2.1.2.2.1.2", _re.compile(r"eth0")
         )
         if mac_num is None or not mac_num.oid:
-            self._logger.error(f"could not find the eth0 device for {self.host}")
+            cls._logger.error(f"could not find the eth0 device for {snmp.hostname}")
         else:
             mac_num = mac_num.oid.split(".")[-1]
-            mac = self._snmp_get_value(f".1.3.6.1.2.1.2.2.1.6.{mac_num}")
+            mac = cls._snmp_get_value(snmp, f".1.3.6.1.2.1.2.2.1.6.{mac_num}")
             if mac:
                 ret.mac_address = _MACAddress(mac.encode().hex())
-        signals = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.4.0")
+        signals = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.4.0")
         if signals:
             for signal in signals.split(" "):
                 parts = signal.split(":")
@@ -88,126 +95,133 @@ class Session(object):
                     ret.rsrq = parts[1]
                 if parts[0] == "SINR":
                     ret.sinr = parts[1]
-        eci = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.6.0")
+        eci = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.6.0")
         if eci:
             ret.eci = eci
-        imei = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.8.0")
+        imei = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.8.0")
         if imei:
             ret.imei = _IMEI(imei)
-        imsi = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.9.0")
+        imsi = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.9.0")
         if imsi:
             ret.imsi = _IMSI(imsi)
-        pci = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.7.0")
+        pci = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.7.0")
         if pci:
             ret.pci = pci
-        bandwidth = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.11.0")
+        bandwidth = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.11.0")
         if bandwidth:
             ret.bandwidth = _re.split(r":\s*", bandwidth)[-1]
-        rssi = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.3.0")
+        rssi = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.3.0")
         if rssi:
             ret.rssi = rssi
-        rx_mcs = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.20.0")
+        rx_mcs = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.20.0")
         if rx_mcs:
             ret.rx_mcs = rx_mcs
-        channel = self._snmp_get_value(".1.3.6.1.4.1.17453.4.1.17.0")
+        channel = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.17.0")
         if channel:
             ret.channel = channel
 
+        cls._logger.info(f"found {ret} as a BEC Device")
         return ret
 
-    def _get_telrad_12000(self) -> _Item:
+    @classmethod
+    def _get_telrad_12000(cls, snmp: _Session) -> _Item:
         ret = _Item()
         ret.model = _Model.T12000
         ret.manufacturer = _Manufacturer.TELRAD
-        mac = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.3.13.0")
+        mac = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.3.13.0")
         if mac:
             ret.mac_address = _MACAddress(mac)
-        imei = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.4.11.0")
+        imei = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.4.11.0")
         if imei:
             ret.imei = _IMEI(imei)
-        imsi = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.4.13.0")
+        imsi = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.4.13.0")
         if imsi:
             ret.imsi = _IMSI(imsi)
-        serial = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.4.5.0")
+        serial = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.4.5.0")
         if serial:
             ret.serial_number = serial
-        product = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.4.3.0")
+        product = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.4.3.0")
         if product:
             ret.product_id = product
-        rx_rate = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.14.0")
+        rx_rate = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.14.0")
         if rx_rate:
             ret.rx_rate = rx_rate
-        tx_rate = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.11.0")
+        tx_rate = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.11.0")
         if tx_rate:
             ret.tx_rate = tx_rate
-        tx_power = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.25.0")
+        tx_power = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.25.0")
         if tx_power:
             ret.tx_power = tx_power
-        rsrp_list = self._snmp_get_value_bulk(".1.3.6.1.4.1.17713.20.2.1.2.6")
+        rsrp_list = cls._snmp_get_value_bulk(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.6")
         rsrp = 0
         for r in rsrp_list:
             try:
                 rsrp = float(r)
             except:
-                self._logger.exception(
+                cls._logger.exception(
                     f"error trying to parse rsrp {r} for telrae 12000"
                 )
         if rsrp:
             ret.rsrp = str(rsrp / len(rsrp_list))
-        rsrq_list = self._snmp_get_value_bulk(".1.3.6.1.4.1.17713.20.2.1.2.8")
+        rsrq_list = cls._snmp_get_value_bulk(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.8")
         rsrq = 0
         for r in rsrq_list:
             try:
                 rsrq = float(r)
             except:
-                self._logger.exception(
+                cls._logger.exception(
                     f"error trying to parse rsrq {r} for telrae 12000"
                 )
         if rsrq:
             ret.rsrq = str(rsrq / len(rsrq_list))
-        pci = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.18.0")
+        pci = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.18.0")
         if pci:
             ret.pci = pci
-        eci = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.48.0")
+        eci = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.48.0")
         if eci:
             ret.eci = eci
-        cell_id = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.17.0")
+        cell_id = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.17.0")
         if cell_id:
             ret.cell_id = cell_id
-        full_cell_id = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.36.0")
+        full_cell_id = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.36.0")
         if full_cell_id:
             ret.full_cell_id = full_cell_id
-        sinr_list = self._snmp_get_value_bulk(".1.3.6.1.4.1.17713.20.2.1.2.32")
+        sinr_list = cls._snmp_get_value_bulk(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.32")
         sinr = 0
         for r in sinr_list:
             try:
                 sinr = float(r)
             except:
-                self._logger.exception(
+                cls._logger.exception(
                     f"error trying to parse sinr {r} for telrae 12000"
                 )
         if sinr:
             ret.sinr = str(sinr / len(sinr_list))
-        enb_id = self._snmp_get_value(".1.3.6.1.4.1.17713.20.2.1.2.30.0")
+        enb_id = cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.30.0")
         if enb_id:
             ret.enb_id = enb_id
+        cls._logger.info(f"found {ret} as a Telrad 12000")
         return ret
 
-    def _snmp_get_value_bulk(self, oid: str) -> list[str]:
-        return list(x.value for x in self._snmp_get_bulk(oid))
+    @classmethod
+    def _snmp_get_value_bulk(cls, snmp: _Session, oid: str) -> list[str]:
+        return list(x.value for x in cls._snmp_get_bulk(snmp, oid))
 
-    def _snmp_get_bulk(self, oid: str) -> list[_SNMPVariable]:
+    @classmethod
+    def _snmp_get_bulk(cls, snmp: _Session, oid: str) -> list[_SNMPVariable]:
         strs = list()
-        if not self._has_snmp:
+        if not cls._has_snmp:
             return strs
         try:
-            s = self._snmp.bulkwalk(oid)
+            s = snmp.bulkwalk(oid)
             for check in s:
                 if isinstance(check, list):
                     check = check[0]
                 if not isinstance(check, _SNMPVariable):
                     continue
                 if not isinstance(check.value, str):
+                    continue
+                if not isinstance(check.snmp_type, str):
                     continue
                 if check.snmp_type.lower() == "nosuchobject":
                     continue
@@ -226,42 +240,54 @@ class Session(object):
                     ).decode()
                 strs.append(check)
         except:
-            self._has_snmp = False
-            self._logger.exception(f"getting the oid group {oid} errored")
+            cls._has_snmp = False
+            cls._logger.exception(f"getting the oid group {oid} errored")
         return strs
 
-    def _snmp_search_bulk_value_regex(self, oid: str, regex: _re.Pattern):
+    @classmethod
+    def _snmp_search_bulk_value_regex(
+        cls, snmp: _Session, oid: str, regex: _re.Pattern
+    ):
         try:
             return next(
-                x for x in self._snmp_get_value_bulk(oid) if _re.fullmatch(regex, x)
+                x
+                for x in cls._snmp_get_value_bulk(snmp, oid)
+                if _re.fullmatch(regex, x)
             )
         except:
             return None
 
-    def _snmp_search_bulk_regex(self, oid: str, regex: _re.Pattern):
+    @classmethod
+    def _snmp_search_bulk_regex(cls, snmp: _Session, oid: str, regex: _re.Pattern):
         try:
             return next(
-                x for x in self._snmp_get_bulk(oid) if _re.fullmatch(regex, x.value)
+                x
+                for x in cls._snmp_get_bulk(snmp, oid)
+                if _re.fullmatch(regex, x.value)
             )
         except:
             return None
 
-    def _snmp_get_value(self, oid: str) -> str:
-        ret = self._snmp_get(oid)
+    @classmethod
+    def _snmp_get_value(cls, snmp: _Session, oid: str) -> str:
+        ret = cls._snmp_get(snmp, oid)
         if not ret:
             return ""
         return ret.value if ret.value and ret.value.lower() != "nosuchobject" else ""
 
-    def _snmp_get(self, oid: str) -> _SNMPVariable | None:
-        if not self._has_snmp:
+    @classmethod
+    def _snmp_get(cls, snmp: _Session, oid: str) -> _SNMPVariable | None:
+        if not cls._has_snmp:
             return
         try:
-            check = self._snmp.get(oid)
+            check = snmp.get(oid)
             if isinstance(check, list):
                 check = check[0]
             if not isinstance(check, _SNMPVariable):
                 return
             if not isinstance(check.value, str):
+                return
+            if not isinstance(check.snmp_type, str):
                 return
             if check.snmp_type.lower() == "nosuchobject":
                 return
@@ -280,5 +306,5 @@ class Session(object):
                 ).decode()
             return check
         except:
-            self._has_snmp = False
-            self._logger.exception(f"errored getting oid {oid}")
+            cls._has_snmp = False
+            cls._logger.exception(f"errored getting oid {oid}")

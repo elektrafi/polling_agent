@@ -47,10 +47,13 @@ class Pipeline:
         fn: Callable[P, T],
         iterable: Iterable[Any] | Any,
         timeout: float | None = None,
-        chunksize: int = -1,
+        chunksize: int = 250,
     ) -> Iterator[T]:
 
         return self.mainExec.map(fn, iterable, timeout=timeout, chunksize=chunksize)
+
+    def new_executor(self, size=100) -> TPE:
+        return ThreadPoolExecutor(max_workers=size)
 
     def start_fn_in_executor(
         self,
@@ -60,7 +63,8 @@ class Pipeline:
         **kwargs: Mapping[str, Any],
     ) -> Future[T]:
         self.__executors.add(e)
-        self.cursor = e.submit(fn, *args, **kwargs)
+        if e == self.mainExec:
+            self.cursor = e.submit(fn, *args, **kwargs)
         return self.cursor
 
     def start_fn(
