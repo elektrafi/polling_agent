@@ -2,7 +2,22 @@
 **/__pycache__/**
 
 .vscode/**
+.vscode/**/**
 .dir-local*
 *.log
 *.har
+tmp*
+test.*
+tmp/**
+tmp/**/**
+.python-version
 
+*.key
+sonar/*.key
+
+
+.old/
+.old/**
+.old/**/**
+.old/**/**/**
+.old/**/**/**/**
