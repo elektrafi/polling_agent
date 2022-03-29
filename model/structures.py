@@ -15,6 +15,8 @@ class MergeSet(set[_T]):
 
     def add(self, __element: _T) -> _T:
         try:
+            if __element == frozenset():
+                return __element
             _lock.acquire()
             mine = next(x for x in iter(self) if x == __element)
         except StopIteration:
@@ -22,6 +24,7 @@ class MergeSet(set[_T]):
                 f"merged key of {__element} not found in the set, adding it"
             )
             super().add(__element)
+            _lock.release()
             return __element
         try:
             super().remove(mine)
@@ -29,6 +32,7 @@ class MergeSet(set[_T]):
             self._log.exception(
                 f"somehow errored removing {mine} from set after finding it in the set"
             )
+            _lock.release()
             raise ke
         current = __element
         while True:
@@ -50,6 +54,7 @@ class MergeSet(set[_T]):
                 self._log.exception(
                     f"somehow errored removing {current} from set after finding it in the set"
                 )
+                _lock.release()
                 raise ke
             except StopIteration:
                 break

@@ -2,7 +2,7 @@
 import re as _re
 import requests as _requests
 from ..model.atoms import Account as _Account, Item as _Item, Name as _Name
-from ..model.network import IMEI as _IMEI, IMSI as _IMSI
+from ..model.network import IMEI as _IMEI, IMSI as _IMSI, IPv4Address as _IPv4Address
 from ..pipeline import Pipeline as _Pipeline
 import logging as _logging
 from typing import Any as _Any
@@ -51,30 +51,15 @@ class Raemis:
             cls._inst = super(Raemis, cls).__new__(cls)
         return cls._inst
 
-    # def event_receiver(self) -> None:
-    #    self._start_event_receiver_server()
-    #    self.logger.info("initialized raemis API connection")
-
-    # def _start_event_receiver_server(self) -> None:
-    #    try:
-    #        self._eventReceiver = ThreadingHTTPServer(("0.0.0.0", 9999), EventReceiver)
-    #        server_thread = threading.Thread(target=self._eventReceiver.serve_forever)
-    #        server_thread.daemon = True
-    #        server_thread.start()
-    #        self.logger.info("event receiver server thread started")
-    #    except:
-    #        self.logger.exception("could not start event erceiver server")
-
     def __del__(self) -> None:
         try:
-            # self._eventReceiver.shutdown()
             self._logger.info("Event receiver HTTP server shutdown")
         except:
             self._logger.error("event receiver HTTP server failed to shutdown")
         self.session.close()
         self._logger.info("HTTP API session to Raemis closed")
 
-    def get_subscribers(self) -> list[tuple[_Item | None, _Account | None]]:
+    def get_subscribers(self) -> list[_Item]:
         data = None
         try:
             data = self._get_data(RaemisEndpoint.SUBSCRIBERS).json()
@@ -94,24 +79,10 @@ class Raemis:
             )
         return data
 
-    def get_data_sessions(self) -> list[dict[str, _Any]] | None:
-        data = None
-        try:
-            data = self._get_data(RaemisEndpoint.DATA_SESSIONS).json()
-        finally:
-            self._logger.info(
-                f'returning {len(data) if data is not None else "N/A"} data session records'
-            )
-        return data
-
-    def _convert_api_subscribers(
-        self, json: list[dict[str, str]]
-    ) -> list[tuple[_Item | None, _Account | None]]:
+    def _convert_api_subscribers(self, json: list[dict[str, str]]) -> list[_Item]:
         return list(self._pipeline.map(self._convert_api_subscriber, json))
 
-    def _convert_api_subscriber(
-        self, json: dict[str, str]
-    ) -> tuple[_Item | None, _Account | None]:
+    def _convert_api_subscriber(self, json: dict[str, str]) -> _Item:
         if "imei" in json and "imsi" in json and json["imei"] and json["imsi"]:
             equip = _Item()
             if "imei" in json and json["imei"]:
@@ -129,20 +100,22 @@ class Raemis:
                     json["local_ps_attachment"].lower().strip() == "attached"
                 )
         else:
-            equip = None
+            equip = _Item()
         if "name" in json and json["name"] and not json["name"].startswith("!"):
             name = self._attempt_name_transform(json["name"])
             account = _Account(_Name(name)) if name else None
         else:
             account = None
-        self._logger.info(f"adding raemis subscriber/item pair: {(equip, account)}")
-        return (equip, account)
+        if equip and account:
+            equip.account = account
+            self._logger.info(f"adding raemis subscriber/item pair: {equip}")
+        return equip
 
     def _attempt_name_transform(self, n: str) -> str | None:
         if n.startswith("!") or n.startswith("_"):
             return None
         sp = r"\s+"
-        amp = _re.compile(r"""([^_]+)\s*(&|and)\s*([^_]+)""")
+        amp = _re.compile(r"""([^_]+)\s+(&|and)\s+([^_]+)""")
         amps = r"""\1 & \3"""
         tow = _re.compile(r"""[sS][eE][tT][xX]\s*\d{1,4}""")
         index = _re.compile(r"""\d{5,6}""")
@@ -158,41 +131,7 @@ class Raemis:
         bename = r"""(([bB][eE][cC])|([rR][wW])|(([rR][iI][dD][gG][eE])?([wW][aA][vV][eE])?))?\s*"""
         becnum = r"""(7000|6[95]00)"""
         model = _re.compile(f"({tname}{tnum})|({baname}{banum})|({bename}{becnum})")
-        for part in _re.split(un, n):
-            if (
-                _re.match(index, part)
-                or _re.match(tow, part)
-                or _re.match(mi, part)
-                or _re.match(model, part)
-            ):
-                continue
-            name = _re.sub(sp, " ", part)
-            name = _re.sub(naspl, nasub, name)
-            name = _re.sub(sp, " ", name)
-            name = _re.sub(amp, amps, name)
-            name = _re.sub(sp, " ", name)
-            if (
-                _re.fullmatch(na, name)
-                and "1200" not in name
-                and "1230" not in name
-                and "6500" not in name
-                and "7000" not in name
-                and "6900" not in name
-                and "SETX" not in name
-                and "setx" not in name
-            ):
-                return name
-            elif (
-                _re.match(na, name)
-                and "1200" not in name
-                and "1230" not in name
-                and "6500" not in name
-                and "7000" not in name
-                and "6900" not in name
-                and "SETX" not in name
-                and "setx" not in name
-            ):
-                return name
+
         name = _re.split(un, n)[0]
         name = _re.sub(sp, " ", name)
         name = _re.sub(naspl, nasub, name)
@@ -207,6 +146,29 @@ class Raemis:
             and not _re.fullmatch(tow, name)
             else None
         )
+
+    def get_data_sessions(self) -> list[_Item]:
+        data = list()
+        try:
+            data = self._get_data(RaemisEndpoint.DATA_SESSIONS).json()
+        finally:
+            self._logger.info(
+                f'returning {len(data) if data is not None else "N/A"} data session records'
+            )
+        return self._convert_sessions_to_items(data)
+
+    def _convert_sessions_to_items(self, d: list[dict[str, str]]) -> list[_Item]:
+        def fn(i: dict[str, str]) -> _Item:
+            ret = _Item()
+            if "apn" in i and i["apn"]:
+                ret.apn = i["apn"]
+            if "imsi" in i and i["imsi"]:
+                ret.imsi = _IMSI(i["imsi"])
+            if "ip" in i and i["ip"]:
+                ret.ipv4 = _IPv4Address(address=i["ip"])
+            return ret
+
+        return list(self._pipeline.map(fn, d))
 
     def _get_raemis_url(self, ep: RaemisEndpoint) -> str:
         return f"{self.apiUrl}/{ep.value}"

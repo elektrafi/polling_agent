@@ -3,7 +3,7 @@
 from collections import UserString as _UserString
 from dataclasses import dataclass as _dc
 import logging
-from typing import Any as _Any, FrozenSet as _FrozenSet, Type as _Type
+from typing import Any as _Any, FrozenSet as _FrozenSet
 from typing_extensions import Self as _Self
 from enum import Enum as _Enum
 from .network import (
@@ -12,7 +12,6 @@ from .network import (
     IMEI as _IMEI,
     IMSI as _IMSI,
 )
-from ..snmp import SNMP as _SNMP
 
 
 class Manufacturer(_Enum):
@@ -39,6 +38,8 @@ _IPType = type(_IPv4Address)
 
 class Name(_UserString):
     def __init__(self, seq: object) -> None:
+        if seq is None:
+            s = ""
         s = str(seq)
         s = Name._repl(s)
         super().__init__(s)
@@ -51,22 +52,20 @@ class Name(_UserString):
         else:
             s = string
         s = Name._repl(str(s))
-        s = s.replace(" & ", "").replace(" and ", "")
-        so = self.data.replace(" & ", "").replace(" and ", "")
-        return all(map(lambda x: x in so, s.split(" ")))
+        return all(map(lambda x: "&" in x or x in self.data, s.split(" ")))
 
-    def __hash__(self):
-        hash(self.data.replace(" & ", "").replace(" and ", ""))
+    def __hash__(self) -> int:
+        return hash(self.data)
 
     def __repr__(self) -> str:
-        return str(self.data.replace(" & ", "").replace(" and ", ""))
+        return str(self.data)
 
     @classmethod
     def _repl(cls, s: str) -> str:
         import re
 
         s = re.sub(r"\s+", r" ", s)
-        s = re.sub(r"(.*)\s?&\s?(.*)", r"\1 & \2", s)
+        s = re.sub(r"(.*)\s+(&|and)\s+(.*)", r"\1 & \2", s)
         s = re.sub(r"(.*)\s?,\s?(.*)", r"\2 \1", s)
         return s
 
@@ -101,7 +100,7 @@ class Address:
         return f'<<Address: {"(id: " + self.sonar_id + ") " if self.sonar_id else ""}{self.line1}{" " + self.line2 if self.line2 else ""}; {self.city}, {self.zip_code}>>'
 
     def __repr__(self) -> str:
-        return "id: " + str(self.sonar_id) if self.sonar_id else str(self)
+        return "{id: " + str(self.sonar_id) + "}" if self.sonar_id else str(self)
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(__o, Address):
@@ -121,14 +120,13 @@ class Account:
     address: Address | None = None
 
     def __init__(self, name: Name | None = None):
-        self.address = Address()
         self.name = name
 
     def __str__(self) -> str:
         return f'||[Account] {"(id: "+self.sonar_id+") " if self.sonar_id else ""}{str(self.name) if self.name else ""}||'
 
     def __repr__(self) -> str:
-        return f'{"id: " + str(self.sonar_id) if self.sonar_id else ""}{"name: " + self.name if self.name else ""}{"address: " + str(self.address) if self.address else ""}'
+        return f'{{{"id: " + str(self.sonar_id) + ", " if self.sonar_id else ""}{"name: " + self.name + ", " if self.name else ""}{"address: " + repr(self.address) if self.address else ""}}}'
 
     def __hash__(self):
         return hash(self.key)
@@ -209,7 +207,6 @@ class Account:
 @_dc
 class Item(object):
     logger = logging.getLogger(__name__)
-    account: Account | None = None
     mac_address: _MACAddress | None = None
     ipv4: _IPType | None = None
     serial_number: str | None = None
@@ -220,7 +217,11 @@ class Item(object):
     imei: _IMEI | None = None
     imsi: _IMSI | None = None
     _raemis_id: str | None = None
+    pci: str | None = None
+    enb_id: str | None = None
+    channel: str | None = None
     cell_id: str | None = None
+    full_cell_id: str | None = None
     sim_index: str | None = None
     rsrp: str | None = None
     rsrq: str | None = None
@@ -242,9 +243,28 @@ class Item(object):
 
     attached: bool = False
     _tag: str | None = None
-    _snmp: _SNMP | None = None
     model: Model = Model.UNKNOWN
     manufacturer: Manufacturer = Manufacturer.UNKNOWN
+    _account: Account | None = None
+
+    @property
+    def account(self) -> Account | None:
+        return self._account
+
+    @account.setter
+    def account(self, __o: object) -> None:
+        if not isinstance(__o, Account):
+            return
+        if not self._account:
+            self._account = __o
+            return
+        if self._account != __o:
+            self.logger.error(
+                f"item has account {self._account} and trying to assign {__o}, but that does not match and it should"
+            )
+            raise ValueError
+        for k, v in __o.__dict__.items():
+            setattr(self._account, k, v)
 
     @property
     def key(self) -> _FrozenSet[Account | _MACAddress | _IPv4Address | _IMEI | _IMSI]:
@@ -266,13 +286,6 @@ class Item(object):
 
     def __init__(self):
         self.linked_to_account = False
-
-    def set_host(self, ipv4: _IPType):
-        self.ipv4 = _IPv4Address(octets=ipv4.address, netmask=ipv4.netmask)
-        self.logger.info(
-            f"assigning {str(ipv4)} to item (imei: {self.imei}, imsi: {self.imsi})"
-        )
-        self._snmp = _SNMP(str(self.ipv4))
 
     def __str__(self):
         return f"Inventory item: {self.key}"
@@ -358,3 +371,15 @@ class Item(object):
                 cls.logger.error(f"unknown model: {model}")
         cls.logger.debug(f"created new inventory item:\n{ret}")
         return ret
+
+
+def from_sonar(d: dict[str, _Any]) -> list[Item]:
+    items: list[Item] = list()
+    if "addresses" in d and d["addresses"]["entities"]:
+        address = d["addresses"]["entities"][0]
+        if "inventory_items" in address and address["inventory_items"]["entities"]:
+            for item in address["inventory_items"]["entities"]:
+                i = Item.from_sonar(item)
+                i.account = Account.from_sonar(d)
+                items.append(i)
+    return items

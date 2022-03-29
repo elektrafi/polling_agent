@@ -7,4 +7,4 @@ from . import genie_acs
 
 __all__ = ["model", "raemis", "genie_acs"]
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)

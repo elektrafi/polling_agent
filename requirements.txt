@@ -1,4 +1,4 @@
-typing_extensions
+typing_extensions[all]
 easysnmp
-gql
-requests
+gql[all]
+requests[all]
