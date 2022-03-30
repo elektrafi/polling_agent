@@ -2,9 +2,6 @@
 import logging as _logging
 from typing import Any as _Any, Iterable as _Iterable, TypeVar as _TypeVar
 from .atoms import Item as _Item, Account as _Account
-from multiprocessing import Lock as _Lock
-
-_lock = _Lock()
 
 
 _T = _TypeVar("_T", _Item, _Account)
@@ -15,16 +12,15 @@ class MergeSet(set[_T]):
 
     def add(self, __element: _T) -> _T:
         try:
-            if __element == frozenset():
+            if __element == _Item():
                 return __element
-            _lock.acquire()
+            self._log.info(f"adding {__element} to set")
             mine = next(x for x in iter(self) if x == __element)
         except StopIteration:
             self._log.debug(
                 f"merged key of {__element} not found in the set, adding it"
             )
             super().add(__element)
-            _lock.release()
             return __element
         try:
             super().remove(mine)
@@ -32,12 +28,11 @@ class MergeSet(set[_T]):
             self._log.exception(
                 f"somehow errored removing {mine} from set after finding it in the set"
             )
-            _lock.release()
             raise ke
         current = __element
         while True:
             items = current.__dict__.items()
-            self._log.debug(f"adding all items from {current} to {mine}")
+            self._log.debug(f"adding all items {items} to {mine}")
             for k, v in items:
                 try:
                     setattr(mine, k, v)
@@ -54,13 +49,11 @@ class MergeSet(set[_T]):
                 self._log.exception(
                     f"somehow errored removing {current} from set after finding it in the set"
                 )
-                _lock.release()
                 raise ke
             except StopIteration:
                 break
         self._log.debug(f"adding the updated item back, maybe new items in key: {mine}")
         super().add(mine)
-        _lock.release()
         return mine
 
     def issubset(self, __s: _Iterable[_Any]) -> bool:
