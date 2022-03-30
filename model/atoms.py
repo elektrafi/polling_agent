@@ -65,7 +65,7 @@ class Name(_UserString):
         import re
 
         s = re.sub(r"\s+", r" ", s)
-        s = re.sub(r"(.*)\s+(&|and)\s+(.*)", r"\1 & \2", s)
+        s = re.sub(r"(.*)\s+(&|and)\s+(.*)", r"\1 & \3", s)
         s = re.sub(r"(.*)\s?,\s?(.*)", r"\2 \1", s)
         return s
 
@@ -294,7 +294,11 @@ class Item(object):
         return str(self.key)
 
     def __eq__(self, __o: object) -> bool:
-        if not isinstance(__o, Item) or len(self.key) == 0 or len(__o.key) == 0:
+        if not isinstance(__o, Item):
+            return False
+        if len(self.key) == 0 and len(__o.key) == 0:
+            return True
+        elif len(self.key) == 0 or len(__o.key) == 0:
             return False
         return any(map(lambda x: x in self.key, __o.key))
 
@@ -373,13 +377,12 @@ class Item(object):
         return ret
 
 
-def from_sonar(d: dict[str, _Any]) -> list[Item]:
-    items: list[Item] = list()
+def from_sonar(d: dict[str, _Any]) -> Item:
+    item = Item()
     if "addresses" in d and d["addresses"]["entities"]:
         address = d["addresses"]["entities"][0]
         if "inventory_items" in address and address["inventory_items"]["entities"]:
-            for item in address["inventory_items"]["entities"]:
-                i = Item.from_sonar(item)
-                i.account = Account.from_sonar(d)
-                items.append(i)
-    return items
+            i = address["inventory_items"]["entities"][0]
+            item = Item.from_sonar(i)
+            item.account = Account.from_sonar(d)
+    return item
