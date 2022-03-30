@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
 import re as _re
 import requests as _requests
-from ..model.atoms import Account as _Account, Item as _Item, Name as _Name
-from ..model.network import IMEI as _IMEI, IMSI as _IMSI, IPv4Address as _IPv4Address
-from ..pipeline import Pipeline as _Pipeline
+from model.atoms import Account as _Account, Item as _Item, Name as _Name
+from model.network import IMEI as _IMEI, IMSI as _IMSI, IPv4Address as _IPv4Address
 import logging as _logging
-from typing import Any as _Any
+from typing import Any as _Any, Iterable as _Iterable, AsyncIterable as _AsyncIterable
 from enum import Enum as _Enum, unique as _unique
 from typing_extensions import Self as _Self
+from aiohttp.client import (
+    ClientSession as _ClientSession,
+    ClientResponse as _ClientResponse,
+)
+from aiohttp import BasicAuth as _BasicAuth
+from concurrent.futures import ProcessPoolExecutor as _PPE
+
+_exec = _PPE()
 
 
 @_unique
 class RaemisEndpoint(_Enum):
-    SUBSCRIBERS = "subscriber"
-    SESSION = "session"
-    DATA_SESSIONS = "data_session"
+    SUBSCRIBERS = "/api/subscriber"
+    SESSION = "/api/session"
+    DATA_SESSIONS = "/api/data_session"
 
 
 @_unique
@@ -25,36 +32,27 @@ class HTTPMethod(_Enum):
 
 
 class Raemis:
-    # event_queue = multiprocessing.Queue()
     _logger = _logging.getLogger(__name__)
-    session: _requests.Session
-    _pipeline: _Pipeline = _Pipeline()
-    apiUrl: str
+    session: _ClientSession
+    _username = "pollingAgent"
+    _password = "EFI_Buna2020!1"
+    _auth: _BasicAuth = _BasicAuth(login=_username, password=_password)
+    apiUrl: str = "http://10.44.1.13"
     _inst: _Self | None = None
 
-    def __init__(
-        self,
-        apiUrl: str = "http://10.44.1.13/api",
-        username: str = "pollingAgent",
-        password: str = "EFI_Buna2020!1",
-    ) -> None:
-        self._logger.info("starting Raemis API connection")
-        self.session = _requests.session()
-        self.session.verify = False
-        self.session.auth = (username, password)
-        self.apiUrl = apiUrl[:-1] if apiUrl[-1] == "/" else apiUrl
-        self._auth = {"username": username, "password": password}
-        self._post_data(RaemisEndpoint.SESSION, self._auth)
-
-    def __new__(cls: type[_Self], *args, **kwargs) -> _Self:
-        if not cls._inst:
-            cls._inst = super(Raemis, cls).__new__(cls)
-        return cls._inst
-
-    def __del__(self) -> None:
+    @classmethod
+    async def get_subscribers(cls) -> _Iterable[_Item]:
+        data = list()
         try:
-            self._logger.info("Event receiver HTTP server shutdown")
+            cls._logger.info("creating items from raemis subscribers")
+            async for data in cls._get_data(RaemisEndpoint.SUBSCRIBERS):
+                data = await data.json()
+                cls._logger.info(
+                    f'returning {len(data) if data is not None else "N/A"} subscribers'
+                )
+                data = await cls._convert_api_subscribers(data)
         except:
+<<<<<<< Updated upstream
             self._logger.error("event receiver HTTP server failed to shutdown")
         self.session.close()
         self._logger.info("HTTP API session to Raemis closed")
@@ -68,21 +66,41 @@ class Raemis:
                 f'returning {len(data) if data is not None else "N/A"} subscribers'
             )
         return self._convert_api_subscribers(data)
+=======
+            cls._logger.exception("raemis error", stack_info=True)
+        return data
+>>>>>>> Stashed changes
 
-    def get_subscribers_json(self) -> list[dict[str, _Any]]:
+    @classmethod
+    async def get_subscribers_json(cls) -> _Iterable[dict[str, _Any]]:
         data = None
         try:
+<<<<<<< Updated upstream
             data = self._get_data(RaemisEndpoint.SUBSCRIBERS).json()
         finally:
             self._logger.info(
                 f'returning {len(data) if data is not None else "N/A"} subscribers'
             )
+=======
+            cls._logger.info("getting json from raemis for subscribers")
+            async for data in cls._get_data(RaemisEndpoint.SUBSCRIBERS):
+                data = await data.json()
+                cls._logger.info(
+                    f'returning {len(data) if data is not None else "N/A"} subscribers'
+                )
+        except:
+            cls._logger.exception("raemis error", stack_info=True)
+>>>>>>> Stashed changes
         return data
 
-    def _convert_api_subscribers(self, json: list[dict[str, str]]) -> list[_Item]:
-        return list(self._pipeline.map(self._convert_api_subscriber, json))
+    @classmethod
+    async def _convert_api_subscribers(
+        cls, json: list[dict[str, str]]
+    ) -> _Iterable[_Item]:
+        return list(_exec.map(cls._convert_api_subscriber, json, chunksize=100))
 
-    def _convert_api_subscriber(self, json: dict[str, str]) -> _Item:
+    @classmethod
+    def _convert_api_subscriber(cls, json: dict[str, str]) -> _Item:
         if "imei" in json and "imsi" in json and json["imei"] and json["imsi"]:
             equip = _Item()
             if "imei" in json and json["imei"]:
@@ -102,16 +120,21 @@ class Raemis:
         else:
             equip = _Item()
         if "name" in json and json["name"] and not json["name"].startswith("!"):
-            name = self._attempt_name_transform(json["name"])
+            name = cls._attempt_name_transform(json["name"])
             account = _Account(_Name(name)) if name else None
         else:
             account = None
         if equip and account:
             equip.account = account
+<<<<<<< Updated upstream
             self._logger.info(f"adding raemis subscriber/item pair: {equip}")
+=======
+            cls._logger.info(f"adding item from raemis: {equip}")
+>>>>>>> Stashed changes
         return equip
 
-    def _attempt_name_transform(self, n: str) -> str | None:
+    @classmethod
+    def _attempt_name_transform(cls, n: str) -> str | None:
         if n.startswith("!") or n.startswith("_"):
             return None
         sp = r"\s+"
@@ -123,7 +146,6 @@ class Raemis:
         un = r"""\s*_+\s*"""
         naspl = r"""([-a-zA-Z'"0-9 &#@*\/.:;()]+)\s*,\s*([-a-zA-Z'"0-9 &#@*\/.:;()]+)"""
         nasub = r"""\2 \1"""
-        na = _re.compile(r"""([-a-zA-Z'"0-9#&@*\/.:;()]+\s*)+""")
         tname = r"""(([Tt][eE][lL]([rR][aA][dD])?)?\s*([lL][Tt][eE])?\s*([cC][Pp][eE])?)?\s*"""
         tnum = r"""(12[30]00?)"""
         baname = r"""(([Bb][aA][iI]([cC][eE][lL][sS]?)?)|([oO][dD]?))?\s*"""
@@ -147,9 +169,11 @@ class Raemis:
             else None
         )
 
-    def get_data_sessions(self) -> list[_Item]:
+    @classmethod
+    async def get_data_sessions(cls) -> _Iterable[_Item]:
         data = list()
         try:
+<<<<<<< Updated upstream
             data = self._get_data(RaemisEndpoint.DATA_SESSIONS).json()
         finally:
             self._logger.info(
@@ -169,45 +193,84 @@ class Raemis:
             return ret
 
         return list(self._pipeline.map(fn, d))
-
-    def _get_raemis_url(self, ep: RaemisEndpoint) -> str:
-        return f"{self.apiUrl}/{ep.value}"
-
-    def _del_data(
-        self, ep: RaemisEndpoint, data: dict[str, str] = {}
-    ) -> _requests.Response:
-        return self._request(HTTPMethod.DELETE, ep, data)
-
-    def _post_data(
-        self, ep: RaemisEndpoint, data: dict[str, str] = {}
-    ) -> _requests.Response:
-        return self._request(HTTPMethod.POST, ep, data)
-
-    def _get_data(self, ep: RaemisEndpoint) -> _requests.Response:
-        return self._request(HTTPMethod.GET, ep)
-
-    def _request(
-        self, method: HTTPMethod, ep: RaemisEndpoint, data: dict[str, str] = {}
-    ) -> _requests.Response:
-        timeout = 1
-        resp = None
-        while resp is None:
-            try:
-                resp = self.session.request(
-                    method.value,
-                    self._get_raemis_url(ep),
-                    timeout=timeout,
-                    data=data if data else None,
+=======
+            cls._logger.info("getting data sessions from raemis")
+            async for data in cls._get_data(RaemisEndpoint.DATA_SESSIONS):
+                data = await data.json()
+                cls._logger.info(
+                    f'returning {len(data) if data is not None else "N/A"} data session records'
                 )
-            except:
-                if timeout > 60:
-                    self._logger.error(
-                        f"unable to resolve HTTP {method.value} request to {self._get_raemis_url(ep)}"
-                    )
-                    raise _requests.ConnectionError
-            finally:
-                timeout += 5
-        self._logger.debug(
-            f"HTTP request type {method.value} resolved with status code {resp.status_code}"
+                data = await cls._convert_sessions_to_items(data)
+        except:
+            cls._logger.exception("raemis error", stack_info=True)
+        return data
+
+    @classmethod
+    async def _convert_sessions_to_items(
+        cls, d: list[dict[str, str]]
+    ) -> _Iterable[_Item]:
+        return list(_exec.map(cls._convert_session_to_item, d, chunksize=75))
+
+    @classmethod
+    def _convert_session_to_item(cls, i: dict[str, str]) -> _Item:
+        ret = _Item()
+        if "apn" in i and i["apn"]:
+            ret.apn = i["apn"]
+        if "imsi" in i and i["imsi"]:
+            ret.imsi = _IMSI(i["imsi"])
+        if "ip" in i and i["ip"]:
+            ret.ipv4 = _IPv4Address(address=i["ip"], cidr_mask=22)
+        cls._logger.info(
+            f'found ip address: {ret.ipv4 if ret.ipv4 else "N/A"} for item: {ret if ret else "UNKNOWN"}'
         )
-        return resp
+        return ret
+>>>>>>> Stashed changes
+
+    @classmethod
+    async def _del_data(
+        cls, ep: RaemisEndpoint, data: dict[str, str] = {}
+    ) -> _AsyncIterable[_ClientResponse]:
+        async for x in cls._request(HTTPMethod.DELETE, ep, data):
+            try:
+                yield x
+            except:
+                return
+
+    @classmethod
+    async def _post_data(
+        cls, ep: RaemisEndpoint, data: dict[str, str] = {}
+    ) -> _AsyncIterable[_ClientResponse]:
+        async for x in cls._request(HTTPMethod.POST, ep, data):
+            try:
+                yield x
+            except:
+                return
+
+    @classmethod
+    async def _get_data(cls, ep: RaemisEndpoint) -> _AsyncIterable[_ClientResponse]:
+        async for x in cls._request(HTTPMethod.GET, ep):
+            try:
+                yield x
+            except:
+                return
+
+    @classmethod
+    async def _request(
+        cls, method: HTTPMethod, ep: RaemisEndpoint, data: dict[str, str] = {}
+    ) -> _AsyncIterable[_ClientResponse]:
+        try:
+            async with _ClientSession(base_url=cls.apiUrl, auth=cls._auth) as session:
+                resp = await session.request(
+                    method=method.value, url=ep.value, data=data
+                )
+                try:
+                    yield resp
+                except:
+                    resp.close()
+
+        except:
+            cls._logger.exception(
+                f"unable to resolve HTTP {method.value} request to {ep.value}",
+                stack_info=True,
+            )
+            raise _requests.ConnectionError
