@@ -48,11 +48,7 @@ class Pipeline:
         fn: Callable[P, T],
         iterable: Iterable[Any] | Any,
         timeout: float | None = None,
-<<<<<<< Updated upstream
-        chunksize: int = -1,
-=======
         chunksize: int = 200,
->>>>>>> Stashed changes
     ) -> Iterator[T]:
 
         return self.procExec.map(fn, iterable, timeout=timeout, chunksize=chunksize)
@@ -64,13 +60,10 @@ class Pipeline:
         iterable: Iterable[Any] | Any,
         timeout: float | None = None,
         chunksize: int = 1,
+        chunksize: int = 250,
     ) -> Iterator[T]:
-
-<<<<<<< Updated upstream
-=======
         return e.map(fn, iterable, timeout=timeout, chunksize=chunksize)
 
->>>>>>> Stashed changes
     def start_fn_in_executor(
         self,
         e: ProcessPoolExecutor | ThreadPoolExecutor,
@@ -78,13 +71,9 @@ class Pipeline:
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Future[T]:
-<<<<<<< Updated upstream
-        self.__executors.add(e)
         self.cursor = e.submit(fn, *args, **kwargs)
-=======
-        if e == self.threadExec:
+        if e == self.mainExec:
             self.cursor = e.submit(fn, *args, **kwargs)
->>>>>>> Stashed changes
         return self.cursor
 
     def start_fn(

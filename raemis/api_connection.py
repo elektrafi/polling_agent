@@ -103,6 +103,7 @@ class Raemis:
         if equip and account:
             equip.account = account
             cls._logger.info(f"adding item from raemis: {equip}")
+
         return equip
 
     @classmethod
