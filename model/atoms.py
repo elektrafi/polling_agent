@@ -208,7 +208,6 @@ class Account:
 class Item(object):
     logger = logging.getLogger(__name__)
     mac_address: _MACAddress | None = None
-    ipv4: _IPType | None = None
     serial_number: str | None = None
     product_id: str | None = None
     sonar_id: str | None = None
@@ -246,6 +245,20 @@ class Item(object):
     model: Model = Model.UNKNOWN
     manufacturer: Manufacturer = Manufacturer.UNKNOWN
     _account: Account | None = None
+    _ipv4: _IPType | None = None
+
+    @property
+    def ipv4(self) -> _IPType | None:
+        return self._ipv4
+
+    @ipv4.setter
+    def ipv4(self, __o: object) -> None:
+        if not isinstance(__o, _IPv4Address) and not isinstance(__o, str):
+            return
+        if isinstance(__o, str):
+            self._ipv4 = _IPv4Address(address=__o)
+        if isinstance(__o, _IPv4Address):
+            self._ipv4 = __o
 
     @property
     def account(self) -> Account | None:

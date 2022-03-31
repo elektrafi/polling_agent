@@ -46,29 +46,45 @@ class PollingAgent:
         ips = self._pipeline.start_fn_after_future(subs, self._raemis.get_data_sessions)
         ips.add_done_callback(self._assign_cb)
         snmp = self._pipeline.start_fn_after_future(ips, self._update_snmp_info)
+        snmp.add_done_callback(self._assign_cb)
         self._pipeline.start_fn_after_future(
             snmp, lambda: self._logger.info("Finished startup process")
         )
 
     def _update_snmp_info(self) -> list[_Item]:
-        def snmp_info(i: _Item):
-            snmp = _Session(str(i.ipv4))
-            i = snmp.get_item_values()
-            self._inventory.add(i)
-            return i
-
-        return list(self._pipeline.map(snmp_info, self._inventory))
+        self._logger.info("getting SNMP info from devices")
+        ex = self._pipeline.new_executor()
+        ret: list[_Future[_Item]] = list()
+        for item in self._inventory:
+            if not item.ipv4 or item.key == frozenset():
+                self._logger.warn(
+                    f'no ip address {str(item.ipv4) if item.ipv4 else "NONE"} or no identifying info for {item if item.key!=frozenset() else "UNKNOWN"}'
+                )
+                continue
+            snmp_info_item = self._pipeline.start_fn_in_executor(
+                ex, _Session.get_item_values, item
+            )
+            ret.append(snmp_info_item)
+        done: list[_Item] = list()
+        for fut in ret:
+            while not fut.done():
+                pass
+            if fut.exception():
+                self._logger.error(
+                    f"There was an SNMP error on one of the UEs: {fut.exception()}"
+                )
+            elif fut.result():
+                done.append(fut.result())
+        return done
 
     def _assign_cb(self, l: _Future[list[_Item]]) -> None:
         while not l.done():
             pass
         if l.exception():
-            self._logger.error(
-                f"raemis encountered error getting subscribers: {l.exception()}"
-            )
+            self._logger.error(f"thread encountered and error: {l.exception()}")
         result = l.result()
         if result is None:
-            self._logger.error("raemis returned no subscribers")
+            self._logger.error("thread has no result")
 
         def fn(i: _Item) -> None:
             if i:
