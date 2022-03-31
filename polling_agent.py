@@ -2,8 +2,9 @@
 
 import logging as _logging
 from concurrent.futures import Future as _Future
+from typing import Iterable as _Iterable
+from threading import Thread as _Thread
 
-from .pipeline import Pipeline as _Pipeline
 from .sonar.api_connection import Sonar as _Sonar
 from .genie_acs.api_connection import GenieACS as _GenieACS
 from .raemis.api_connection import Raemis as _Raemis
@@ -28,18 +29,22 @@ class PollingAgent:
     _allocator: _Allocator
     _listener: _Listener
     _inventory: _MergeSet[_Item]
-    _pipeline: _Pipeline
+    _pool: _Pool
+    _mainProc: _Thread
 
     def __init__(self):
-        self._logger.info("starting polling agent")
+        # self._mainProc = _Process(target=self._startup, daemon=False, name="main")
+        # self._mainProc.start()
+        self._mainProc = _Thread(target=self._startup, name="main", daemon=False)
+        self._startup()
+
+    def _startup(self):
+        self._logger.info("starting polling agent thread")
+        _logging.basicConfig(level=_logging.INFO)
         self._inventory = _MergeSet()
-        self._pipeline = _Pipeline()
         self._raemis = _Raemis()
         self._genie = _GenieACS()
         self._sonar = _Sonar()
-        # self.listener = _Listener()
-        # self.allocator = _Allocator(self.__get_item_by_imsi)
-        # self.allocator.start_loop()
         self._starter()
 
     def _starter(self):
@@ -62,5 +67,4 @@ class PollingAgent:
         for item in self._inventory:
             if item.manufacturer != _Manufacturer.BAICELLS:
                 _Session.get_item_values()
-
         return tasks
