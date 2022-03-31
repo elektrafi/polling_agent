@@ -1,18 +1,4 @@
 #!/usr/bin/env python3
-<<<<<<< Updated upstream
-
-from functools import reduce as _reduce
-from operator import iconcat as _iconcat
-from typing_extensions import Self as _Self
-
-from ..model.atoms import Account as _Account, Item as _Item, from_sonar as _from_sonar
-from ..pipeline import Pipeline as _Pipeline
-
-from gql.transport.requests import RequestsHTTPTransport as _RequestsHTTPTransport
-from typing import Any as _Any, TypeVar as _TypeVar, Callable as Callable
-
-from gql import Client as _Client, gql as _gql
-=======
 from urllib3 import disable_warnings as _disable_warnings
 from model.atoms import Account as _Account, Item as _Item, from_sonar as _from_sonar
 from gql.transport.requests import (
@@ -29,7 +15,6 @@ from gql.client import (
     AsyncClientSession as _AsyncClientSession,
     Client as _Client,
 )
->>>>>>> Stashed changes
 import re as _re
 from json import JSONDecoder as _JSONDecoder
 import logging as _logging
@@ -55,13 +40,9 @@ class Sonar:
                 "Accept": "application/json",
             },
         )
-<<<<<<< Updated upstream
-        self._client = _Client(transport=transport, fetch_schema_from_transport=True)
-=======
         _gql_log.setLevel(_logging.WARNING)
         async with _Client(transport=transport) as client:
             return await func(client)
->>>>>>> Stashed changes
 
     @classmethod
     async def get_inventory_items(

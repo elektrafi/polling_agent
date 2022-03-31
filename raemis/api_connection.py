@@ -52,36 +52,13 @@ class Raemis:
                 )
                 data = await cls._convert_api_subscribers(data)
         except:
-<<<<<<< Updated upstream
-            self._logger.error("event receiver HTTP server failed to shutdown")
-        self.session.close()
-        self._logger.info("HTTP API session to Raemis closed")
-
-    def get_subscribers(self) -> list[_Item]:
-        data = None
-        try:
-            data = self._get_data(RaemisEndpoint.SUBSCRIBERS).json()
-        finally:
-            self._logger.info(
-                f'returning {len(data) if data is not None else "N/A"} subscribers'
-            )
-        return self._convert_api_subscribers(data)
-=======
             cls._logger.exception("raemis error", stack_info=True)
         return data
->>>>>>> Stashed changes
 
     @classmethod
     async def get_subscribers_json(cls) -> _Iterable[dict[str, _Any]]:
         data = None
         try:
-<<<<<<< Updated upstream
-            data = self._get_data(RaemisEndpoint.SUBSCRIBERS).json()
-        finally:
-            self._logger.info(
-                f'returning {len(data) if data is not None else "N/A"} subscribers'
-            )
-=======
             cls._logger.info("getting json from raemis for subscribers")
             async for data in cls._get_data(RaemisEndpoint.SUBSCRIBERS):
                 data = await data.json()
@@ -90,7 +67,6 @@ class Raemis:
                 )
         except:
             cls._logger.exception("raemis error", stack_info=True)
->>>>>>> Stashed changes
         return data
 
     @classmethod
@@ -126,11 +102,7 @@ class Raemis:
             account = None
         if equip and account:
             equip.account = account
-<<<<<<< Updated upstream
-            self._logger.info(f"adding raemis subscriber/item pair: {equip}")
-=======
             cls._logger.info(f"adding item from raemis: {equip}")
->>>>>>> Stashed changes
         return equip
 
     @classmethod
@@ -173,27 +145,6 @@ class Raemis:
     async def get_data_sessions(cls) -> _Iterable[_Item]:
         data = list()
         try:
-<<<<<<< Updated upstream
-            data = self._get_data(RaemisEndpoint.DATA_SESSIONS).json()
-        finally:
-            self._logger.info(
-                f'returning {len(data) if data is not None else "N/A"} data session records'
-            )
-        return self._convert_sessions_to_items(data)
-
-    def _convert_sessions_to_items(self, d: list[dict[str, str]]) -> list[_Item]:
-        def fn(i: dict[str, str]) -> _Item:
-            ret = _Item()
-            if "apn" in i and i["apn"]:
-                ret.apn = i["apn"]
-            if "imsi" in i and i["imsi"]:
-                ret.imsi = _IMSI(i["imsi"])
-            if "ip" in i and i["ip"]:
-                ret.ipv4 = _IPv4Address(address=i["ip"])
-            return ret
-
-        return list(self._pipeline.map(fn, d))
-=======
             cls._logger.info("getting data sessions from raemis")
             async for data in cls._get_data(RaemisEndpoint.DATA_SESSIONS):
                 data = await data.json()
@@ -224,7 +175,6 @@ class Raemis:
             f'found ip address: {ret.ipv4 if ret.ipv4 else "N/A"} for item: {ret if ret else "UNKNOWN"}'
         )
         return ret
->>>>>>> Stashed changes
 
     @classmethod
     async def _del_data(
