@@ -3,11 +3,17 @@
 from functools import reduce as _reduce
 from operator import iconcat as _iconcat
 from typing_extensions import Self as _Self
+from urllib3 import disable_warnings as _disable_warnings
+
+_disable_warnings()
 
 from ..model.atoms import Account as _Account, Item as _Item, from_sonar as _from_sonar
 from ..pipeline import Pipeline as _Pipeline
 
-from gql.transport.requests import RequestsHTTPTransport as _RequestsHTTPTransport
+from gql.transport.requests import (
+    RequestsHTTPTransport as _RequestsHTTPTransport,
+    log as _gql_log,
+)
 from typing import Any as _Any, TypeVar as _TypeVar, Callable as Callable
 
 from gql import Client as _Client, gql as _gql
@@ -54,6 +60,7 @@ class Sonar:
             },
         )
         self._client = _Client(transport=transport, fetch_schema_from_transport=True)
+        _gql_log.setLevel(_logging.WARNING)
 
     def __del__(self):
         if self._client.transport is not None:

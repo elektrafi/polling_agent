@@ -55,7 +55,9 @@ class IPv4Address:
             raise ValueError
 
         if not self.is_valid_ipv4(self.address, netmask=netmask):
-            self._logger.error("ipv4 adddress/netmask combo invalid, see warning logs")
+            self._logger.error(
+                f"ipv4 adddress/netmask combo ({self.address}/{netmask}) invalid, see warning logs"
+            )
             raise ValueError
 
         self.netmask = netmask
@@ -90,12 +92,14 @@ class IPv4Address:
             netmask = (255, 255, 255, 255)
 
         if not cls.is_valid_netmask(netmask=netmask):
-            cls._logger.error("Invalid netmask, check warning logs")
+            cls._logger.error(f"Invalid netmask {netmask}")
             raise AttributeError
 
         if len(addr) != 4:
+            cls._logger.error(f"address must have 4 octets: {addr}")
             return False
-        if len(list(filter(lambda x: x.bit_length() > 8 or x < 1, addr))):
+        if len(list(filter(lambda x: x.bit_length() > 8 or x < 0, addr))):
+            cls._logger.error(f"address {addr} octets must be in the range [0,255]")
             return False
 
         network = [addr[a] & m for a, m in enumerate(netmask)]
@@ -104,11 +108,13 @@ class IPv4Address:
         if (addr == broadcast or addr == network) and cls.netmask_to_cidr(
             netmask
         ) != 32:
-            cls._logger.warn("ip address cannot be the network or broadcast address")
+            cls._logger.error(
+                f"ip address {addr} cannot be the network or broadcast address"
+            )
             return False
 
         if not all([v >= network[i] and v <= broadcast[i] for i, v in enumerate(addr)]):
-            cls._logger.warn("ip address must be within the network")
+            cls._logger.error(f"ip address {addr} must be within the network")
             return False
 
         return True
@@ -131,11 +137,11 @@ class IPv4Address:
         elif netmask is None:
             netmask = (255, 255, 255, 255)
         if len(netmask) != 4:
-            cls._logger.warn("provided netmask must have 4 octets")
+            cls._logger.error(f"provided netmask {netmask} must have 4 octets")
             return False
         if len(list(filter(lambda x: x.bit_length() > 8 or x < 0, netmask))):
-            cls._logger.warn(
-                "netmask octet values must be integers in the range [0,255]"
+            cls._logger.error(
+                f"netmask {netmask} octet values must be integers in the range [0,255]"
             )
             return False
         #
@@ -163,10 +169,14 @@ class IPv4Address:
                 )
             )
         ):
-            cls._logger.warn("octets in the netmask must be in CIDR form, see RFC 1219")
+            cls._logger.error(
+                f"octets in the netmask {netmask} must be in CIDR form, see RFC 1219"
+            )
             return False
         if tuple(sorted(netmask, reverse=True)) != netmask:
-            cls._logger.warn("netmask octets must be in descending sorted order")
+            cls._logger.error(
+                f"netmask {netmask} octets must be in descending sorted order"
+            )
             return False
         return True
 

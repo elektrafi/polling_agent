@@ -40,7 +40,7 @@ class PollingAgent:
         # self.listener = _Listener()
         # self.allocator = _Allocator(self.__get_item_by_imsi)
         # self.allocator.start_loop()
-        self._startup()
+        self._starter()
 
     def _starter(self):
         self._logger.info("starting initilization sync")

@@ -62,6 +62,7 @@ class Raemis:
     def get_subscribers(self) -> list[_Item]:
         data = None
         try:
+            self._logger.info("creating items from raemis subscribers")
             data = self._get_data(RaemisEndpoint.SUBSCRIBERS).json()
         finally:
             self._logger.info(
@@ -72,6 +73,7 @@ class Raemis:
     def get_subscribers_json(self) -> list[dict[str, _Any]]:
         data = None
         try:
+            self._logger.info("getting json from raemis for subscribers")
             data = self._get_data(RaemisEndpoint.SUBSCRIBERS).json()
         finally:
             self._logger.info(
@@ -108,7 +110,7 @@ class Raemis:
             account = None
         if equip and account:
             equip.account = account
-            self._logger.info(f"adding raemis subscriber/item pair: {equip}")
+            self._logger.info(f"adding item from raemis: {equip}")
         return equip
 
     def _attempt_name_transform(self, n: str) -> str | None:
@@ -150,6 +152,7 @@ class Raemis:
     def get_data_sessions(self) -> list[_Item]:
         data = list()
         try:
+            self._logger.info("getting data sessions from raemis")
             data = self._get_data(RaemisEndpoint.DATA_SESSIONS).json()
         finally:
             self._logger.info(
@@ -158,17 +161,20 @@ class Raemis:
         return self._convert_sessions_to_items(data)
 
     def _convert_sessions_to_items(self, d: list[dict[str, str]]) -> list[_Item]:
-        def fn(i: dict[str, str]) -> _Item:
-            ret = _Item()
-            if "apn" in i and i["apn"]:
-                ret.apn = i["apn"]
-            if "imsi" in i and i["imsi"]:
-                ret.imsi = _IMSI(i["imsi"])
-            if "ip" in i and i["ip"]:
-                ret.ipv4 = _IPv4Address(address=i["ip"])
-            return ret
+        return list(self._pipeline.map(self._convert_session_to_item, d))
 
-        return list(self._pipeline.map(fn, d))
+    def _convert_session_to_item(self, i: dict[str, str]) -> _Item:
+        ret = _Item()
+        if "apn" in i and i["apn"]:
+            ret.apn = i["apn"]
+        if "imsi" in i and i["imsi"]:
+            ret.imsi = _IMSI(i["imsi"])
+        if "ip" in i and i["ip"]:
+            ret.ipv4 = _IPv4Address(address=i["ip"], cidr_mask=22)
+        self._logger.info(
+            f'found ip address: {ret.ipv4 if ret.ipv4 else "N/A"} for item: {ret if ret else "UNKNOWN"}'
+        )
+        return ret
 
     def _get_raemis_url(self, ep: RaemisEndpoint) -> str:
         return f"{self.apiUrl}/{ep.value}"
