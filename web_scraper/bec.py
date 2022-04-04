@@ -34,7 +34,7 @@ class BECWebEmulator:
             try:
                 resp = self.session.get(url, timeout=timeout, verify=False)
             except:
-                if timeout > 10:
+                if timeout > 4:
                     self.logger.error(f"Could not connect to BEC device page {url}")
                     raise ConnectionError
             finally:
@@ -62,6 +62,19 @@ class BECWebEmulator:
                 return "6900"
 
         return ""
+
+    def get_mac_address(self) -> str | None:
+        try:
+            resp = self.getPage("/cgi-bin/status_deviceinfo.asp")
+            page = resp.text
+            regex = re.search(
+                r"[Mm][Aa][Cc]\s*[Aa][Dd][Dd][Rr][Ee][Ss][Ss]\s*[</A-Za-z\s\r\n>]+(([a-zA-Z0-9]{2}:?){6})",
+                page,
+            )
+            if regex:
+                return regex.groups()[0]
+        except:
+            return None
 
     def postPage(self, name: str, data: dict[str, str]) -> requests.Response:
         url = f'{self.baseUrl}{"" if self.baseUrl[-1] == "/" else "/"}/{name}'

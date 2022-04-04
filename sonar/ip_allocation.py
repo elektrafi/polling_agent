@@ -1,41 +1,155 @@
 #!/usr/bin/env python3
 
-from multiprocessing import Queue as _Queue, Process as _Process, Event as _Event
-from typing import Callable as _Callable, Any as _Any
+import asyncio
+from multiprocessing import Process as _Process
+from threading import Event as _Event
+from multiprocessing.managers import (
+    SyncManager as _SyncManager,
+)
+from queue import Queue as _Queue
+from typing import (
+    Callable as _Callable,
+    Any as _Any,
+    Coroutine as _Coroutine,
+)
 from typing_extensions import Self as _Self
-from .api_connection import Sonar as _Sonar
 
-from ..model.atoms import Item as _Item
-from ..model.network import IPv4Address as _IPv4Address
+from model.atoms import Item as _Item
+from model.network import IPv4Address as _IPv4Address
 import time as _time
-import logging as _logging
+from functools import partial as _partial
+from pickle import Pickler
 
 
 class Attachment:
-    _imsi: str
-    _timestamp: _time.struct_time | None
-    _address: _IPv4Address | None
+    sonar_id: str | None
+    sonar_item_id: str
+    timestamp: float
+    address: _IPv4Address
 
-    def __init__(self, i, t=None, a=None):
-        self._imsi = i
-        self._timestamp = t
-        self._address = a
+    def __init__(self, si, ts=_time.time()):
+        self.sonar_item_id = si
+        self.timestamp = ts
+        self.sonar_id = None
+
+    def set_address(self, ipv4: _IPv4Address):
+        self.address = ipv4
+
+    def __str__(self) -> str:
+        return f'(id: {self.sonar_id if self.sonar_id else "NOT IN SONAR YET"}) Item id: {self.sonar_item_id} IP: {self.address} Attached at {_time.strftime("%m/%d/%y %H:%M:%S",_time.localtime(self.timestamp))}'
+
+    @classmethod
+    def item_to_attachment(cls, item: _Item) -> _Self:
+        attach = cls.__new__(cls)
+        if item.ipv4:
+            attach.address = _IPv4Address(
+                octets=item.ipv4.address, netmask=item.ipv4.netmask
+            )
+        if item.sonar_id:
+            attach.sonar_item_id = item.sonar_id
+        attach.sonar_id = None
+        attach.timestamp = _time.time()
+        return attach
+
+
+class PullAllocator:
+    _manager: _SyncManager
+    _queue: _Queue
+    _current: dict[str, Attachment]
+    _event: _Event
+    _create: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]]
+    _update: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]]
+
+    def __init__(
+        self,
+        manager: _SyncManager,
+        create: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]],
+        update: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]],
+        event: _Event,
+        queue: _Queue,
+    ):
+        self._manager = manager
+        self._create = create
+        self._update = update
+        self._queue = queue
+        self._event = event
+
+    def poll(self):
+        import logging as _logging
+
+        self._current = {}
+        self._logger = _logging.getLogger(__name__)
+        self._logger.info("start poller")
+        while not self._event.is_set():
+            try:
+                attach = self._queue.get(block=True, timeout=3)
+                try:
+                    attach.sonar_id = self._current[attach.sonar_item_id].sonar_id
+                except KeyError:
+                    attach.sonar_id = None
+            except:
+                continue
+            if not isinstance(attach, Attachment):
+                self._logger.error(f"{attach} is not an Attachment object")
+            if attach.sonar_id is None:
+                try:
+                    attach = asyncio.run(self._create(attach))
+                    tmp = Attachment(attach.sonar_item_id)
+                    tmp.sonar_id = attach.sonar_id
+                    tmp.set_address(_IPv4Address(address=repr(attach.address)))
+                    self._current[attach.sonar_item_id] = tmp
+                    self._logger.info(f"created attachment {tmp}")
+                except:
+                    self._logger.exception(
+                        f"error when attempting to create IP address allocation: {attach}"
+                    )
+            else:
+                try:
+                    if (
+                        attach.sonar_item_id in self._current
+                        and hasattr(attach, "address")
+                        and attach.address
+                        != self._current[attach.sonar_item_id].address
+                    ):
+                        attach = asyncio.run(self._update(attach))
+                        self._logger.info(f"updated attachment {attach}")
+                        self._current[attach.sonar_item_id].address = _IPv4Address(
+                            address=repr(attach.address)
+                        )
+                    else:
+                        self._logger.info(
+                            f"{attach.sonar_item_id} has not changed addresses from {self._current[attach.sonar_item_id].address}"
+                        )
+                        continue
+                except:
+                    self._logger.exception(
+                        f"error when attempting to update IP address allocation: {attach}"
+                    )
+        with open("allocations.dat", "w") as fi:
+            p = Pickler(fi.buffer)
+            try:
+                p.dump(self._current)
+            except:
+                self._logger.exception(f"failed to pickle the allocations")
+        self._logger.info("stopping polling loop")
 
 
 class Allocator(object):
+    import logging as _logging
+
     pending_allocations: _Queue
     _logger = _logging.getLogger(__name__)
     _loop_process: _Process
     _stop_event: _Any
     _ue_callback: _Callable[[str], _Item | None]
-    _sonar: _Sonar
+    # _sonar: _Sonar
     _api_key: str
     _inst: _Self | None = None
 
     def __init__(self, ue_callback: _Callable[[str], _Item | None]):
         self._logger.info("creating IP address allocator thread")
-        self._sonar = _Sonar()
-        self._api_key = self._sonar._sonar_api_key
+        # self._sonar = _Sonar()
+        # self._api_key = self._sonar._sonar_api_key
         self._ue_callback = ue_callback
         self.pending_allocations = _Queue()
         self._stop_event = _Event()

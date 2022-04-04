@@ -2,3 +2,6 @@ typing_extensions[all]
 easysnmp
 gql[all]
 requests[all]
+pyOpenSSL
+aioopenssl
+aiohttp

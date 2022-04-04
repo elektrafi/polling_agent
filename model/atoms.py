@@ -6,7 +6,7 @@ import logging
 from typing import Any as _Any, FrozenSet as _FrozenSet
 from typing_extensions import Self as _Self
 from enum import Enum as _Enum
-from .network import (
+from model.network import (
     IPv4Address as _IPv4Address,
     MACAddress as _MACAddress,
     IMEI as _IMEI,
@@ -32,8 +32,31 @@ class Model(_Enum):
     WAC104 = "WAC104 with ElektraFi-RT Firmware"
     UNKNOWN = "Unknown Device Type"
 
+    @classmethod
+    def model_to_sonar_id(cls, model: _Self) -> int:
+        return {
+            cls.WAC104: 1,
+            cls.OD06: 2,
+            cls.T12000: 13,
+            cls.T12300: 14,
+            cls.BEC6900: 15,
+            cls.BEC6500: 16,
+            cls.BEC7000: 17,
+            cls.UNKNOWN: 0,
+        }[model]
 
-_IPType = type(_IPv4Address)
+    @classmethod
+    def item_to_sonar_id(cls, item: "Item") -> int:
+        return {
+            cls.WAC104: 1,
+            cls.OD06: 2,
+            cls.T12000: 13,
+            cls.T12300: 14,
+            cls.BEC6900: 15,
+            cls.BEC6500: 16,
+            cls.BEC7000: 17,
+            cls.UNKNOWN: 0,
+        }[item.model]
 
 
 class Name(_UserString):
@@ -230,8 +253,10 @@ class Item(object):
     sinr: str | None = None
     bandwidth: str | None = None
     tx_rate: str | None = None
+    max_tx_rate: str | None = None
     tx_power: str | None = None
     rx_rate: str | None = None
+    max_rx_rate: str | None = None
     rx_power: str | None = None
     rx_mcs: str | None = None
     tx_mcs: str | None = None
@@ -245,20 +270,18 @@ class Item(object):
     model: Model = Model.UNKNOWN
     manufacturer: Manufacturer = Manufacturer.UNKNOWN
     _account: Account | None = None
-    _ipv4: _IPType | None = None
+    _ipv4: _IPv4Address | None = None
 
     @property
-    def ipv4(self) -> _IPType | None:
+    def ipv4(self) -> _IPv4Address | None:
         return self._ipv4
 
     @ipv4.setter
     def ipv4(self, __o: object) -> None:
-        if not isinstance(__o, _IPv4Address) and not isinstance(__o, str):
-            return
-        if isinstance(__o, str):
-            self._ipv4 = _IPv4Address(address=__o)
         if isinstance(__o, _IPv4Address):
             self._ipv4 = __o
+        if isinstance(__o, str):
+            self._ipv4 = _IPv4Address(address=__o)
 
     @property
     def account(self) -> Account | None:
@@ -398,4 +421,6 @@ def from_sonar(d: dict[str, _Any]) -> Item:
             i = address["inventory_items"]["entities"][0]
             item = Item.from_sonar(i)
             item.account = Account.from_sonar(d)
+            if item and item._account and item._account.sonar_id:
+                item.linked_to_account = True
     return item

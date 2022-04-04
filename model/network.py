@@ -214,7 +214,7 @@ class IPv4Address:
 
     def __repr__(self) -> str:
         a = self.address
-        return f"{a[0]}.{a[1]}.{a[2]}.{a[3]}/{self._cidr_mask}"
+        return f"{a[0]}.{a[1]}.{a[2]}.{a[3]}"
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(__o, IPv4Address):
@@ -236,11 +236,30 @@ class MACAddress:
     def __init__(self, mac: str) -> None:
         if not isinstance(mac, str):
             raise ValueError()
-        mac = mac.upper().replace(":", "")
+        mac = mac.strip()
+        if len(mac) > 12:
+            mac = mac.strip().replace(":", "")
         if len(mac) != 12:
+            try:
+                ret = ""
+                for char in mac:
+                    self._log.debug(f"first: {mac}")
+                    c = char.encode().hex()
+                    if len(c) > 2:
+                        c = c[:2]
+                    ret = ret + c
+                    self._log.debug(f"loop: {ret}")
+                if len(ret) == 12:
+                    self._mac = bytes.fromhex(ret.upper())
+                    self._log.info(f"good value {self._mac} after converting hex {mac}")
+                    return
+                else:
+                    self._log.error(f"bad value {mac}")
+            except:
+                self._log.error(f"bad value {mac}")
             self._log.error(f"bad value {mac}")
             raise ValueError()
-        self._mac = bytes.fromhex(mac)
+        self._mac = bytes.fromhex(mac.upper())
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(__o, MACAddress):
@@ -266,12 +285,12 @@ class IMEI(str):
             cls._log.error(
                 f"provided {s}, but IMEI must be 15 characters long (or 16 for newer versions)"
             )
-            raise ValueError
+            s = super(IMEI, cls).__new__(cls, "")
         if not s.isdecimal():
             cls._log.error(
                 f"provided {s}, but IMEI must be a string of decimal numbers"
             )
-            raise ValueError
+            s = super(IMEI, cls).__new__(cls, "")
         return s
 
 
@@ -282,10 +301,10 @@ class IMSI(str):
         s = super(IMSI, cls).__new__(cls, obj).strip()
         if len(s) != 15:
             cls.__log.error(f"provided {s}, but IMSI must be 15 characters long")
-            raise ValueError
+            s = super(IMSI, cls).__new__(cls, "")
         if not s.isdecimal():
             cls.__log.error(
                 f"provided {s}, but IMSI must be a string of decimal numbers"
             )
-            raise ValueError
+            s = super(IMSI, cls).__new__(cls, "")
         return s

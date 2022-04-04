@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
 from model.network import MACAddress as _MACAddress, IMEI as _IMEI, IMSI as _IMSI
 from model.atoms import Item as _Item, Model as _Model, Manufacturer as _Manufacturer
-from typing import AsyncIterable as _AsyncIterable
+from typing import (
+    AsyncIterable as _AsyncIterable,
+    Iterable as _Iterable,
+    Coroutine as _Coroutine,
+)
 import re as _re
 import logging
-import asyncio as _asyncio
+from asyncio import gather as _gather
 from aiosnmp import Snmp as _Snmp, SnmpVarbind as _SnmpVarBind
+from aiosnmp.exceptions import SnmpTimeoutError as _SnmpTimeoutError
+import asyncio as _asyncio
 
 
 class Session(object):
     _logger = logging.getLogger(__name__)
+
+    @classmethod
+    async def get_all_values(cls, l: _Iterable[_Item]) -> _Iterable[_Item]:
+        tasks: _Iterable[_Coroutine[None, None, _Item]] = []
+        for item in l:
+            tasks.append(cls.get_item_values(item))
+        return await _gather(*tasks)
 
     @classmethod
     async def get_item_values(cls, i: _Item) -> _Item:
@@ -24,21 +37,34 @@ class Session(object):
             retries=3,
         ) as snmp:
             cls._logger.info(f"getting SNMP info for IP {snmp.host}")
-            info = (await cls._get_device_info(snmp)).strip().lower()
-            print(info)
-            t120_info = _re.compile(r"linux\s*[a-z0-9_]*\s*[-0-9\.]+uc\d")
-            t123_info = _re.compile(r"linux\s*gdm\d{1,5}\s*[-0-9\.]+uc\d")
-            bec69_info = _re.compile(
-                r"(bec)?\s*((ridgewave)|(bec))?\s*((6[95]00)|(7000))((ael)|(-r21)|(\s*r28-g))?\s*4g/lte"
-            )
-            if _re.match(t123_info, info):
-                ret = await cls._get_telrad_12300(snmp)
-            if _re.match(t120_info, info):
-                ret = await cls._get_telrad_12000(snmp)
-            elif _re.match(bec69_info, info):
-                ret = await cls._get_bec6900(snmp, info)
-            else:
-                cls._logger.error(f"no model type determined for {snmp.host}")
+            try:
+                info = (await cls._get_device_info(snmp)).strip().lower()
+                t120_info = _re.compile(r"linux\s*[a-z0-9_]*\s*[-0-9\.]+uc\d")
+                t123_info = _re.compile(r"linux\s*gdm\d{1,5}\s*[-0-9\.]+uc\d")
+                bec69_info = _re.compile(
+                    r"(bec)?\s*((ridgewave)|(bec))?\s*((6[95]00)|(7000))((ael)|(-r21)|(\s*r28-g))?\s*4g/lte"
+                )
+                test = await cls._snmp_get_value(snmp, "1.3.6.1.4.1.17713.20.2.1.4.1.0")
+                if _re.match(t123_info, info) and not test:
+                    ret = await cls._get_telrad_12300(snmp)
+                elif _re.match(t120_info, info) or "12000" in test:
+                    ret = await cls._get_telrad_12000(snmp)
+                elif _re.match(bec69_info, info) or (
+                    i.imei and str(i.imei).startswith("8699")
+                ):
+                    ret = await cls._get_bec6900(snmp, info)
+                elif ret.manufacturer == _Manufacturer.BAICELLS:
+                    cls._logger.info(f"found a Baicells device at {snmp.host}")
+                elif "efi" in info:
+                    ret.model = _Model.WAC104
+                    ret.manufacturer = _Manufacturer.NETGEAR
+                    cls._logger.info(
+                        f"Netgear device found for {snmp.host} -- skipping"
+                    )
+                else:
+                    cls._logger.error(f"no model type determined for {snmp.host}")
+            except:
+                cls._logger.exception(f"couldnt get snmp info for {snmp.host}")
         cls._logger.info(f"returning {ret} for {snmp.host}")
         return ret
 
@@ -62,9 +88,12 @@ class Session(object):
         mac_num = mac_num.oid.split(".")[-1]
         mac = await cls._snmp_get_value(snmp, f".1.3.6.1.2.1.2.2.1.6.{mac_num}")
         if mac:
-            ret.mac_address = _MACAddress(mac)
+            try:
+                ret.mac_address = _MACAddress(mac)
+            except:
+                cls._logger.exception(f"mac address error: {mac}")
 
-        cls._logger.info(f"found {ret} as a Telrad 12300")
+        cls._logger.debug(f"found {ret} as a Telrad 12300")
         return ret
 
     @classmethod
@@ -86,7 +115,13 @@ class Session(object):
             mac_num = mac_num.oid.split(".")[-1]
             mac = await cls._snmp_get_value(snmp, f".1.3.6.1.2.1.2.2.1.6.{mac_num}")
             if mac:
-                ret.mac_address = _MACAddress(mac)
+                try:
+                    ret.mac_address = _MACAddress(mac)
+                except:
+                    try:
+                        ret.mac_address = _MACAddress(mac.encode().hex())
+                    except:
+                        cls._logger.error(f"mac address error: {mac}")
         signals = await cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17453.4.1.4.0")
         if signals:
             for signal in signals.split(" "):
@@ -122,7 +157,7 @@ class Session(object):
         if channel:
             ret.channel = channel
 
-        cls._logger.info(f"found {ret} as a BEC Device")
+        cls._logger.debug(f"found {ret} as a BEC Device")
         return ret
 
     @classmethod
@@ -132,7 +167,10 @@ class Session(object):
         ret.manufacturer = _Manufacturer.TELRAD
         mac = await cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.3.13.0")
         if mac:
-            ret.mac_address = _MACAddress(mac)
+            try:
+                ret.mac_address = _MACAddress(mac)
+            except:
+                cls._logger.exception(f"mac address error: {mac}")
         imei = await cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.4.11.0")
         if imei:
             ret.imei = _IMEI(imei)
@@ -162,10 +200,8 @@ class Session(object):
                 rsrp = float(r)
                 cnt += 1
             except:
-                cls._logger.exception(
-                    f"error trying to parse rsrp {r} for telrae 12000"
-                )
-        if rsrp:
+                pass
+        if rsrp is not None and rsrp:
             ret.rsrp = str(rsrp / cnt)
         rsrq_list = cls._snmp_get_value_bulk(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.8")
         rsrq = 0
@@ -175,10 +211,8 @@ class Session(object):
                 rsrq = float(r)
                 cnt += 1
             except:
-                cls._logger.exception(
-                    f"error trying to parse rsrq {r} for telrae 12000"
-                )
-        if rsrq:
+                pass
+        if rsrq is not None and rsrq:
             ret.rsrq = str(rsrq / cnt)
         pci = await cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.18.0")
         if pci:
@@ -202,15 +236,13 @@ class Session(object):
                 sinr = float(r)
                 cnt += 1
             except:
-                cls._logger.exception(
-                    f"error trying to parse sinr {r} for telrae 12000"
-                )
-        if sinr:
+                pass
+        if sinr is not None and sinr:
             ret.sinr = str(sinr / cnt)
         enb_id = await cls._snmp_get_value(snmp, ".1.3.6.1.4.1.17713.20.2.1.2.30.0")
         if enb_id:
             ret.enb_id = enb_id
-        cls._logger.info(f"found {ret} as a Telrad 12000")
+        cls._logger.debug(f"found {ret} as a Telrad 12000")
         return ret
 
     @classmethod
@@ -221,6 +253,10 @@ class Session(object):
             val = x.value
             if isinstance(val, bytes):
                 val = val.decode()
+            if val is None:
+                yield ""
+            elif str(val).strip().lower() in ["none", "None", "NONE"]:
+                yield ""
             yield str(val)
 
     @classmethod
@@ -235,6 +271,8 @@ class Session(object):
                     yield check
                 except:
                     return
+        except _SnmpTimeoutError:
+            pass
         except:
             cls._logger.exception(f"getting the oid group {oid} errored")
 
@@ -244,8 +282,10 @@ class Session(object):
     ) -> str:
         try:
             async for x in cls._snmp_get_value_bulk(snmp, oid):
-                if x and _re.fullmatch(regex, x):
+                if x is not None and x and x != "NONE" and _re.fullmatch(regex, x):
                     return x
+        except _SnmpTimeoutError:
+            pass
         except:
             cls._logger.exception(f"snmp error", stack_info=True)
         return ""
@@ -266,6 +306,8 @@ class Session(object):
                         val = val.hex()
                 if _re.fullmatch(regex, str(val)):
                     return x
+        except _SnmpTimeoutError:
+            pass
         except:
             return None
 
@@ -280,7 +322,11 @@ class Session(object):
             except:
                 ret = ret.value.hex()
         else:
+            if ret is None:
+                return ""
             ret = str(ret.value)
+            if ret.lower().strip() in ["none", "NONE", "None"]:
+                return ""
         return ret
 
     @classmethod
@@ -290,5 +336,7 @@ class Session(object):
             if isinstance(check, list):
                 check = check[0]
             return check
+        except _SnmpTimeoutError:
+            pass
         except:
             cls._logger.exception(f"errored getting oid {oid}")

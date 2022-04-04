@@ -14,12 +14,13 @@ class MergeSet(set[_T]):
         try:
             if __element == _Item():
                 return __element
-            self._log.info(f"adding {__element} to set")
+            self._log.info(f"adding old {__element} to set")
             mine = next(x for x in iter(self) if x == __element)
         except StopIteration:
             self._log.debug(
                 f"merged key of {__element} not found in the set, adding it"
             )
+            self._log.info(f"adding new {__element} to set")
             super().add(__element)
             return __element
         try:
@@ -28,7 +29,6 @@ class MergeSet(set[_T]):
             self._log.exception(
                 f"somehow errored removing {mine} from set after finding it in the set"
             )
-            raise ke
         current = __element
         while True:
             items = current.__dict__.items()
@@ -53,6 +53,7 @@ class MergeSet(set[_T]):
             except StopIteration:
                 break
         self._log.debug(f"adding the updated item back, maybe new items in key: {mine}")
+        self._log.info(f"adding new {mine} to set")
         super().add(mine)
         return mine
 

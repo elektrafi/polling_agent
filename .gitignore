@@ -16,6 +16,7 @@ tmp/**/**
 sonar/*.key
 
 
+*.dat
 .old/
 .old/**
 .old/**/**
