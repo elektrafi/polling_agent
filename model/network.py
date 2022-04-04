@@ -217,6 +217,8 @@ class IPv4Address:
         return f"{a[0]}.{a[1]}.{a[2]}.{a[3]}"
 
     def __eq__(self, __o: object) -> bool:
+        if isinstance(__o, str):
+            return repr(self) == __o
         if not isinstance(__o, IPv4Address):
             return False
         return self.address == __o.address and self._cidr_mask == __o._cidr_mask

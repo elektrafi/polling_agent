@@ -226,6 +226,9 @@ class Sonar:
                         ret.set_address(_IPv4Address(address=info["subnet"]))
                         ret.sonar_id = info["id"]
                         attachments.append(ret)
+                        cls._logger.info(
+                            f"got assignment (id {ret.sonar_id}) at {ret.address} for {ret.sonar_item_id}"
+                        )
                 except:
                     cls._logger.exception(f"failed to create attachemt for {info}")
                     continue
@@ -274,7 +277,6 @@ class Sonar:
         except:
             cls._logger.exception(
                 f"failed to delete {attach}",
-                stack_info=True,
                 stacklevel=_logging.CRITICAL,
             )
         return attach

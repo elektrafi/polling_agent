@@ -141,6 +141,11 @@ mutation create_item($input:CreateInventoryItemsMutationInput) {
 current_ip_address_assignments = """
 query ($page:Paginator!) {
 ip_assignments(paginator:$page, subnet_id:25) {
+  page_info {
+    page
+    total_pages
+    total_count
+  }
   entities{
     id
     ipassignmentable_id

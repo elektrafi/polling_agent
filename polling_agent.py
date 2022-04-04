@@ -56,8 +56,9 @@ class PollingAgent:
     def run_allocator(self):
         create = _Sonar.create_ip_assignment
         update = _Sonar.update_ip_assignment
+        delete = _Sonar.delete_ip_assignment
         self._allocator = _PullAllocator(
-            self._manager, create, update, self._stop_event, self._queue
+            self._manager, create, update, delete, self._stop_event, self._queue
         )
         self._poll_thread = _Thread(target=self._allocator.poll, name="poller")
         self._poll_thread.start()
@@ -71,6 +72,15 @@ class PollingAgent:
                 self._logger.debug(f"sent {attach} to the queue")
 
     def poll_raemis(self, delay):
+        acct = _run(_Sonar.execute(_Sonar.get_all_clients_and_assigned_inventory))
+        for item in acct:
+            self._inventory.add(item)
+        inv = _run(_Sonar.execute(_Sonar.get_inventory_items))
+        for item in inv:
+            self._inventory.add(item)
+        attachments = _run(_Sonar.get_ip_address_assignments())
+        for attach in attachments:
+            self._queue.put(attach)
         while not self._stop_event.is_set():
             try:
                 time.sleep(60 * delay)
@@ -166,7 +176,7 @@ if __name__ == "__main__":
     polling_agent = PollingAgent()
     polling_agent.startup()
     polling_agent.run_allocator()
-    polling_agent.run_pickup()
+    # polling_agent.run_pickup()
     # polling_agent.shutdown()
     polling_agent.run_raemis_poller(5)
     polling_agent._poll_thread.join()

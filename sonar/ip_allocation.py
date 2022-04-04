@@ -33,7 +33,7 @@ class Attachment:
         self.sonar_id = None
 
     def set_address(self, ipv4: _IPv4Address):
-        self.address = ipv4
+        self.address = _IPv4Address(address=repr(ipv4), cidr_mask=ipv4._cidr_mask)
 
     def __str__(self) -> str:
         return f'(id: {self.sonar_id if self.sonar_id else "NOT IN SONAR YET"}) Item id: {self.sonar_item_id} IP: {self.address} Attached at {_time.strftime("%m/%d/%y %H:%M:%S",_time.localtime(self.timestamp))}'
@@ -59,18 +59,21 @@ class PullAllocator:
     _event: _Event
     _create: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]]
     _update: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]]
+    _delete: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]]
 
     def __init__(
         self,
         manager: _SyncManager,
         create: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]],
         update: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]],
+        delete: _Callable[[Attachment], _Coroutine[_Any, _Any, Attachment]],
         event: _Event,
         queue: _Queue,
     ):
         self._manager = manager
         self._create = create
         self._update = update
+        self._delete = delete
         self._queue = queue
         self._event = event
 
@@ -81,12 +84,23 @@ class PullAllocator:
         self._logger = _logging.getLogger(__name__)
         self._logger.info("start poller")
         while not self._event.is_set():
+            to_del = list()
+            for k in self._current:
+                if _time.time() - self._current[k].timestamp > 12 * 60:
+                    asyncio.run(self._delete(self._current[k]))
+                    to_del.append(k)
+            for d in to_del:
+                del self._current[d]
             try:
-                attach = self._queue.get(block=True, timeout=3)
-                try:
-                    attach.sonar_id = self._current[attach.sonar_item_id].sonar_id
-                except KeyError:
-                    attach.sonar_id = None
+                attach = self._queue.get(block=True, timeout=15)
+                if not hasattr(attach, "sonar_id") or attach.sonar_id is None:
+                    try:
+                        attach.sonar_id = self._current[attach.sonar_item_id].sonar_id
+                    except KeyError:
+                        attach.sonar_id = None
+                if hasattr(attach, "address"):
+                    if not repr(attach.address).startswith("10."):
+                        continue
             except:
                 continue
             if not isinstance(attach, Attachment):
@@ -96,7 +110,12 @@ class PullAllocator:
                     attach = asyncio.run(self._create(attach))
                     tmp = Attachment(attach.sonar_item_id)
                     tmp.sonar_id = attach.sonar_id
-                    tmp.set_address(_IPv4Address(address=repr(attach.address)))
+                    tmp.set_address(
+                        _IPv4Address(
+                            address=repr(attach.address),
+                            cidr_mask=attach.address._cidr_mask,
+                        )
+                    )
                     self._current[attach.sonar_item_id] = tmp
                     self._logger.info(f"created attachment {tmp}")
                 except:
@@ -105,22 +124,33 @@ class PullAllocator:
                     )
             else:
                 try:
-                    if (
-                        attach.sonar_item_id in self._current
-                        and hasattr(attach, "address")
-                        and attach.address
-                        != self._current[attach.sonar_item_id].address
+                    if attach.sonar_item_id in self._current and hasattr(
+                        attach, "address"
                     ):
-                        attach = asyncio.run(self._update(attach))
-                        self._logger.info(f"updated attachment {attach}")
-                        self._current[attach.sonar_item_id].address = _IPv4Address(
-                            address=repr(attach.address)
-                        )
+                        if not isinstance(attach.address, _IPv4Address):
+                            self._logger.error(
+                                f"{attach} has a incorrect type of obect"
+                            )
+                            continue
+                        if repr(attach.address) != repr(
+                            self._current[attach.sonar_item_id].address
+                        ):
+                            attach = asyncio.run(self._update(attach))
+                            self._current[attach.sonar_item_id].timestamp = _time.time()
+                            self._logger.info(f"updated attachment {attach}")
+                            self._current[attach.sonar_item_id] = attach
+                        else:
+                            self._current[attach.sonar_item_id].timestamp = _time.time()
+                            self._logger.info(
+                                f"{attach.sonar_item_id} has not changed addresses from {self._current[attach.sonar_item_id].address}"
+                            )
+                            continue
                     else:
-                        self._logger.info(
-                            f"{attach.sonar_item_id} has not changed addresses from {self._current[attach.sonar_item_id].address}"
-                        )
+                        self._current[attach.sonar_item_id] = attach
+                        self._current[attach.sonar_item_id].timestamp = _time.time()
+                        self._logger.info(f"adding {attach} to dict")
                         continue
+
                 except:
                     self._logger.exception(
                         f"error when attempting to update IP address allocation: {attach}"
