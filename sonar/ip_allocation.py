@@ -41,6 +41,9 @@ class Attachment:
     def __str__(self) -> str:
         return f'(id: {self.sonar_id if self.sonar_id else "NOT IN SONAR YET"}) Item id: {self.sonar_item_id} IP: {self.address} Attached at {_time.strftime("%m/%d/%y %H:%M:%S",_time.localtime(self.timestamp))}'
 
+    def __repr__(self) -> str:
+        return str(self)
+
     def __hash__(self) -> int:
         return (
             hash(self.sonar_id)

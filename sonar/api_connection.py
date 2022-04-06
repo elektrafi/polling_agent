@@ -245,6 +245,7 @@ class Sonar:
                 "ipassignmentable_id": attach.sonar_item_id,
                 "soft": True,
                 "ipassignmentable_type": "InventoryItem",
+                "reference": attach.sonar_item_id,
             },
         }
         try:
@@ -289,6 +290,7 @@ class Sonar:
                 "soft": True,
                 "ipassignmentable_id": attach.sonar_item_id,
                 "ipassignmentable_type": "InventoryItem",
+                "reference": attach.sonar_item_id,
             }
         }
         try:
