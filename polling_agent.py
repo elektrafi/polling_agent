@@ -28,6 +28,7 @@ import queue as _queue
 import multiprocessing.queues as _queues
 from sys import stdout as _stdout
 from logging import StreamHandler as _Handler, Formatter as _Formatter
+from logging.handlers import RotatingFileHandler
 from web_scraper.bec import BECWebEmulator
 from model.network import MACAddress
 from web_scraper.telrad import Telrad12300 as _Telrad
@@ -127,7 +128,13 @@ if __name__ == "__main__":
         format="""%(asctime)s %(levelname)s:: [%(threadName)s.%(name)s.%(funcName)s]: %(message)s""",
     )
 
-    fh = _logging.FileHandler("polling_agent_main.log", mode="w")
+    fh = RotatingFileHandler(
+        filename="polling_agent_main.log",
+        mode="w",
+        maxBytes=102400,
+        backupCount=4,
+        delay=False,
+    )
     fh.setFormatter(
         _logging.Formatter(
             """%(asctime)s %(levelname)s:: [%(threadName)s.%(name)s.%(funcName)s]: %(message)s"""
@@ -138,5 +145,4 @@ if __name__ == "__main__":
     polling_agent.startup()
     polling_agent.run_pickup()
     polling_agent.run_allocator()
-    # polling_agent.shutdown()
     polling_agent._poll_thread.join()
