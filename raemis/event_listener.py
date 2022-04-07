@@ -9,8 +9,6 @@ from urllib.parse import parse_qs as _parse_qs
 import logging as _logging
 import json as _json
 
-# from ..sonar.ip_allocation import Allocator as _Allocator, Attachment as _Attachment
-
 
 class Listener:
     _logger = _logging.getLogger(__name__)
@@ -138,8 +136,6 @@ class EventReceiver(_BaseHTTPRequestHandler):
             if event == "pdp_context_activated":
                 self._logger.info(f"parsing event: {event}")
                 data = dict(data)
-                # attach = _Attachment(imsi, event_time, data["ip"])
-                # _Allocator().add_pending_allocation(attach)
             elif event == "pdp_context_deactivated":
                 self._logger.info(f"parsing event: {event}")
             else:
