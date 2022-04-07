@@ -1,36 +1,20 @@
 #!/usr/bin/env python3
 
-import multiprocessing
-import signal
-import sys
+import signal as _signal
+import sys as _sys
 import logging as _logging
-from functools import partial as _partial
-from time import get_clock_info
-import time
-from model.network import IPv4Address
-
 from sonar.api_connection import Sonar as _Sonar
 from raemis.api_connection import Raemis as _Raemis
 from snmp import Session as _Session
 from model.atoms import Item as _Item, Manufacturer, Model
 from model.structures import MergeSet as _MergeSet
 from asyncio import run as _run
-import asyncio as _asyncio
 from web_scraper.baicells import Baicells as _Baicells
-from sonar.ip_allocation import Attachment, PullAllocator as _PullAllocator
+from sonar.ip_allocation import PullAllocator as _PullAllocator
 from multiprocessing.managers import SyncManager as _SyncManager
-from multiprocessing import set_start_method as _mp_method, get_logger
-from typing import Iterable as _Iterable, Coroutine as _Coroutine, Any as _Any
 from threading import Event as _Event
 from multiprocessing.dummy import DummyProcess as _Thread
-from queue import Queue as _Queue
-import queue as _queue
-import multiprocessing.queues as _queues
-from sys import stdout as _stdout
-from logging import StreamHandler as _Handler, Formatter as _Formatter
 from logging.handlers import RotatingFileHandler
-from web_scraper.bec import BECWebEmulator
-from model.network import MACAddress
 from web_scraper.telrad import Telrad12300 as _Telrad
 
 
@@ -58,7 +42,6 @@ class PollingAgent:
         delay = 1 * 60
 
         self._allocator = _PullAllocator(
-            self._manager,
             get_assignments=get_assignments,
             get_addresses=get_addresses,
             create=create,
@@ -68,7 +51,7 @@ class PollingAgent:
             base_list=base_list,
             delay=delay,
         )
-        self._poll_thread = _Thread(target=self._allocator.new_poll, name="poller")
+        self._poll_thread = _Thread(target=self._allocator.poll, name="poller")
         self._poll_thread.start()
 
     def shutdown(self):
@@ -79,37 +62,56 @@ class PollingAgent:
         self._manager.shutdown()
         self._logger.info("shut down manager")
 
-    def run_pickup(self):
-        self._logger.info("starting initilization sync")
+    def run_full_scan(self):
+        self.get_base_inventory_information()
+        self.get_subscriber_information()
+        self.get_inventory_network_information()
+        self.get_detailed_inventory_stats()
+
+    def get_subscriber_information(self):
+        subs = _run(_Raemis.get_subscribers())
+        for item in subs:
+            self._inventory.add(item)
+
+    def get_inventory_network_information(self):
+        ips = _run(_Raemis.get_data_sessions())
+        for item in ips:
+            self._inventory.add(item)
+        web_tel = _run(_Telrad.get_items(self._inventory))
+        for item in web_tel:
+            if item:
+                self._inventory.add(item)
+        web = _run(_Baicells.get_items(self._inventory))
+        for item in web:
+            item.model = Model.OD06
+            item.manufacturer = Manufacturer.BAICELLS
+            self._inventory.add(item)
+
+    def get_detailed_inventory_stats(self):
+        snmp = _run(_Session.get_all_values(self._inventory))
+        for item in snmp:
+            self._inventory.add(item)
+
+    def add_raemis_info_to_item_notes(self):
+        _run(_Sonar.add_raemis_name_to_items(self._inventory))
+
+    def try_to_match_items_to_accounts_by_name_guessing(self):
+        _run(_Sonar.match_names_and_link(self._inventory))
+
+    def create_missing_inventory_items(self):
+        _run(_Sonar.create_missing(self._inventory))
+
+    def update_inventory_item_information(self):
+        _run(_Sonar.update_needed(self._inventory))
+
+    def get_base_inventory_information(self):
+        self._logger.info("starting inventory initilization")
         acct = _run(_Sonar.execute(_Sonar.get_all_clients_and_assigned_inventory))
         for item in acct:
             self._inventory.add(item)
         inv = _run(_Sonar.execute(_Sonar.get_inventory_items))
         for item in inv:
             self._inventory.add(item)
-        # subs = _run(_Raemis.get_subscribers())
-        # for item in subs:
-        #    self._inventory.add(item)
-        # ips = _run(_Raemis.get_data_sessions())
-        # for item in ips:
-        # self._inventory.add(item)
-        # snmp = _run(_Session.get_all_values(self._inventory))
-        # for item in snmp:
-        #    self._inventory.add(item)
-        # web_tel = _run(_Telrad.get_items(self._inventory))
-        # for item in web_tel:
-        #    if item:
-        #        self._inventory.add(item)
-        # web = _run(_Baicells.get_items(self._inventory))
-        # for item in web:
-        #    item.model = Model.OD06
-        #    item.manufacturer = Manufacturer.BAICELLS
-        #    self._inventory.add(item)
-        # _ = _run(_Sonar.create_missing(self._inventory))
-        # _ = _run(_Sonar.update_needed(self._inventory))
-        # linked = _run(_Sonar.add_raemis_name_to_items(self._inventory))
-        # _ = _run(_Sonar.match_names_and_link(self._inventory))
-        # self.report(linked)
 
 
 if __name__ == "__main__":
@@ -119,10 +121,10 @@ if __name__ == "__main__":
 
         if threading.main_thread() == threading.current_thread():
             polling_agent.shutdown()
-        _logging.warning(f"CAUGHT SIGNAL {signal.strsignal(signum)} SHUTTING DOWN")
-        sys.exit(0)
+        _logging.warning(f"CAUGHT SIGNAL {_signal.strsignal(signum)} SHUTTING DOWN")
+        _sys.exit(0)
 
-    signal.signal(signal.SIGINT, sig_handle)
+    _signal.signal(_signal.SIGINT, sig_handle)
     _logging.basicConfig(
         level=_logging.INFO,
         format="""%(asctime)s %(levelname)s:: [%(threadName)s.%(name)s.%(funcName)s]: %(message)s""",
@@ -143,6 +145,6 @@ if __name__ == "__main__":
     _logging.root.addHandler(fh)
     polling_agent = PollingAgent()
     polling_agent.startup()
-    polling_agent.run_pickup()
+    polling_agent.get_base_inventory_information()
     polling_agent.run_allocator()
     polling_agent._poll_thread.join()
