@@ -1,3 +1,5 @@
+wheel
+setuptools
 black
 aiosnmp
 typing_extensions[all]
