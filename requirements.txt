@@ -1,3 +1,7 @@
+wheel
+setuptools
+black
+aiosnmp
 typing_extensions[all]
 easysnmp
 gql[all]

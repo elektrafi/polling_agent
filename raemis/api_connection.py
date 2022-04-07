@@ -171,7 +171,7 @@ class Raemis:
         if "imsi" in i and i["imsi"]:
             ret.imsi = _IMSI(i["imsi"])
         if "ip" in i and i["ip"]:
-            ret.ipv4 = _IPv4Address(address=i["ip"], cidr_mask=22)
+            ret.ipv4 = _IPv4Address(address=i["ip"])
         cls._logger.debug(
             f'found ip address: {ret.ipv4 if ret.ipv4 else "N/A"} for item: {ret if ret else "UNKNOWN"}'
         )
