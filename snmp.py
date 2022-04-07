@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# Copyright 2021 Brenden Smith
+#
+# Use of this source code is governed by an MIT-style
+# license that can be found in the LICENSE file or at
+# https://opensource.org/licenses/MIT.
+
 from model.network import MACAddress as _MACAddress, IMEI as _IMEI, IMSI as _IMSI
 from model.atoms import Item as _Item, Model as _Model, Manufacturer as _Manufacturer
 from typing import (
