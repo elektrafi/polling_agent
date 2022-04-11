@@ -284,10 +284,7 @@ class Item(object):
 
     @ipv4.setter
     def ipv4(self, __o: object) -> None:
-        if isinstance(__o, _IPv4Address):
-            self._ipv4 = __o
-        if isinstance(__o, str):
-            self._ipv4 = _IPv4Address(address=__o)
+        self._ipv4 = _IPv4Address.to_ip(__o)
 
     @property
     def account(self) -> Account | None:

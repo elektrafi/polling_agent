@@ -5,6 +5,9 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+from numbers import Integral
+from collections.abc import Sequence
+from typing import Union
 
 import logging as _logging
 from typing_extensions import Self as _Self
@@ -236,6 +239,29 @@ class IPv4Address:
         if not isinstance(__o, IPv4Address):
             return False
         return self.network == __o.network
+
+    @classmethod
+    def to_ip(cls, __o: object) -> _Self:
+        if isinstance(__o, IPv4Address):
+            return IPv4Address(octets=__o.address, cidr_mask=__o._cidr_mask)
+        if not isinstance(__o, Sequence):
+            raise ValueError(f"type {type(__o)} is not convertable to an IP address")
+        elif isinstance(__o, str):
+            return IPv4Address(address=__o)
+        elif isinstance(__o, bytes):
+            return IPv4Address(address=__o.decode())
+        elif isinstance(__o, Sequence):
+            if not all(map(lambda x: isinstance(x, Integral), __o)):
+                cls._logger.error(f"not all elements of {str(__o)} are integers")
+                raise ValueError("Elements of the sequence must be integers")
+            else:
+                return IPv4Address(octets=tuple(__o))
+        else:
+            try:
+                return IPv4Address(address=str(__o))
+            except:
+                cls._logger.exception(f"{__o} is not an IP address")
+                raise ValueError("Not an IP address")
 
 
 class MACAddress:
