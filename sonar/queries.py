@@ -168,6 +168,15 @@ create_ip_assignment = """mutation ($input: CreateIpAssignmentMutationInput) {
 }
 """
 
+update_billing_parameters = """mutation updateAccountBilling($id: Int64Bit!, $input: UpdateAccountBillingParameterMutationInput) {
+  updateAccountBillingParameter(input: $input, account_id: $id) {
+    account_id
+    days_of_delinquency_for_status_switch
+    grace_days
+  }
+}
+"""
+
 update_ip_assignment = """mutation ($id: Int64Bit!, $input: UpdateIpAssignmentMutationInput) {
   updateIpAssignment(id: $id, input: $input) {
     id

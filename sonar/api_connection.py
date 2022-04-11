@@ -369,6 +369,20 @@ class Sonar:
         return list(_exec.map(_from_sonar, d, chunksize=50))
 
     @classmethod
+    async def update_billing_parameters(
+        cls, client: _AsyncClientSession, account_id: str
+    ):
+        data = {
+            "id": account_id,
+            "input": {"grace_days": 25, "days_of_delinquency_for_status_switch": 0},
+        }
+        try:
+            ret = await cls._execute_update(client, _q.update_billing_parameters, data)
+            return ret
+        except:
+            cls._logger.exception(f"Failed to update account {account_id}")
+
+    @classmethod
     async def assign_inventory_item(
         cls, client: _AsyncClientSession, item: _Item, loc_type: str = "Address"
     ) -> _Item:
