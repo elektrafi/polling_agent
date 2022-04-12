@@ -2,6 +2,8 @@
 **/__pycache__/**
 
 scratch.py
+my.*
+config.json
 
 .vscode/**
 .vscode/**/**
@@ -26,3 +28,4 @@ sonar/*.key
 .old/**/**
 .old/**/**/**
 .old/**/**/**/**
+config.json

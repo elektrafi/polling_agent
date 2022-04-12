@@ -19,6 +19,7 @@ from aiohttp.client import (
 )
 from aiohttp import BasicAuth as _BasicAuth
 from concurrent.futures import ProcessPoolExecutor as _PPE
+from main import Application
 
 _exec = _PPE()
 
@@ -40,10 +41,10 @@ class HTTPMethod(_Enum):
 class Raemis:
     _logger = _logging.getLogger(__name__)
     session: _ClientSession
-    _username = "pollingAgent"
-    _password = "EFI_Buna2020!1"
+    _username = Application.config.raemis.username
+    _password = Application.config.raemis.password
     _auth: _BasicAuth = _BasicAuth(login=_username, password=_password)
-    apiUrl: str = "http://10.44.1.13"
+    apiUrl: str = Application.config.raemis.url
     _inst: _Self | None = None
 
     @classmethod

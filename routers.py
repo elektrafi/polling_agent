@@ -5,6 +5,7 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+from main import Application
 from model.atoms import Item
 from routeros_api import RouterOsApiPool
 from routeros_api.api import RouterOsApi
@@ -33,10 +34,10 @@ class MikroTikRouter:
 
     def __init__(
         self,
-        address="10.176.1.1",
-        port=8729,
-        username="sonar",
-        password="EFI_Sonar2020!1",
+        address=Application.config.mikrotik.host,
+        port=Application.config.mikrotik.port,
+        username=Application.config.mikrotik.username,
+        password=Application.config.mikrotik.password,
     ):
         self._address_lists = None
         self._filter = None

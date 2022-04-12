@@ -37,7 +37,6 @@ def get_socket(hostname,
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
     if ssl_context is not None:
-        ssl_context.minimum_version = ssl.PROTOCOL_TLSv1_2
         api_socket = ssl_context.wrap_socket(api_socket,
                                              server_hostname=hostname)
     return SocketWrapper(api_socket)

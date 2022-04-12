@@ -7,6 +7,7 @@
 
 import asyncio
 from asyncio.tasks import Task
+from main import Application
 from urllib3 import disable_warnings as _disable_warnings
 from model.atoms import (
     Account as _Account,
@@ -597,9 +598,8 @@ class Sonar:
         return invItems
 
 
-apiUrl: str = "https://elektrafi.sonar.software/api/graphql"
+apiUrl: str = Application.config.sonar.url
 Sonar._apiUrl = apiUrl
-with open("sonar_api.key") as key_file:
-    Sonar._sonar_api_key = _JSONDecoder().decode(key_file.readline())["sonar_api_key"]
+Sonar._sonar_api_key = Application.config.sonar.key
 
 _exec = _PPE()
