@@ -1,0 +1,17 @@
+{
+    "sonar": {
+        "url": "https://URL.sonar.software",
+        "key": ""
+    },
+    "raemis": {
+        "url": "http://x.x.x.x",
+        "username": "",
+        "password": ""
+    },
+    "mikrotik": {
+        "host": "x.x.x.x",
+        "port": 8729,
+        "username": "",
+        "password": ""
+    }
+}
