@@ -1,6 +1,6 @@
 {
     "sonar": {
-        "url": "https://URL.sonar.software",
+        "url": "https://URL.sonar.software/api/graphql",
         "key": ""
     },
     "raemis": {
