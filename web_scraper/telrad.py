@@ -30,7 +30,8 @@ class Telrad12300:
         for item in items:
             if item.ipv4 and item.imei and str(item.imei).startswith("86630"):
                 info = cls.get_info(item.ipv4)
-                cls._log.info(f"got web scraping info for a Telrad 12300: {info}")
+                cls._log.info(
+                    f"got web scraping info for a Telrad 12300: {info}")
                 ret.append(info)
         return await _gather(*ret)
 
@@ -38,9 +39,9 @@ class Telrad12300:
     async def get_info(cls, ip: _IPv4Address):
         try:
             async with _aiohttp.ClientSession(
-                base_url=f"https://{repr(ip)}:8080/",
-                auto_decompress=True,
-                trust_env=True,
+                    base_url=f"https://{repr(ip)}:8080/",
+                    auto_decompress=True,
+                    trust_env=True,
             ) as session:
                 i = _Item()
                 i.model = _Model.T12300
@@ -64,7 +65,10 @@ class Telrad12300:
         return i
 
     @classmethod
-    async def rate_info(cls, ip: _IPv4Address, i: _Item = _Item(), session=None):
+    async def rate_info(cls,
+                        ip: _IPv4Address,
+                        i: _Item = _Item(),
+                        session=None):
         page = "/cgi-bin/cusltestatus.cgi"
         rate = {"Command": "Thr", "T": _time.time_ns() // 1_000}
         root = await cls.get_page(ip, page, rate, session)
@@ -83,9 +87,15 @@ class Telrad12300:
         return i
 
     @classmethod
-    async def radio_info(cls, ip: _IPv4Address, i: _Item = _Item(), session=None):
+    async def radio_info(cls,
+                         ip: _IPv4Address,
+                         i: _Item = _Item(),
+                         session=None):
         page = "/cgi-bin/cusradioinfo.cgi"
-        radio = {"Command": "getRadioInfo", "T": str(int(_time.time() * 1000))}
+        radio: dict[str, str | int] = {
+            "Command": "getRadioInfo",
+            "T": str(int(_time.time() * 1000))
+        }
         root = await cls.get_page(ip, page, radio, session)
         rsrp = root.find("RSRP")
         if rsrp is not None and rsrp.text is not None:
@@ -164,14 +174,14 @@ class Telrad12300:
     ):
         if session is None:
             async with _aiohttp.ClientSession(
-                base_url=f"https://{repr(host)}:8080/",
-                auto_decompress=True,
-                trust_env=True,
+                    base_url=f"https://{repr(host)}:8080/",
+                    auto_decompress=True,
+                    trust_env=True,
             ) as session:
                 async with session.get(
-                    url=page,
-                    ssl=False,
-                    params=data,
+                        url=page,
+                        ssl=False,
+                        params=data,
                 ) as resp:
                     text = await resp.text()
                     parser = _ElementTree.XMLParser()
@@ -180,9 +190,9 @@ class Telrad12300:
                     root: _ElementTree.Element = build.close()
         else:
             async with session.get(
-                url=page,
-                ssl=False,
-                params=data,
+                    url=page,
+                    ssl=False,
+                    params=data,
             ) as resp:
                 text = await resp.text()
                 parser = _ElementTree.XMLParser()

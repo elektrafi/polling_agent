@@ -10,14 +10,33 @@ from routeros_api import exceptions
 from routeros_api import resource
 
 
-def connect(host, username='admin', password='', port=None, plaintext_login=False, use_ssl=False, ssl_verify=True, ssl_verify_hostname=True, ssl_context=None):
-    return RouterOsApiPool(host, username, password, port, plaintext_login, use_ssl, ssl_verify, ssl_verify_hostname, ssl_context).get_api()
+def connect(host,
+            username='admin',
+            password='',
+            port=None,
+            plaintext_login=False,
+            use_ssl=False,
+            ssl_verify=True,
+            ssl_verify_hostname=True,
+            ssl_context=None):
+    return RouterOsApiPool(host, username, password, port, plaintext_login,
+                           use_ssl, ssl_verify, ssl_verify_hostname,
+                           ssl_context).get_api()
 
 
 class RouterOsApiPool(object):
     socket_timeout = 15.0
 
-    def __init__(self, host, username='admin', password='', port=None, plaintext_login=False, use_ssl=False, ssl_verify=True, ssl_verify_hostname=True, ssl_context=None):
+    def __init__(self,
+                 host,
+                 username='admin',
+                 password='',
+                 port=None,
+                 plaintext_login=False,
+                 use_ssl=False,
+                 ssl_verify=True,
+                 ssl_verify_hostname=True,
+                 ssl_context=None):
         self.host = host
         self.username = username
         self.password = password
@@ -42,8 +61,14 @@ class RouterOsApiPool(object):
 
     def get_api(self):
         if not self.connected:
-            self.socket = api_socket.get_socket(self.host, self.port,
-                                                timeout=self.socket_timeout, use_ssl=self.use_ssl, ssl_verify=self.ssl_verify, ssl_verify_hostname=self.ssl_verify_hostname, ssl_context=self.ssl_context)
+            self.socket = api_socket.get_socket(
+                self.host,
+                self.port,
+                timeout=self.socket_timeout,
+                use_ssl=self.use_ssl,
+                ssl_verify=self.ssl_verify,
+                ssl_verify_hostname=self.ssl_verify_hostname,
+                ssl_context=self.ssl_context)
             base = base_api.Connection(self.socket)
             communicator = api_communicator.ApiCommunicator(base)
             self.api = RouterOsApi(communicator)
@@ -74,6 +99,7 @@ class RouterOsApiPool(object):
 
 
 class RouterOsApi(object):
+
     def __init__(self, communicator):
         self.communicator = communicator
 
@@ -84,18 +110,26 @@ class RouterOsApi(object):
                 login = login.encode()
             if isinstance(password, string_types):
                 password = password.encode()
-            response = self.get_binary_resource('/').call('login',{ 'name': login, 'password': password })
+            response = self.get_binary_resource('/').call(
+                'login', {
+                    'name': login,
+                    'password': password
+                })
         else:
             response = self.get_binary_resource('/').call('login')
         if 'ret' in response.done_message:
             token = binascii.unhexlify(response.done_message['ret'])
             hasher = hashlib.md5()
             hasher.update(b'\x00')
-            hasher.update(password.encode())
+            hasher.update(
+                password.encode() if isinstance(password, str) else password)
             hasher.update(token)
             hashed = b'00' + hasher.hexdigest().encode('ascii')
             self.get_binary_resource('/').call(
-                'login', {'name': login.encode(), 'response': hashed})
+                'login', {
+                    'name': login.encode() if isinstance(login, str) else login,
+                    'response': hashed
+                })
 
     def get_resource(self, path, structure=None):
         structure = structure or api_structure.default_structure
@@ -106,12 +140,13 @@ class RouterOsApi(object):
 
 
 class CloseConnectionExceptionHandler:
+
     def __init__(self, pool):
         self.pool = pool
 
     def handle(self, exception):
-        connection_closed = isinstance(
-            exception, exceptions.RouterOsApiConnectionError)
+        connection_closed = isinstance(exception,
+                                       exceptions.RouterOsApiConnectionError)
         fatal_error = isinstance(exception, exceptions.FatalRouterOsApiError)
         if connection_closed or fatal_error:
             self.pool.disconnect()

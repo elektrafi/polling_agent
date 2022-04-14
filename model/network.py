@@ -30,12 +30,14 @@ class IPv4Address:
         netmask: tuple[int, int, int, int] | None = None,
     ):
         if not (address or octets):
-            self._logger.error("Must provide an IP address in string or list form")
+            self._logger.error(
+                "Must provide an IP address in string or list form")
             raise ValueError
 
         if address:
             address = address.strip()
-            if not _re.match(_re.compile(r"""(\d{1,3}\.){3}\d{1,3}"""), address):
+            if not _re.match(_re.compile(r"""(\d{1,3}\.){3}\d{1,3}"""),
+                             address):
                 self._logger.error(
                     f"Provided string, {address} is not in the (PCRE) form of (\\d{{1,3}}.){{3}}\\d{{1,3}}"
                 )
@@ -78,7 +80,8 @@ class IPv4Address:
 
     @property
     def broadcast(self) -> tuple[int, int, int, int]:
-        return tuple(self.address[a] | (0xFF ^ m) for a, m in enumerate(self.netmask))
+        return tuple(
+            self.address[a] | (0xFF ^ m) for a, m in enumerate(self.netmask))
 
     @classmethod
     def is_valid_ipv4(
@@ -108,21 +111,22 @@ class IPv4Address:
             cls._logger.error(f"address must have 4 octets: {addr}")
             return False
         if len(list(filter(lambda x: x.bit_length() > 8 or x < 0, addr))):
-            cls._logger.error(f"address {addr} octets must be in the range [0,255]")
+            cls._logger.error(
+                f"address {addr} octets must be in the range [0,255]")
             return False
 
         network = [addr[a] & m for a, m in enumerate(netmask)]
         broadcast = [addr[a] | (0xFF ^ m) for a, m in enumerate(netmask)]
 
-        if (addr == broadcast or addr == network) and cls.netmask_to_cidr(
-            netmask
-        ) != 32:
+        if (addr == broadcast or
+                addr == network) and cls.netmask_to_cidr(netmask) != 32:
             cls._logger.error(
-                f"ip address {addr} cannot be the network or broadcast address"
-            )
+                f"ip address {addr} cannot be the network or broadcast address")
             return False
 
-        if not all([v >= network[i] and v <= broadcast[i] for i, v in enumerate(addr)]):
+        if not all(
+            [v >= network[i] and v <= broadcast[i] for i, v in enumerate(addr)
+            ]):
             cls._logger.error(f"ip address {addr} must be within the network")
             return False
 
@@ -130,12 +134,13 @@ class IPv4Address:
 
     @classmethod
     def is_valid_netmask(
-        cls, *, cidr: int = 0, netmask: tuple[int, int, int, int] | None = None
-    ) -> bool:
+            cls,
+            *,
+            cidr: int = 0,
+            netmask: tuple[int, int, int, int] | None = None) -> bool:
         if not (cidr or netmask):
             cls._logger.error(
-                "Either a CIDR mask or a netmask address msut be provided"
-            )
+                "Either a CIDR mask or a netmask address msut be provided")
             raise AttributeError
         if cidr and netmask:
             cls._logger.warn(
@@ -171,21 +176,18 @@ class IPv4Address:
         #
         #
         if len(
-            tuple(
-                filter(
-                    lambda x: 2 ** x.bit_length() - 2 ** cls.__ones(x) != x,
-                    netmask,
-                )
-            )
-        ):
+                tuple(
+                    filter(
+                        lambda x: 2**x.bit_length() - 2**cls.__ones(x) != x,
+                        netmask,
+                    ))):
             cls._logger.error(
                 f"octets in the netmask {netmask} must be in CIDR form, see RFC 1219"
             )
             return False
         if tuple(sorted(netmask, reverse=True)) != netmask:
             cls._logger.error(
-                f"netmask {netmask} octets must be in descending sorted order"
-            )
+                f"netmask {netmask} octets must be in descending sorted order")
             return False
         return True
 
@@ -194,17 +196,20 @@ class IPv4Address:
         if not cls.is_valid_netmask(netmask=netmask):
             cls._logger.error("invalid netmask")
             raise ValueError
-        return sum([v << 8 * (3 - i) for i, v in enumerate(netmask)]).bit_count()
+        return sum([v << 8 * (3 - i) for i, v in enumerate(netmask)
+                   ]).bit_count()
 
     @classmethod
     def cidr_to_netmask(cls, cidr_mask: int) -> tuple[int, int, int, int]:
         if cidr_mask < 2 or cidr_mask > 32:
-            cls._logger.error(f"A CIDR netmask must be between 2 and 32, inclusive.")
+            cls._logger.error(
+                f"A CIDR netmask must be between 2 and 32, inclusive.")
             raise ValueError
 
         bitmask = (2**cidr_mask) - 1 << (32 - cidr_mask)
 
-        netmask = tuple(((0xFF << 8 * x) & bitmask) >> 8 * x for x in range(3, -1, -1))
+        netmask = tuple(
+            ((0xFF << 8 * x) & bitmask) >> 8 * x for x in range(3, -1, -1))
 
         if not cls.is_valid_netmask(netmask=netmask):
             cls._logger.error(
@@ -245,14 +250,16 @@ class IPv4Address:
         if isinstance(__o, IPv4Address):
             return IPv4Address(octets=__o.address, cidr_mask=__o._cidr_mask)
         if not isinstance(__o, Sequence):
-            raise ValueError(f"type {type(__o)} is not convertable to an IP address")
+            raise ValueError(
+                f"type {type(__o)} is not convertable to an IP address")
         elif isinstance(__o, str):
             return IPv4Address(address=__o)
         elif isinstance(__o, bytes):
             return IPv4Address(address=__o.decode())
         elif isinstance(__o, Sequence):
             if not all(map(lambda x: isinstance(x, Integral), __o)):
-                cls._logger.error(f"not all elements of {str(__o)} are integers")
+                cls._logger.error(
+                    f"not all elements of {str(__o)} are integers")
                 raise ValueError("Elements of the sequence must be integers")
             else:
                 return IPv4Address(octets=tuple(__o))
@@ -285,7 +292,8 @@ class MACAddress:
                     self._log.debug(f"loop: {ret}")
                 if len(ret) == 12:
                     self._mac = bytes.fromhex(ret.upper())
-                    self._log.info(f"good value {self._mac} after converting hex {mac}")
+                    self._log.info(
+                        f"good value {self._mac} after converting hex {mac}")
                     return
                 else:
                     self._log.error(f"bad value {mac}")
@@ -314,7 +322,7 @@ class IMEI(str):
     _log = logging.getLogger(__name__)
 
     def __new__(cls, obj: object = "") -> _Self:
-        s = super(IMEI, cls).__new__(cls, obj).strip().replace("-", "")
+        s = super(IMEI, cls).__new__(cls, str(obj).strip().replace("-", ""))
         if len(s) not in (15, 16):
             cls._log.error(
                 f"provided {s}, but IMEI must be 15 characters long (or 16 for newer versions)"
@@ -322,8 +330,7 @@ class IMEI(str):
             s = super(IMEI, cls).__new__(cls, "")
         if not s.isdecimal():
             cls._log.error(
-                f"provided {s}, but IMEI must be a string of decimal numbers"
-            )
+                f"provided {s}, but IMEI must be a string of decimal numbers")
             s = super(IMEI, cls).__new__(cls, "")
         return s
 
@@ -332,13 +339,13 @@ class IMSI(str):
     __log = logging.getLogger(__name__)
 
     def __new__(cls, obj: object = "") -> _Self:
-        s = super(IMSI, cls).__new__(cls, obj).strip()
+        s = super(IMSI, cls).__new__(cls, str(obj).strip())
         if len(s) != 15:
-            cls.__log.error(f"provided {s}, but IMSI must be 15 characters long")
+            cls.__log.error(
+                f"provided {s}, but IMSI must be 15 characters long")
             s = super(IMSI, cls).__new__(cls, "")
         if not s.isdecimal():
             cls.__log.error(
-                f"provided {s}, but IMSI must be a string of decimal numbers"
-            )
+                f"provided {s}, but IMSI must be a string of decimal numbers")
             s = super(IMSI, cls).__new__(cls, "")
         return s

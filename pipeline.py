@@ -18,7 +18,6 @@ from typing import (
 import logging
 from typing_extensions import Self
 
-
 P = ParamSpec("P")
 T = TypeVar("T")
 F = TypeVar("F", list[Future], Future)
@@ -43,10 +42,8 @@ class Pipeline:
         return cls._inst
 
     def __del__(self):
-        (
-            x.shutdown(wait=True, cancel_futures=False)
-            for x in [self.procExec, self.threadExec]
-        )
+        (x.shutdown(wait=True, cancel_futures=False)
+         for x in [self.procExec, self.threadExec])
 
     def map(
         self,
@@ -56,7 +53,10 @@ class Pipeline:
         chunksize: int = 200,
     ) -> Iterator[T]:
 
-        return self.procExec.map(fn, iterable, timeout=timeout, chunksize=chunksize)
+        return self.procExec.map(fn,
+                                 iterable,
+                                 timeout=timeout,
+                                 chunksize=chunksize)
 
     def map_in_executor(
         self,
@@ -64,7 +64,6 @@ class Pipeline:
         fn: Callable[P, T],
         iterable: Iterable[Any] | Any,
         timeout: float | None = None,
-        chunksize: int = 1,
         chunksize: int = 250,
     ) -> Iterator[T]:
         return e.map(fn, iterable, timeout=timeout, chunksize=chunksize)
@@ -77,7 +76,7 @@ class Pipeline:
         **kwargs: P.kwargs,
     ) -> Future[T]:
         self.cursor = e.submit(fn, *args, **kwargs)
-        if e == self.mainExec:
+        if e == self.threadExec:
             self.cursor = e.submit(fn, *args, **kwargs)
         return self.cursor
 
@@ -87,7 +86,8 @@ class Pipeline:
         *args: Iterable[Any] | Any,
         **kwargs: Mapping[str, Any],
     ) -> Future[T]:
-        self.cursor = self.start_fn_in_executor(self.threadExec, fn, *args, **kwargs)
+        self.cursor = self.start_fn_in_executor(self.threadExec, fn, *args,
+                                                **kwargs)
         return self.cursor
 
     def start_fn_after_cursor(
@@ -96,7 +96,8 @@ class Pipeline:
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Future[T]:
-        self.cursor = self.start_fn_after_future(self.cursor, fn, *args, **kwargs)
+        self.cursor = self.start_fn_after_future(self.cursor, fn, *args,
+                                                 **kwargs)
         return self.cursor
 
     def start_fns_after_future(
@@ -114,7 +115,8 @@ class Pipeline:
                 kwalist.append({})
         ret = []
         for i, fn in enumerate(fns):
-            ret.append(self.start_fn_after_future(f, fn, *alist[i], **kwalist[i]))
+            ret.append(
+                self.start_fn_after_future(f, fn, *alist[i], **kwalist[i]))
         self.cursor = self.merge_futures_list(ret)
         return self.cursor
 
@@ -125,6 +127,7 @@ class Pipeline:
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> Future[T]:
+
         def call_fn_after_future(
             f: Future[Any],
             fn: Callable[P, T],
@@ -135,9 +138,8 @@ class Pipeline:
                 pass
             return fn(*args, **kwargs)
 
-        self.cursor = self.threadExec.submit(
-            call_fn_after_future, f, fn, *args, **kwargs
-        )
+        self.cursor = self.threadExec.submit(call_fn_after_future, f, fn, *args,
+                                             **kwargs)
         return self.cursor
 
     def start_fn_after_futures_list(
@@ -152,6 +154,7 @@ class Pipeline:
         return self.cursor
 
     def merge_futures_list(self, l: FList) -> FList:
+
         def merge(l: FList) -> list[Any]:
             while not self.__all_futures_done(l):
                 pass

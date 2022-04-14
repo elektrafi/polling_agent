@@ -1,5 +1,6 @@
 from routeros_api import utils
 
+
 class BasicQuery(object):
     operator = None
 
@@ -24,6 +25,7 @@ class IsGreaterQuery(BasicQuery):
 
 
 class HasValueQuery(object):
+
     def __init__(self, key):
         self.key = utils.get_bytes(key)
 
@@ -32,7 +34,7 @@ class HasValueQuery(object):
 
 
 class OperatorQuery(object):
-    operator = None
+    operator: bytes
 
     def __init__(self, *others):
         self.others = others
@@ -55,6 +57,7 @@ class AndQuery(OperatorQuery):
 
 
 class NandQuery(AndQuery):
+
     def get_api_format(self):
         formated = super(NandQuery, self).get_api_format()
         formated[-1] += b'!'
