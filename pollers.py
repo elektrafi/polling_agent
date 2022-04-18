@@ -5,6 +5,7 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+import time
 from functools import partial
 from os import environ
 import operator
@@ -150,23 +151,19 @@ class ICMPPoller:
 
     log = logging.getLogger(__name__)
     requests: Collection[PollerRequest]
-    pings: list[PingResult]
+    time_taken: float = -1
 
     def __init__(self, requests: Collection[PollerRequest]) -> None:
         self.requests = requests
 
     def run_all_pings(self) -> None:
-        asyncio.run(self.store_all_pings())
+        asyncio.run(self.ping_all())
 
-    async def store_all_pings(self) -> None:
-        self.pings = list(await self.ping_all())
-
-    async def ping_all(self) -> Collection[PingResult]:
+    async def ping_all(self) -> None:
         results = []
         for request in self.requests:
-            results.append(asyncio.create_task(self.fping(request.ip)))
-        ret = await asyncio.gather(*results)
-        return ret
+            results.append(asyncio.create_task(self.fping(request)))
+        await asyncio.gather(*results)
 
     def _get_fping_cmd(
         self, host: IPv4Address, repeats: int, timeout: int
@@ -218,7 +215,7 @@ class ICMPPoller:
         ping_list = self.filter_fails(res_list)
         return PingResult(IPv4Address(address=res_host), ping_list, num_loss)
 
-    async def fping(self, request: PollerRequest, repeats=10, timeout=2000):
+    async def fping(self, request: PollerRequest, repeats=10, timeout=2000) -> None:
         res = await asyncio.subprocess.create_subprocess_exec(
             *self._get_fping_cmd(request.ip, repeats, timeout),
             stdout=asyncio.subprocess.PIPE,
@@ -233,19 +230,15 @@ class ICMPPoller:
         await asyncio.sleep(0)
         if status != 0:
             self.log.error(f"`fping` returned status code {status}. Message: {output}")
-            return PingResult(request.ip, status_code=status, error_msg=output.decode())
-        return self._parse_fping_output(output)
-
-
-@dataclass
-class PollerResponse:
-    api_key: str
-    version: str
-    time_taken: float
-    icmp_results: dict[str, Any]
+            request.icmp_result = PingResult(
+                request.ip, status_code=status, error_msg=output.decode()
+            )
+        request.icmp_result = self._parse_fping_output(output)
 
 
 class PollerConnection:
+    log = logging.getLogger(__name__)
+
     @property
     def headers(self) -> dict[str, str]:
         return {
@@ -262,9 +255,16 @@ class PollerConnection:
             "version": Application.config.poller.version,
         }
 
-    @property
-    def response_body(self) -> dict[str, Any]:
-        pass
+    def run(self):
+        asyncio.run(self.do_task())
+
+    async def do_task(self):
+        poller = await self.get_requests()
+        start = time.perf_counter()
+        await poller.ping_all()
+        stop = time.perf_counter()
+        poller.time_taken = stop - start
+        await self.send_response(poller)
 
     async def get_requests(self) -> ICMPPoller:
         async with aiohttp.ClientSession(
@@ -279,11 +279,42 @@ class PollerConnection:
                     loads=JSONDecoder(object_hook=json_obj_hook).decode
                 )
         await asyncio.sleep(0.250)
-        assert isinstance(requests, list)
         return ICMPPoller(requests)
 
-    async def send_response(self):
-        pass
+    async def send_response(self, poller: ICMPPoller):
+        requests = poller.requests
+        results = {}
+        for request in requests:
+            result = request.icmp_result
+            if result.status_code != 0:
+                self.log.error(
+                    f"fping errored with status code {result.status_code}. Message: {result.error_msg}"
+                )
+                continue
+            elif result.host is None or result.pings is None:
+                self.log.error(f"No ICMP result found for request: {request}")
+                continue
+            results[request.item_id] = {
+                "icmp": {
+                    "low": "%.2f" % min(result.pings),
+                    "high": "%.2f" % max(result.pings),
+                    "median": "%.2f" % (sum(result.pings) / len(result.pings)),
+                    "loss_percentage": "%.2f"
+                    % (float(result.num_failures) / len(result.pings)),
+                }
+            }
+        ret = dict(self.request_body)
+        ret["time_taken"] = "%f.2" % poller.time_taken
+        async with aiohttp.ClientSession(
+            headers=self.headers,
+            timeout=ClientTimeout(connect=120, sock_read=120, sock_connect=120),
+            trust_env=True,
+        ) as session:
+            async with session.post(
+                url=Application.config.poller.response, body=self.request_body
+            ) as resp:
+                status = await resp.json()
+                self.log.info(f"Received response from Sonar: {status}")
 
 
 if __name__ == "__main__":
@@ -336,7 +367,6 @@ if __name__ == "__main__":
     loaded = json.loads(data, object_hook=json_obj_hook)
 
     async def go(num_runs):
-        import time
 
         tasks = []
         start = time.perf_counter()
