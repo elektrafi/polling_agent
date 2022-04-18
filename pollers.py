@@ -283,7 +283,7 @@ class PollerConnection:
 
     async def send_response(self, poller: ICMPPoller):
         requests = poller.requests
-        results = {}
+        results: dict[str, dict[str, dict[str, float]]] = {}
         for request in requests:
             result = request.icmp_result
             if result.status_code != 0:
@@ -296,15 +296,16 @@ class PollerConnection:
                 continue
             results[request.item_id] = {
                 "icmp": {
-                    "low": "%.2f" % min(result.pings),
-                    "high": "%.2f" % max(result.pings),
-                    "median": "%.2f" % (sum(result.pings) / len(result.pings)),
-                    "loss_percentage": "%.2f"
-                    % (float(result.num_failures) / len(result.pings)),
+                    "low": min(result.pings),
+                    "high": max(result.pings),
+                    "median": sum(result.pings) / len(result.pings),
+                    "loss_percentage": float(result.num_failures) / len(result.pings),
                 }
             }
-        ret = dict(self.request_body)
+        self.log.debug(f"Results:\n{results}")
+        ret: dict[str, Any] = dict(self.request_body)
         ret["time_taken"] = "%f.2" % poller.time_taken
+        ret["results"] = results
         async with aiohttp.ClientSession(
             headers=self.headers,
             timeout=ClientTimeout(connect=120, sock_read=120, sock_connect=120),
