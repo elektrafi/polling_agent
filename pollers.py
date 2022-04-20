@@ -5,6 +5,7 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 
+import pprint
 import time
 from functools import partial
 from os import environ
@@ -17,12 +18,12 @@ from dataclasses import KW_ONLY, dataclass, field
 import json
 from json.decoder import JSONDecoder
 import logging
-from pprint import pprint
 from typing import Collection, Iterable, Mapping, Any, Callable, Type
 from aiohttp.client import ClientSession, ClientTimeout
 from main import Application
 import aiohttp
 import shutil
+import gzip
 
 from model.network import IPv4Address
 
@@ -51,19 +52,24 @@ class MonitoringTemplate:
 
 
 @dataclass
-class PingResult:
+class PingResult(json.JSONEncoder):
     host: IPv4Address | None = field(default=None, init=True)
     pings: list[float] | None = field(default=None)
     num_failures: int = field(default=0)
     status_code: int = field(default=0)
     error_msg: str | None = field(default=None)
 
+    def default(self, o: object):
+        if not isinstance(o, PingResult):
+            super().default(o)
+        return {}
+
 
 @dataclass
 class PollerRequest:
 
     _: KW_ONLY
-    item_id: str
+    item_id: str | None = field(default=None)
     ip: IPv4Address
     host_type: str
     priority: int
@@ -95,7 +101,6 @@ def json_obj_hook(pairs: dict[str, Any]) -> _parsing_type:
         )
     ):
         return PollerRequest(
-            item_id="",
             ip=IPv4Address(address=pairs["ip"]),
             host_type=pairs["type"],
             template=MonitoringTemplate(template_id=pairs["monitoring_template_id"]),
@@ -104,7 +109,7 @@ def json_obj_hook(pairs: dict[str, Any]) -> _parsing_type:
     elif all(map(lambda x: isinstance(x, PollerRequest), pairs.values())):
         ret = list()
         for item_id in pairs:
-            pairs[item_id].item_id = item_id
+            pairs[item_id].item_id = str(item_id)
             ret.append(pairs[item_id])
         return ret
     elif all(
@@ -114,7 +119,7 @@ def json_obj_hook(pairs: dict[str, Any]) -> _parsing_type:
         )
     ):
         return MonitoringTemplate(
-            icmp=pairs["icmp"],
+            icmp=bool(pairs["icmp"]),
             interface_stats=pairs["collect_interface_statistics"],
             snmp_version=pairs["snmp_version"],
             snmp_community=pairs["snmp_community"],
@@ -126,9 +131,10 @@ def json_obj_hook(pairs: dict[str, Any]) -> _parsing_type:
             pairs[template_id].template_id = template_id
             ret.append(pairs[template_id])
         return ret
-    elif "hosts" in pairs and "template" in pairs:
+    elif "hosts" in pairs and "monitoring_templates" in pairs:
+        logging.debug(f"matching template to hosts:\n{pprint.pformat(pairs)}")
         hosts: list[PollerRequest] = pairs["hosts"]
-        templates: list[MonitoringTemplate] = pairs["template"]
+        templates: list[MonitoringTemplate] = pairs["monitoring_templates"]
         for host in hosts:
             try:
                 host.template = next(
@@ -150,11 +156,11 @@ def json_obj_hook(pairs: dict[str, Any]) -> _parsing_type:
 class ICMPPoller:
 
     log = logging.getLogger(__name__)
-    requests: Collection[PollerRequest]
+    requests: list[PollerRequest]
     time_taken: float = -1
 
     def __init__(self, requests: Collection[PollerRequest]) -> None:
-        self.requests = requests
+        self.requests = list(requests)
 
     def run_all_pings(self) -> None:
         asyncio.run(self.ping_all())
@@ -162,7 +168,8 @@ class ICMPPoller:
     async def ping_all(self) -> None:
         results = []
         for request in self.requests:
-            results.append(asyncio.create_task(self.fping(request)))
+            if request.template.icmp:
+                results.append(asyncio.create_task(self.fping(request)))
         await asyncio.gather(*results)
 
     def _get_fping_cmd(
@@ -255,35 +262,41 @@ class PollerConnection:
             "version": Application.config.poller.version,
         }
 
+    async def open_session(self):
+        return aiohttp.ClientSession(
+            headers=self.headers,
+            timeout=ClientTimeout(connect=120, sock_read=120, sock_connect=120),
+            trust_env=True,
+        )
+
     def run(self):
         asyncio.run(self.do_task())
 
     async def do_task(self):
-        poller = await self.get_requests()
+        session = await self.open_session()
+        poller = await self.get_requests(session)
         start = time.perf_counter()
         await poller.ping_all()
         stop = time.perf_counter()
         poller.time_taken = stop - start
-        await self.send_response(poller)
+        await self.send_response(session, poller)
+        await session.close()
+        await asyncio.sleep(0.5)
 
-    async def get_requests(self) -> ICMPPoller:
-        async with aiohttp.ClientSession(
-            headers=self.headers,
-            timeout=ClientTimeout(connect=120, sock_read=120, sock_connect=120),
-            trust_env=True,
-        ) as session:
-            async with session.post(
-                url=Application.config.poller.request, json=self.request_body
-            ) as resp:
-                requests: list[PollerRequest] = await resp.json(
-                    loads=JSONDecoder(object_hook=json_obj_hook).decode
-                )
-        await asyncio.sleep(0.250)
+    async def get_requests(self, session: aiohttp.ClientSession) -> ICMPPoller:
+        async with session.post(
+            url=Application.config.poller.request, json=self.request_body
+        ) as resp:
+            self.log.debug(f"Requests (RAW):\n{pprint.pformat(await resp.json())}")
+            requests: list[PollerRequest] = await resp.json(
+                loads=JSONDecoder(object_hook=json_obj_hook).decode
+            )
+        self.log.debug(f"Requests:\n{pprint.pformat(requests)}")
         return ICMPPoller(requests)
 
-    async def send_response(self, poller: ICMPPoller):
+    async def send_response(self, session: aiohttp.ClientSession, poller: ICMPPoller):
         requests = poller.requests
-        results: dict[str, dict[str, dict[str, float]]] = {}
+        results: dict[str, dict[str, None | dict[str, float]]] = {}
         for request in requests:
             result = request.icmp_result
             if result.status_code != 0:
@@ -294,37 +307,33 @@ class PollerConnection:
             elif result.host is None or result.pings is None:
                 self.log.error(f"No ICMP result found for request: {request}")
                 continue
-            results[request.item_id] = {
+            results[str(request.item_id)] = {
                 "icmp": {
-                    "low": min(result.pings),
-                    "high": max(result.pings),
-                    "median": sum(result.pings) / len(result.pings),
-                    "loss_percentage": float(result.num_failures) / len(result.pings),
-                }
+                    "low": float("%.2f" % min(result.pings)),
+                    "high": float("%.2f" % max(result.pings)),
+                    "median": float(
+                        "%.2f" % sorted(result.pings)[len(result.pings) // 2]
+                    ),
+                    "loss_percentage": float(
+                        "%.2f" % (float(result.num_failures) / len(result.pings))
+                    ),
+                },
+                "snmp": {},
             }
-        self.log.debug(f"Results:\n{results}")
         ret: dict[str, Any] = dict(self.request_body)
-        ret["time_taken"] = "%f.2" % poller.time_taken
+        ret["time_taken"] = float("%.2f" % float(poller.time_taken))
         ret["results"] = results
-        async with aiohttp.ClientSession(
-            headers=self.headers,
-            timeout=ClientTimeout(connect=120, sock_read=120, sock_connect=120),
-            trust_env=True,
-        ) as session:
-            async with session.post(
-                url=Application.config.poller.response, body=self.request_body
-            ) as resp:
-                status = await resp.json()
-                self.log.info(f"Received response from Sonar: {status}")
+        self.log.debug(f"Results:\n{json.dumps(ret)}")
+        async with session.post(
+            url=Application.config.poller.response, json=ret
+        ) as resp:
+            status = await resp.json()
+            resp._body
+        self.log.info(f"Received response from Sonar: {status}")
 
 
 if __name__ == "__main__":
 
-    async def run():
-        loaded = await asyncio.create_task(PollerConnection().get_requests())
-        print(loaded)
-
-    # asyncio.run(run())
     data = """
     {
     "data":{
@@ -365,22 +374,51 @@ if __name__ == "__main__":
      }
     """
     # test = ICMPPoller(data)
-    loaded = json.loads(data, object_hook=json_obj_hook)
+    # loaded = json.loads(data, object_hook=json_obj_hook)
 
-    async def go(num_runs):
+    # async def go(num_runs):
 
-        tasks = []
-        start = time.perf_counter()
-        for _ in range(num_runs):
-            poller = ICMPPoller(loaded)
-            tasks.append(poller.ping_all())
-        await asyncio.gather(*tasks)
-        end = time.perf_counter()
-        return end - start
+    #    tasks = []
+    #    start = time.perf_counter()
+    #    for _ in range(num_runs):
+    #        poller = ICMPPoller(loaded)
+    #        tasks.append(poller.ping_all())
+    #    await asyncio.gather(*tasks)
+    #    end = time.perf_counter()
+    #    return end - start
 
-    RUNS = 10
-    total = asyncio.run(go(RUNS))
-    print(
-        f"took: %.1fs total and averaged %.4fs over %s runs for %d hosts averaging %.4f per host for an average run"
-        % (total, total / RUNS, RUNS, len(loaded), total / RUNS / len(loaded))
+    # RUNS = 10
+    # total = asyncio.run(go(RUNS))
+    # print(
+    #    f"took: %.1fs total and averaged %.4fs over %s runs for %d hosts averaging %.4f per host for an average run"
+    #    % (total, total / RUNS, RUNS, len(loaded), total / RUNS / len(loaded))
+    # )
+    import pickle
+
+    import logging.handlers
+
+    rfh = logging.handlers.RotatingFileHandler(
+        "pollers.log", mode="w", backupCount=2, delay=False
     )
+    logging.basicConfig(level=logging.INFO)
+    log = logging.getLogger(__name__)
+    log.addHandler(rfh)
+
+    async def go():
+        conn = PollerConnection()
+        session = await conn.open_session()
+        poller = await conn.get_requests(session)
+        start = time.perf_counter()
+        await poller.ping_all()
+        end = time.perf_counter()
+        poller.time_taken = end - start
+        log.info(f"Time: {poller.time_taken}")
+        if poller.requests:
+            log.info(f"Sending:\n{pprint.pformat(poller.requests)}")
+            await conn.send_response(session, poller)
+        else:
+            log.info("No requets")
+        await session.close()
+        await asyncio.sleep(0.5)
+
+    asyncio.run(go())
