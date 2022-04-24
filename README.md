@@ -4,12 +4,12 @@ This application is a combination of a IP Address Manager and Source of Truth re
 ## Usage
 The program can be run from any directory, but POSIX standards dictate the program be housed in `/usr/share/efi`. If the project does not already exist in that location, clone the repository.
 ```bash
-git clone https://github.com/elektrafi/efi_polling_agent /usr/share/efi/efi_poller
+git clone https://github.com/elektrafi/polling_agent /usr/share/efi/efi_poller
 ```
 
 You may need administrative or root access to write to the /usr/share/efi directory the user account you are currently using does not own the directory or is not a member of a group that owns the directory.
 ```bash
-sudo git clone https://github.com/elektrafi.com/efi_polling_agent /usr/share/efi/efi_poller
+sudo git clone https://github.com/elektrafi.com/polling_agent /usr/share/efi/efi_poller
 ```
 
 For production usage, the release referenced by the `stable` tag is recommended.
