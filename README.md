@@ -1,9 +1,43 @@
 # ElektraFi IPAM Arbiter and Device Information Poller
 This application is a combination of a IP Address Manager and Source of Truth regarding deployed network device inventory for [Sonar](sonar.software). 
 
+## Usage
+The program can be run from any directory, but POSIX standards dictate the program be housed in `/usr/share/efi`. If the project does not already exist in that location, clone the repository.
+```bash
+git clone https://github.com/elektrafi/efi_polling_agent /usr/share/efi/efi_poller
+```
+
+You may need administrative or root access to write to the /usr/share/efi directory the user account you are currently using does not own the directory or is not a member of a group that owns the directory.
+```bash
+sudo git clone https://github.com/elektrafi.com/efi_polling_agent /usr/share/efi/efi_poller
+```
+
+For production usage, the release referenced by the `stable` tag is recommended.
+```bash
+git checkout stable
+```
+
+In order to maintain a persistent application after disconnecting from an SSH session, it is recommended to run the application in a tmux session. __After a server restart, the application must be restarted as well.__
+```bash
+tmux new -s poller
+```
+
+The main application is started via the `__main__` method of `polling_agent.py`
+```bash
+python polling_agent.py
+```
+
+Detach from the tmux session with `CTRL + b` followed by `d`. You can reattach to the session at any time.
+```bash
+tumux a -t poller
+```
+
+## Output and Logs
+The application outputs high-level information to the terminal and debug-level information to 4 rotating log files that are size-limited. Not all exceptions in the output are errors, `StopIteration` errors, `ConnectionTimeoutError` errors, and SSL related errors are expected and are caused by either normal application flow or issues with Sonar's connection endpoint.
+
 ## Features
 - Receives current IP address assignments from [Druid Software's Raemis](https://www.druidsoftware.com/raemis-cellular-network-technology/) (the EPC for ElektraFi's legacy LTE network)
-    - Configurable betwen server-initiated pushed information or application-initated pull based information on a timer
+    - Configurable between server-initiated pushed information or application-initiated pull based information on a timer
 - Scans the IP addresses currently in use and collects information about the device in different ways depending on the make/model of the device
 - Reports IP address attach and detach events to Sonar
 - Reports requested SNMP information to Sonar
